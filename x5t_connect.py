@@ -1,9 +1,6 @@
 import psycopg2
 import psycopg2.extras
-from flask import Flask, session, json, jsonify, render_template, request, escape, copy_current_request_context
-#from checker import check_logged_in
 
-app=Flask(__name__)
 
 db_cfg = {'host': 'v1-nx-psg0153',
           'user': 'anton_dmitriev',
@@ -78,62 +75,9 @@ _SQL3 = """SELECT df.feature_id,dfd."name", dfd.description  FROM "core-drivers-
     inner join "core-drivers-schema".driver_feature_dictionary dfd on dfd.id = df.feature_id 
     where dr.number = '{0}'"""
 
-#tab_num = """'00638577'"""
 
 
 
 
-#for k, v in current_races[0].items(): print(k, end=' ')
-#print()
-#for i in current_races:
-#    for k, v in i.items():
- #       print(v, end=' ')
-#    print()
 
 
-#print(current_races)
-#print()
-#print()
-
-@app.route('/')
-@app.route('/entry')
-def entry_page() -> 'html':
-
-    return render_template('entry.html',
-                           the_title='Welcome to x5transport support on the web!')
-
-@app.route('/search', methods=['POST'])
-def do_search() -> 'html':
-    tab_num = request.form['tabnum']
-    title = 'fucking results'
-    driver_info = get_dict_resultset(_SQL.format(tab_num))
-    current_races = get_dict_resultset(_SQL2.format(tab_num))
-    driver_features = get_dict_resultset(_SQL3.format(tab_num))
-    output = str_dict(driver_info) + "\n\n" + str_dict(current_races) + "\n\n" + str_dict(driver_features)
-    titles1 = []
-    data1 = []
-    for k, v in driver_info[0].items():
-        titles1.append(str(k))
-        data1.append(str(v))
-
-
-
-    print(titles1)
-    print(data1)
-
-    return render_template('viewlog.html',
-                           the_title='View Log',
-                           the_row_titles=titles1,
-                           the_data=data1)
-
-@app.route('/driver_info')
-def driver_page() -> str:
-    output = str_dict(driver_info) + "\n\n" + str_dict(current_races)+ "\n\n" + str_dict(driver_features)
-
-    print(output)
-    return output
-
-app.secret_key = 'SimplePasskey'
-
-if __name__ == '__main__':
-    app.run(debug=True)
