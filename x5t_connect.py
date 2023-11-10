@@ -1,7 +1,7 @@
 import psycopg2
 import psycopg2.extras
 from flask import Flask, session, json, jsonify, render_template, request, escape, copy_current_request_context
-from checker import check_logged_in
+#from checker import check_logged_in
 
 app=Flask(__name__)
 
