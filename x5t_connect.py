@@ -27,8 +27,8 @@ def db_request(sql_request: str) -> object:
 
 
 def get_dict_resultset(sql):
-    conn = psycopg2.connect(dbname='mfp', user='anton_dmitriev',
-                        password='PgVsMtcn@jd$AonUns', host='msk-dpro-psg044')
+    conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USERNAME"),
+                            password=os.getenv("DB_PASSWORD"), host=os.getenv("DB_HOST"))
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute(sql)
     ans = cur.fetchall()
@@ -53,9 +53,7 @@ def str_dict(dict) -> str:
     return result
 
 
-# conn = psycopg2.connect(dbname='mfp', user='anton_dmitriev',
-#                        password='PgVsMtcn@jd$AonUns', host='msk-dpro-psg044')
-# cursor = conn.cursor()
+
 _SQL = """select "number" , "name" , phone, licence, auth_user_id, 
     id, status, "type", driver_id, ut, birth_date, request_number, block_date
     from "core-drivers-schema".drivers where number = '{0}'"""

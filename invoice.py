@@ -141,4 +141,3 @@ def list_transform(input: list) -> list:
 
 #print(vehicle_counter('X897AX761'))
 
-finish(10629383)
