@@ -3,6 +3,7 @@ def send_sms(phone_num, text):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     import smtplib
+    import os
     from dotenv import load_dotenv
     sms_text = "Добрый день. " \
                "{0}" \
@@ -10,7 +11,7 @@ def send_sms(phone_num, text):
     postfix = '@sms.beeline.amega-inform.ru'
     load_dotenv()
     link = os.getenv("SMS_LINK")
-    login = os.getenv("SMS_USERNAMES")
+    login = os.getenv("SMS_USERNAME")
     password = os.getenv("SMS_PASSWORD")
     sms_text = "Добрый день. " \
                "{0}" \

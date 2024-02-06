@@ -158,17 +158,24 @@ def main():
                 print('Введите номер рейса х5т')
             else:
                 points = checkpoints(values[2])
-                points = DataFrame(points[1:], columns=points[0])
-                print(tabulate(points, headers='keys', tablefmt='tsv'))
+                if points != []:
+                    points = DataFrame(points[1:], columns=points[0])
+                    print(tabulate(points, headers='keys', tablefmt='tsv'))
+                else:
+                    print('Прожатия отсутствуют!')
 
         if event == 'Показать рейсы' and report == None:
+            races = []
             print('------------------------------------------------------------------------------------')
             if not values[3]:
                 print('Введите табельный номер')
             else:
                 races = all_races(values[3])
-                races= DataFrame(races[1:], columns=races[0])
-                print(tabulate(races, headers='keys', tablefmt='tsv'))
+                if races != []:
+                    races= DataFrame(races[1:], columns=races[0])
+                    print(tabulate(races, headers='keys', tablefmt='tsv'))
+                else:
+                    print('На активном ПЛ рейсы отсутствуют.')
                 # report = report_window(sorted_races[0], sorted_races[1:])
 
         if event == 'Фичи':
@@ -202,9 +209,6 @@ def main():
                 print('Введите табельный номер')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
-                #print(ot_id)
-                #print(ot_insrt.format(values[3]))
-                #print(ot_upd.format(values[3]))
                 if ot_id == []:
                     db_request(ot_insrt.format(values[3]))
                     print('ШК ОТ/ВС водителя {0} прописан и поставлен на обновление.'.format(values[3]))

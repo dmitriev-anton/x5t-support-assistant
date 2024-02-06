@@ -99,45 +99,40 @@ def finish(invoice_id, to_destroy=False) -> None:
 def checkpoints(invoice_id) -> list:
     from x5t_connect import db_request
 
-    checkpoints_query = """select * FROM "core-invoices-schema".driver_checkpoint where invoice_id = '{0}'"""
+    checkpoints_query = ("select invoice_version as inv_ver, invoice_point_sequence as seq, internal_point_id as int_p, "
+                         "external_point_id as ext_p, stage_id, create_time as cr_time, longitude as lng, latitude as lat, "
+                         "credentials as creds FROM \"core-invoices-schema\".driver_checkpoint where invoice_id = '{0}' "
+                         "order by seq desc")
     temp = []
     temp = db_request(checkpoints_query.format(invoice_id))
 
     return temp
 
-def list_transform(input: list) -> list:
-    output = []
+def get_x5t_id(inv_id):
 
-    if input != []:
-        headers = [k for k in input[0].keys()]
-        output.append(headers)
-        for i in input:
-            temp = []
-            for c in i.values():
-                temp.append(c)
-            output.append(temp)
-    return output
+    id = inv_id.strip().lstrip('0')
+    ord_num_q = "select id from \"core-invoices-schema\".invoice where tms_number = \'{0}\'"
+    sap_num_q = "select id from \"core-invoices-schema\".invoice where sap_number = \'00{0}\'"
+    try:
+        x5tid = db_request(ord_num_q.format(id))[0]['id']
+    except IndexError:
+        try:
+            x5tid = db_request(sap_num_q.format(id))[0]['id']
+        except IndexError:
+            x5tid = None
 
+    return x5tid
 
+#inv_id = '12100439'
+#print(get_x5t_id(inv_id))
 
+#inv_id = '000050020367'
+#print(inv_id.strip().lstrip('0'))
+#print(get_x5t_id(inv_id))
 
+#inv_id = '15510084'
+#print(get_x5t_id(inv_id))
 
+#print(checkpoints(11664535))
 
-#cur_invoice = Invoice(7224907)
-
-#print(cur_invoice.invoice)
-#print(cur_invoice.invoice['system_version'])
-#print(cur_invoice.invoice['id'])
-#print(cur_invoice.points)
-#print(cur_invoice.plants)
-
-#cure = checkpoints_aio(cur_invoice)
-
-#for i in cure:
-    #db_request(i)
-    #print(i)
-
-#print('Готово')
-
-#print(vehicle_counter('X897AX761'))
 
