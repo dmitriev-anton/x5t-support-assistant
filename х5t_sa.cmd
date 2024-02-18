@@ -1,2 +1,2 @@
 @echo off
-venv\Scripts\python.exe x5t_support_assistant_v_2_5.py
+venv\Scripts\python.exe x5t_support_assistant_v_2_10.py

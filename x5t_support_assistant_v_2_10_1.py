@@ -149,8 +149,8 @@ def main():
                     logging.info(car_assign.format(values[1], vehicle_code))
 
         if event == 'Бафнуть Х5Т':
-            #print('Функционал отключен.')
-            tasks()
+            print('Функционал отключен.')
+            #tasks()
 
         if event == 'Чекпоинты':
             print('--------------------------------------------------------------------------------------')

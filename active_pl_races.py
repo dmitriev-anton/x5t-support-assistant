@@ -1,4 +1,5 @@
-
+from pandas import DataFrame
+from tabulate import tabulate
 
 def all_races(tab_num) -> list:
     from x5t_connect import db_request
@@ -34,10 +35,11 @@ def driver_features(tab_num) -> list:
     return temp
 
 
+#races = all_races('01830798')
+
+#print(tabulate(DataFrame(races), ))
 
 
-#for i in all_races('01764786'):
-    #print(i)
 
 
 
