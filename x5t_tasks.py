@@ -1,6 +1,6 @@
 from datetime import datetime, date, time, timedelta
 from x5t_connect import db_request
-from auto_et import auto_et_finish
+from invoice import auto_et_finish
 import threading
 
 bad_et_check = """select id from "core-invoices-schema".invoice where type_code = 'ET' and plan_start_date between (
@@ -37,7 +37,7 @@ driver_version = 0 where (status = 'SAP_REJECTED') and sap_message like  ('%Об
 
 def tasks():
     from datetime import datetime, date, time, timedelta
-    print('------------------------------------------------------------------------------------')
+    #print('------------------------------------------------------------------------------------')
     print('Запуск бафера.')
 
     bad_ets = db_request(bad_et_check)
