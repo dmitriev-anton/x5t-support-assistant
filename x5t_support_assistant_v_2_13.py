@@ -14,6 +14,7 @@ from x5t_tasks import tasks
 from vehicle import car_num_to_latin,group_list, vehicle_counter, car_assign, car_drop
 from driver import all_races, driver_features, add_feature, remove_feature, feature_dictionary, ot_check, ot_upd, ot_insrt
 from bee_sms import send_sms
+from driver_api import driver_pwd_reset
 
 f_dict=feature_dictionary()
 g_list=group_list()
@@ -29,23 +30,20 @@ def main_window():
     ]
 
     vehicle_tab_layout = [
-        [sg.Text('ТС'), sg.InputText(), sg.Text('Группа'), sg.Combo(g_list, default_value=g_list[0]),
+        [sg.Text('ТС'), sg.InputText(), sg.Text('Группа'), sg.Combo(g_list, default_value=g_list[0], readonly=True),
          sg.Submit('Привязать')]
     ]
 
     drivers_tab_layout = [
-        [sg.Text('Табельный номер'), sg.InputText(), sg.Submit('Фичи'),sg.Combo(f_dict, default_value=f_dict[0]),
+        [sg.Text('Таб.н./тел.'), sg.InputText(), sg.Submit('Фичи'),sg.Combo(f_dict, default_value=f_dict[0], readonly=True),
          sg.Submit('Добавить фичу'),sg.Submit('Удалить фичу')],
-        [sg.Submit('Показать рейсы'),sg.Submit('ШК ОТ/ВС'), sg.Submit('Обновить ШК ОТ/ВС')]
+        [sg.Submit('ШК ОТ/ВС'), sg.Submit('Обновить ШК ОТ/ВС'), sg.Submit('Показать рейсы'), sg.Submit('Сбросить пароль')]
     ]
 
     sms_tab_layout = [
         [sg.Multiline(default_text='Введите текст сообщения', size=(80, 3), no_scrollbar=True),
          sg.InputText(default_text='Номер телефона', size=(15, 3)),
          sg.Submit('Отправить СМС')]
-
-        #[sg.Text('Номер телефона'), sg.InputText(size=(12, 1)), sg.Submit('Отправить СМС')],
-        #[sg.Text('СМС'), sg.InputText(size=(100, 2))]
     ]
 
     main_layout = [
@@ -54,7 +52,7 @@ def main_window():
         [sg.Output(size=(140, 20))]
     ]
 
-    return sg.Window('X5T support assistant v2.12 by A.Dmitriev', main_layout)
+    return sg.Window('X5T support assistant v2.13 by A.Dmitriev', main_layout)
 
 
 def main():
@@ -77,6 +75,28 @@ def main():
 
         if event in (None, 'Exit', 'Выход'):
             break
+
+        if event == 'Привязать':
+            print('------------------------------------------------------------------------------------')
+            vehicle_code = car_num_to_latin(values[0].strip())
+            m_window[0].update(vehicle_code)
+            if not vehicle_code:
+                print('Отсутствует номер ТС.')
+
+            elif vehicle_counter(vehicle_code) == 0:
+                print('ТС {0} в системе х5транспорт отсутствует. Укажите существующий номер.'.format(vehicle_code))
+
+            else:
+
+                if values[1] == None:
+                    print(car_drop.format(vehicle_code))
+                    db_request(car_drop.format(vehicle_code))
+                    logging.info(car_drop.format(vehicle_code))
+
+                else:
+                    print(car_assign.format(values[1], vehicle_code))
+                    db_request(car_assign.format(values[1], vehicle_code))
+                    logging.info(car_assign.format(values[1], vehicle_code))
 
         if event == '-->X5T ID':
             #print('------------------------------------------------------------------------------------')
@@ -130,27 +150,6 @@ def main():
                 print('Рейс {0} завершен'.format(values[2]))
                 logging.info('Рейс {0} завершен'.format(values[2]))
 
-        if event == 'Привязать':
-            print('------------------------------------------------------------------------------------')
-            vehicle_code = car_num_to_latin(values[0].strip())
-            m_window[0].update(vehicle_code)
-            if not vehicle_code:
-                print('Отсутствует номер ТС.')
-
-            elif vehicle_counter(vehicle_code) == 0:
-                print('ТС {0} в системе х5транспорт отсутствует. Укажите существующий номер.'.format(vehicle_code))
-
-            else:
-
-                if values[1] == None:
-                    print(car_drop.format(vehicle_code))
-                    db_request(car_drop.format(vehicle_code))
-                    logging.info(car_drop.format(vehicle_code))
-
-                else:
-                    print(car_assign.format(values[1], vehicle_code))
-                    db_request(car_assign.format(values[1], vehicle_code))
-                    logging.info(car_assign.format(values[1], vehicle_code))
 
         if event == 'Бафнуть Х5Т':
             #print('Функционал отключен.')
@@ -262,6 +261,18 @@ def main():
                     logging.info('ШК ОТ/ВС водителя {0} поставлен на обновление.'.format(values[3]))
                 # event, values = window2.read()
                 # window2.close()
+
+        if event == 'Сбросить пароль':
+            print('------------------------------------------------------------------------------------')
+            #print(values[3])
+            if values[3].isdigit() and len(values[3]) == 10:
+                rst_result = driver_pwd_reset(values[3])
+                if rst_result == True:
+                    print('Пароль водителя с телефоном {0} сброшен'.format(values[3]))
+                    logging.info('Пароль водителя с телефоном {0} сброшен'.format(values[3]))
+                else:
+                    print(rst_result)
+
         if event == 'Отправить СМС':
             #print(values)
             print('------------------------------------------------------------------------------------')

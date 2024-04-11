@@ -1,7 +1,11 @@
+import requests
+
 from x5t_connect import db_request
 import psycopg2
 from pandas import DataFrame
 from tabulate import tabulate
+
+
 
 ot_check = "select id, driver_id, barcode, status, deleted from \"core-drivers-schema\".drivers_otvs where driver_id = (select id from " \
            "\"core-drivers-schema\".drivers where number = '{0}')"
@@ -13,7 +17,7 @@ ot_upd = "update \"core-drivers-schema\".drivers_otvs set barcode = null, delete
 
 def all_races(tab_num) -> list:
 
-    active_pl_races = """  select t4.id,t4.sap_number as sap, t4.tms_number as tms, t2.status as sap_status, t2.driver_status, 
+    active_pl_races = """  select t4.id ,t4.sap_number as sap, t4.tms_number as tms, t2.status as sap_status, t2.driver_status, 
                             t4.plan_start_date as plan_start,t5.status,t4.system_version as sys_ver, t2."version" as own_ver, 
                             t2.driver_version as dr_ver, t4.sap_status_code as sapCode,  t3.is_mfp,  t2.waybillid as PL
                             from "core-drivers-schema".drivers t1
@@ -50,7 +54,8 @@ def remove_feature(tab_num,f_num):
 def feature_dictionary():
     feature_dictionary_query = """select id from "core-drivers-schema".driver_feature_dictionary order by id"""
     result = []
-    for i in db_request(feature_dictionary_query):
+    response = db_request(feature_dictionary_query)
+    for i in response:
         result.append(i['id'])
     return result
 
@@ -67,6 +72,8 @@ def driver_features(tab_num) -> list:
     temp = db_request(driver_features_query.format(tab_num))
 
     return temp
+
+
 
 
 #races = all_races('00642700')
