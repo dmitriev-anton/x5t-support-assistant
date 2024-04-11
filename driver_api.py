@@ -54,7 +54,7 @@ def api_pwd_verify(code, phone, verification_id : str):
     except requests.exceptions.SSLError:
         return None
 
-def api_pwd_create(password, verification_id : str):
+def api_pwd_create(password, verification_id: str):
 
     api = 'http://app-registration.x5tmfp-prod-2.salt.x5.ru/api/v1/driver/password/create'
     headers = {
@@ -75,7 +75,7 @@ def api_pwd_create(password, verification_id : str):
     except requests.exceptions.SSLError:
         return None
 
-def driver_pwd_reset(phone):
+def driver_pwd_reset(phone: str) -> object:
     verification_id = api_pwd_recovery_request(phone)
     if verification_id:
         pass_code = pwd_code(verification_id)
@@ -88,23 +88,6 @@ def driver_pwd_reset(phone):
             return 'Отказ на шаге 2'
     else:
         return 'Отказ на шаге 1'
-
-
-def api_pwd_recovery_request2(phone: str):
-    api='http://app-registration.x5tmfp-prod-2.salt.x5.ru/api/v1/driver/password/recovery'
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Content-Length': '68',
-        'Host': 'app-registration.x5tmfp-prod-2.salt.x5.ru',
-               }
-    body = {
-        'data': {'phone': phone },
-        'params': 'null'
-            }
-
-    response = requests.post(api, headers=headers,data=json.dumps(body),timeout=30, verify=False)
-    return response.json()['data']['verificationSessionId']
 
 #print(api_pwd_recovery_request2('9056000235'))
 #print(driver_pwd_reset('9056000235'))

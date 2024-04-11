@@ -1,20 +1,18 @@
-import PySimpleGUI as sg
-import pandas.core.arraylike
-import psycopg2
-import psycopg2.extras
 import logging
-import pandas as pd
+import warnings
+
+import PySimpleGUI as sg
 from pandas import DataFrame
-import pandas.core.arraylike
 from tabulate import tabulate
-from datetime import datetime, date, time, timedelta
-from x5t_connect import db_request
-from invoice import Invoice, finish, checkpoints, checkpoints_aio, get_x5t_id
-from x5t_tasks import tasks
-from vehicle import car_num_to_latin,group_list, vehicle_counter, car_assign, car_drop
-from driver import all_races, driver_features, add_feature, remove_feature, feature_dictionary, ot_check, ot_upd, ot_insrt
+
 from bee_sms import send_sms
+from driver import all_races, driver_features, add_feature, remove_feature, feature_dictionary, ot_check, ot_upd, \
+    ot_insrt, driver_phone
 from driver_api import driver_pwd_reset
+from invoice import Invoice, finish, checkpoints, checkpoints_aio, get_x5t_id
+from vehicle import car_num_to_latin, group_list, vehicle_counter, car_assign, car_drop
+from x5t_connect import db_request
+from x5t_tasks import tasks
 
 f_dict=feature_dictionary()
 g_list=group_list()
@@ -56,7 +54,7 @@ def main_window():
 
 
 def main():
-    #start_time = datetime.now()
+    warnings.filterwarnings('ignore')
     logging.basicConfig(
         level=logging.DEBUG,
         filename="log.log",
@@ -73,7 +71,7 @@ def main():
         # print(event, values) #debug
         vehicle_code = group = None
 
-        if event in (None, 'Exit', 'Выход'):
+        if event in ('Exit', 'Выход'):
             break
 
         if event == 'Привязать':
@@ -265,13 +263,16 @@ def main():
         if event == 'Сбросить пароль':
             print('------------------------------------------------------------------------------------')
             #print(values[3])
-            if values[3].isdigit() and len(values[3]) == 10:
-                rst_result = driver_pwd_reset(values[3])
+            phone = db_request(driver_phone.format(values[3]))[0]['phone']
+            if phone.isdigit() == True and len(phone) == 10:
+                rst_result = driver_pwd_reset(phone=phone)
                 if rst_result == True:
-                    print('Пароль водителя с телефоном {0} сброшен'.format(values[3]))
-                    logging.info('Пароль водителя с телефоном {0} сброшен'.format(values[3]))
+                    print('Пароль водителя с телефоном {0} сброшен'.format(phone))
+                    logging.info('Пароль водителя с телефоном {0} сброшен'.format(phone))
                 else:
                     print(rst_result)
+            else:
+                print('Некорректный запрос')
 
         if event == 'Отправить СМС':
             #print(values)
