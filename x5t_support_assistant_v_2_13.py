@@ -7,7 +7,7 @@ from tabulate import tabulate
 
 from bee_sms import send_sms
 from driver import all_races, driver_features, add_feature, remove_feature, feature_dictionary, ot_check, ot_upd, \
-    ot_insrt, driver_phone
+    ot_insrt, driver_phone_query, driver_phone
 from driver_api import driver_pwd_reset
 from invoice import Invoice, finish, checkpoints, checkpoints_aio, get_x5t_id
 from vehicle import car_num_to_latin, group_list, vehicle_counter, car_assign, car_drop
@@ -169,8 +169,9 @@ def main():
         if event == 'Показать рейсы' :
             races = []
             print('------------------------------------------------------------------------------------')
-            if not values[3]:
-                print('Введите табельный номер')
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
             else:
                 races = all_races(values[3].strip())
 
@@ -183,8 +184,9 @@ def main():
 
         if event == 'Фичи':
             print('------------------------------------------------------------------------------------')
-            if not values[3]:
-                print('Введите табельный номер')
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
             else:
                 # res = []
                 features = driver_features(values[3])
@@ -196,8 +198,9 @@ def main():
 
         if event == 'Добавить фичу':
             print('------------------------------------------------------------------------------------')
-            if not values[3]:
-                print('Введите табельный номер')
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
             else:
                 # res = []
                 features = driver_features(values[3])
@@ -215,8 +218,9 @@ def main():
 
         if event == 'Удалить фичу':
             print('------------------------------------------------------------------------------------')
-            if not values[3]:
-                print('Введите табельный номер')
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
             else:
                 # res = []
                 features = driver_features(values[3])
@@ -233,8 +237,9 @@ def main():
 
         if event == 'ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
-            if not values[3]:
-                print('Введите табельный номер')
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
                 if ot_id == []:
@@ -245,8 +250,9 @@ def main():
 
         if event == 'Обновить ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
-            if not values[3]:
-                print('Введите табельный номер')
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
                 if ot_id == []:
@@ -263,16 +269,18 @@ def main():
         if event == 'Сбросить пароль':
             print('------------------------------------------------------------------------------------')
             #print(values[3])
-            phone = db_request(driver_phone.format(values[3]))[0]['phone']
-            if phone.isdigit() == True and len(phone) == 10:
+            phone = driver_phone(values[3])
+            if not phone:
+                print('Некорректный табельный номер')
+            else:
                 rst_result = driver_pwd_reset(phone=phone)
                 if rst_result == True:
-                    print('Пароль водителя с телефоном {0} сброшен'.format(phone))
-                    logging.info('Пароль водителя с телефоном {0} сброшен'.format(phone))
+                    send_sms(phone, )
+                    print('Пароль водителя с телефоном {0} сброшен. Смс о сбросе отправлено.'.format(phone))
+                    logging.info('Пароль водителя с телефоном {0} сброшен. Смс о сбросе отправлено.'.format(phone))
                 else:
                     print(rst_result)
-            else:
-                print('Некорректный запрос')
+
 
         if event == 'Отправить СМС':
             #print(values)

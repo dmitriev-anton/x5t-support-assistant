@@ -1,5 +1,6 @@
-
-def send_sms(phone_num, text):
+pwd_rst_msg = '''Для проверки был установлен временный пароль как последние 6 цифр вашего номера телефона. 
+Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля.'''
+def send_sms(phone_num, text=pwd_rst_msg):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     import smtplib
@@ -43,6 +44,6 @@ def send_sms(phone_num, text):
 
 #phone_num = '9127609251'
 
-#send_sms(phone_num, 'СМС работает!')
+#send_sms('9127609251')
 
 #print("successfully sent email to %s:" % (phone_num))

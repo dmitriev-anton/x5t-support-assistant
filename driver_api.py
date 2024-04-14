@@ -89,5 +89,28 @@ def driver_pwd_reset(phone: str) -> object:
     else:
         return 'Отказ на шаге 1'
 
-#print(api_pwd_recovery_request2('9056000235'))
-#print(driver_pwd_reset('9056000235'))
+def api_driver_token(phone: str) -> str:
+    api = 'http://app-registration.x5tmfp-prod-2.salt.x5.ru/driver-info/v1/auth/drivers/token'
+    headers = {
+        'Content-Type': 'application/json',
+        'Cookie': '17b4e09f4ad0242ff0dcd2969ae02791=5dc45d0378d1e3bd72bbffecd742833e',
+        'User-Agent': 'X5 Transport NEW/123',
+        'Host': 'app-registration.x5tmfp-prod-2.salt.x5.ru',
+    }
+    body = {
+        'password': phone[4:],
+        'userName': phone
+    }
+
+    try:
+        response = requests.post(api, headers=headers,data=json.dumps(body),timeout=30, verify=False)
+        return response.json()#['data']['accessToken']
+    except requests.exceptions.SSLError:
+        return None
+
+
+#phone = '9515147419'
+
+#print(api_pwd_recovery_request2('9515147419'))
+#print(driver_pwd_reset('9257521025'))
+#print(api_driver_token(phone))

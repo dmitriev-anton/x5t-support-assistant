@@ -14,7 +14,7 @@ ot_insrt = "insert into \"core-drivers-schema\".drivers_otvs (id,driver_id, dele
            "number = '{0}'), 'false', 'CREATE')"
 ot_upd = "update \"core-drivers-schema\".drivers_otvs set barcode = null, deleted = false, status = 'CREATE' where " \
          "driver_id = (select id from \"core-drivers-schema\".drivers where number = '{0}')"
-driver_phone = 'select phone from "core-drivers-schema".drivers where number = \'{0}\''
+driver_phone_query = 'select phone from "core-drivers-schema".drivers where number = \'{0}\''
 
 def all_races(tab_num) -> list:
 
@@ -74,13 +74,18 @@ def driver_features(tab_num) -> list:
 
     return temp
 
-
-
+def driver_phone(num: str):
+    driver_phone_query = 'select phone from "core-drivers-schema".drivers where number = \'{0}\''
+    try:
+        resolve = db_request(driver_phone_query.format(num))
+        return resolve[0]['phone']
+    except IndexError:
+        return None
 
 #races = all_races('00642700')
 #print(DataFrame(races))
 #print(feature_dictionary())
 #print(remove_feature('02017180','1043'))
-#print(db_request(driver_phone.format(values[3])[0]['phone'])
-
-
+#number = '900000301'
+#print(driver_phone.format(number))
+#print(driver_phone(number))
