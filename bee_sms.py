@@ -44,6 +44,6 @@ def send_sms(phone_num, text=''):
 
 #phone_num = '9127609251'
 
-send_sms('9127609251')
+#send_sms('9127609251')
 
 #print("successfully sent email to %s:" % (phone_num))
