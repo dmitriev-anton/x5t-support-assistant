@@ -1,6 +1,4 @@
-pwd_rst_msg = '''В приложении х5 Transport Вам был установлен временный пароль, равный 6 последним цифрам вашего номера телефона. 
-Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля.'''
-def send_sms(phone_num, text=pwd_rst_msg):
+def send_sms(phone_num, text=''):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     import smtplib
@@ -8,16 +6,18 @@ def send_sms(phone_num, text=pwd_rst_msg):
     from dotenv import load_dotenv
     sms_text = "Добрый день. " \
                "{0}" \
-               " С уважением, группа поддержки сервисов транспорта"
+               " С уважением, поддержка X5 Transport"
+
+    pwd_rst_msg = '''В приложении X5 Transport Вам был установлен временный пароль, равный 6 последним цифрам вашего номера телефона. 
+    Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля.'''
+
     postfix = '@sms.beeline.amega-inform.ru'
     load_dotenv()
     link = os.getenv("SMS_LINK")
     login = os.getenv("SMS_USERNAME")
     password = os.getenv("SMS_PASSWORD")
-    sms_text = "Добрый день. " \
-               "{0}" \
-               " С уважением, группа поддержки сервисов транспорта"
 
+    if text == '': text = pwd_rst_msg
     # create message object instance
     msg = MIMEMultipart()
     message = sms_text.format(text)
