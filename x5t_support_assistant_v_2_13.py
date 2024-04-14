@@ -275,7 +275,7 @@ def main():
             else:
                 rst_result = driver_pwd_reset(phone=phone)
                 if rst_result == True:
-                    send_sms(phone, )
+                    send_sms(phone)
                     print('Пароль водителя с телефоном {0} сброшен. Смс о сбросе отправлено.'.format(phone))
                     logging.info('Пароль водителя с телефоном {0} сброшен. Смс о сбросе отправлено.'.format(phone))
                 else:
