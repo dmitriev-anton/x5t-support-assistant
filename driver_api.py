@@ -112,9 +112,3 @@ def api_driver_token(phone: str) -> str:
     except requests.exceptions.SSLError:
         return None
 
-
-#phone = '9515147419'
-
-#print(api_pwd_recovery_request2('9515147419'))
-#print(driver_pwd_reset('9257521025'))
-#print(api_driver_token(phone))

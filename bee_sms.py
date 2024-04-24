@@ -42,8 +42,3 @@ def send_sms(phone_num, text=''):
     server.sendmail(msg['From'], msg['To'], msg.as_string())
     server.quit()
 
-#phone_num = '9127609251'
-
-#send_sms('9127609251')
-
-#print("successfully sent email to %s:" % (phone_num))
