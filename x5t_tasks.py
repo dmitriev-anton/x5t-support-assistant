@@ -36,6 +36,8 @@ driver_version = 0 where (status = 'SAP_REJECTED') and sap_message like  ('%Об
 
 
 def tasks():
+    """Массовые фиксапдейты"""
+
     from datetime import datetime, date, time, timedelta
     #print('------------------------------------------------------------------------------------')
     print('Запуск бафера.')
@@ -75,18 +77,3 @@ def tasks():
     if sap_rejected_bug_counter != []:
         print(datetime.now(), 'Баг "Обработка заявки типа "Назначенная" не возможна" ', sap_rejected_bug_counter)
         db_request(sap_rejected_bug)
-
-
-def auto_starter(start_time, mins):
-    time_diff = datetime.now() - start_time
-    if time_diff >= timedelta(minutes=mins):
-        start_time = datetime.now()
-        tasks()
-
-
-def main():
-    tasks()
-
-
-if __name__ == "__main__":
-    main()
