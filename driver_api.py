@@ -4,14 +4,18 @@ import psycopg2
 import json
 import time
 from x5t_connect import db_request
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+api_host = os.getenv("DRIVER_API_HOST")
 def api_pwd_recovery_request(phone: str):
-    api='http://app-registration.x5tmfp-prod-2.salt.x5.ru/api/v1/driver/password/recovery'
+    api=f f'http://{api_host}}/api/v1/driver/password/recovery'
 
     headers = {
         'Content-Type': 'application/json',
         'Content-Length': '68',
-        'Host': 'app-registration.x5tmfp-prod-2.salt.x5.ru',
+        'Host': api_host,
                }
     body = {
         'data': {'phone': phone },
@@ -33,11 +37,11 @@ def pwd_code(verification_id:str):
 
 def api_pwd_verify(code, phone, verification_id : str):
 
-    api = 'http://app-registration.x5tmfp-prod-2.salt.x5.ru/api/v1/driver/sms/verify'
+    api = f'http://{api_host}/api/v1/driver/sms/verify'
     headers = {
         'Content-Type': 'application/json',
         'Content-Length': '129',
-        'Host': 'app-registration.x5tmfp-prod-2.salt.x5.ru',
+        'Host': api_host,
                }
     body = {
         'data': {
@@ -56,11 +60,11 @@ def api_pwd_verify(code, phone, verification_id : str):
 
 def api_pwd_create(password, verification_id: str):
 
-    api = 'http://app-registration.x5tmfp-prod-2.salt.x5.ru/api/v1/driver/password/create'
+    api = f'http://{api_host}}/api/v1/driver/password/create'
     headers = {
         'Content-Type': 'application/json',
         'Content-Length': '122',
-        'Host': 'app-registration.x5tmfp-prod-2.salt.x5.ru',
+        'Host': api_host,
                }
     body = {
         'data': {
@@ -90,12 +94,12 @@ def driver_pwd_reset(phone: str) -> object:
         return 'Отказ на шаге 1'
 
 def api_driver_token(phone: str) -> str:
-    api = 'http://app-registration.x5tmfp-prod-2.salt.x5.ru/driver-info/v1/auth/drivers/token'
+    api = f'http://{api_host}/driver-info/v1/auth/drivers/token'
     headers = {
         'Content-Type': 'application/json',
         'Cookie': '17b4e09f4ad0242ff0dcd2969ae02791=5dc45d0378d1e3bd72bbffecd742833e',
         'User-Agent': 'X5 Transport NEW/123',
-        'Host': 'app-registration.x5tmfp-prod-2.salt.x5.ru',
+        'Host': api_host,
     }
     body = {
         'password': phone[4:],
