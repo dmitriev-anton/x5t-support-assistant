@@ -8,7 +8,7 @@ load_dotenv()
 def db_request(sql_request: str) -> object:
     """
 
-    :rtype: object
+    query function
     """
     dict_result = []
     conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USERNAME"),

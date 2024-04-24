@@ -36,7 +36,7 @@ def checkpoints_aio(invoice: Invoice) -> list:
         one_external_stage = ('INSERT INTO "core-invoices-schema".driver_checkpoint '
                               '(invoice_id, invoice_version, invoice_point_sequence, internal_point_id, external_point_id,'
                               'stage_id, create_time, id, longitude, latitude, credentials, username)'
-                              'VALUES     ({0}, {1}, {2}, NULL, \'{3}\', {4},now(), (select(max(id) + 1) FROM '
+                              'VALUES     ({0}, {1}, {2}, NULL, \'{3}\', {4},now(), (select(max(id) + 1000) FROM '
                               '"core-invoices-schema".driver_checkpoint),'
                               '0, 0, \'AUTOSET\', null);')
 

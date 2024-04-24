@@ -33,7 +33,7 @@ def main_window():
     ]
 
     drivers_tab_layout = [
-        [sg.Text('Таб.н./тел.'), sg.InputText(), sg.Submit('Фичи'),sg.Combo(f_dict, default_value=f_dict[0], readonly=True),
+        [sg.Text('Таб.н.'), sg.InputText(), sg.Submit('Фичи'),sg.Combo(f_dict, default_value=f_dict[0], readonly=True),
          sg.Submit('Добавить фичу'),sg.Submit('Удалить фичу')],
         [sg.Submit('ШК ОТ/ВС'), sg.Submit('Обновить ШК ОТ/ВС'), sg.Submit('Показать рейсы'), sg.Submit('Сбросить пароль')]
     ]
@@ -71,7 +71,7 @@ def main():
         # print(event, values) #debug
         vehicle_code = group = None
 
-        if event in ('Exit', 'Выход'):
+        if event in ('Exit', 'Выход',sg.WIN_CLOSED):
             break
 
         if event == 'Привязать':
