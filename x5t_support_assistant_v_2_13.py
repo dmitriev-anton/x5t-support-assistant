@@ -6,8 +6,7 @@ from pandas import DataFrame
 from tabulate import tabulate
 
 from bee_sms import send_sms
-from driver import all_races, driver_features, add_feature, remove_feature, feature_dictionary, ot_check, ot_upd, \
-    ot_insrt, driver_phone_query, driver_phone
+from driver import *
 from driver_api import driver_pwd_reset
 from invoice import Invoice, finish, checkpoints, checkpoints_aio, get_x5t_id
 from vehicle import car_num_to_latin, group_list, vehicle_counter, car_assign, car_drop
@@ -33,10 +32,11 @@ def main_window():
     ]
 
     drivers_tab_layout = [
-        [sg.Text('Таб.н.'), sg.InputText(), sg.Submit('Фичи'),sg.Combo(f_dict, default_value=f_dict[0], readonly=True),
-         sg.Submit('Добавить фичу'),sg.Submit('Удалить фичу')],
-        [sg.Submit('ШК ОТ/ВС'), sg.Submit('Обновить ШК ОТ/ВС'), sg.Submit('Показать рейсы'), sg.Submit('Сбросить пароль')]
+        [sg.Text('Таб.н.'), sg.InputText(), sg.Submit('Поиск'), sg.Submit('Рейсы'), sg.Submit('Путевые листы'),sg.Submit('ВТК'),sg.Submit('Сбросить пароль')],
+        [sg.Submit('Фичи'),sg.Combo(f_dict, default_value=f_dict[0], readonly=True), sg.Submit('Добавить фичу'),sg.Submit('Удалить фичу'),sg.Submit('ШК ОТ/ВС'), sg.Submit('Обновить ШК ОТ/ВС'), ]
     ]
+
+    cards_tab_layout = []
 
     sms_tab_layout = [
         [sg.Multiline(default_text='Введите текст сообщения', size=(80, 3), no_scrollbar=True),
@@ -45,12 +45,12 @@ def main_window():
     ]
 
     main_layout = [
-        [sg.TabGroup([[sg.Tab('Привязка ТС', vehicle_tab_layout), sg.Tab('Рейсы', invoice_tab_layout),
-            sg.Tab('Водители', drivers_tab_layout), sg.Tab('SMS', sms_tab_layout)]])],
+        [sg.TabGroup([[sg.Tab('Привязка ТС', vehicle_tab_layout), sg.Tab('Рейс', invoice_tab_layout),
+            sg.Tab('Водители', drivers_tab_layout), sg.Tab('ВТК', cards_tab_layout), sg.Tab('SMS', sms_tab_layout)]])],
         [sg.Output(size=(140, 20))]
     ]
 
-    return sg.Window('X5T support assistant v2.13 by A.Dmitriev', main_layout)
+    return sg.Window('X5T support assistant v2.14 by A.Dmitriev', main_layout)
 
 
 def main():
@@ -63,12 +63,10 @@ def main():
     )
     logging.info('Запуск приложения')
     m_window = main_window()
-    #report = None
 
     while True:  # The Event Loop
 
         event, values = m_window.read()
-        # print(event, values) #debug
         vehicle_code = group = None
 
         if event in ('Exit', 'Выход',sg.WIN_CLOSED):
@@ -82,19 +80,19 @@ def main():
                 print('Отсутствует номер ТС.')
 
             elif vehicle_counter(vehicle_code) == 0:
-                print('ТС {0} в системе х5транспорт отсутствует. Укажите существующий номер.'.format(vehicle_code))
+                print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
 
             else:
 
                 if values[1] == None:
-                    print(car_drop.format(vehicle_code))
                     db_request(car_drop.format(vehicle_code))
-                    logging.info(car_drop.format(vehicle_code))
+                    print(f'ТС {vehicle_code} отвязана.')
+                    logging.info(f'ТС {vehicle_code} отвязана.')
 
                 else:
-                    print(car_assign.format(values[1], vehicle_code))
                     db_request(car_assign.format(values[1], vehicle_code))
-                    logging.info(car_assign.format(values[1], vehicle_code))
+                    print(f'ТС {vehicle_code} привязана к группе {values[1]}.')
+                    logging.info(f'ТС {vehicle_code} привязана к группе {values[1]}.')
 
         if event == '-->X5T ID':
             #print('------------------------------------------------------------------------------------')
@@ -108,8 +106,7 @@ def main():
                 x5tid = get_x5t_id(values[2].strip())
                 if x5tid:
                     m_window[2].update(x5tid)
-                    #print(x5tid)
-                    #print(values)
+
                 else:
                     print('------------------------------------------------------------------------------------')
                     print('Номер не найден!')
@@ -127,8 +124,8 @@ def main():
                     db_request(i)
                 # print(i)
 
-                print('Рейс {0} прожат'.format(values[2]))
-                logging.info('Рейс {0} прожат'.format(values[2]))
+                print(f'Рейс {values[2]} прожат')
+                logging.info(f'Рейс {values[2]} прожат')
 
         if event == 'Отменить':
             print('------------------------------------------------------------------------------------')
@@ -136,8 +133,8 @@ def main():
                 print('Введите номер рейса х5т')
             else:
                 finish(values[2].strip(), True)
-                print('Рейс {0} отменен'.format(values[2]))
-                logging.info('Рейс {0} отменен'.format(values[2]))
+                print(f'Рейс {values[2]} отменен')
+                logging.info(f'Рейс {values[2]} отменен')
 
         if event == 'Завершить':
             print('------------------------------------------------------------------------------------')
@@ -145,8 +142,8 @@ def main():
                 print('Введите номер рейса х5т')
             else:
                 finish(values[2].strip())
-                print('Рейс {0} завершен'.format(values[2]))
-                logging.info('Рейс {0} завершен'.format(values[2]))
+                print(f'Рейс {values[2]} завершен')
+                logging.info(f'Рейс {values[2]} завершен')
 
 
         if event == 'Бафнуть Х5Т':
@@ -166,12 +163,49 @@ def main():
                 else:
                     print('Прожатия отсутствуют!')
 
-        if event == 'Показать рейсы' :
+        if event == 'Поиск':
+            print('------------------------------------------------------------------------------------')
+            if not values[3].strip():
+                print('Введите данные для поиска.')
+            else:
+                drv = search_driver(values[3].strip())
+                if drv == []:
+                    print('Водитель не найден')
+                else:
+                    drv = DataFrame(drv)
+                    print(tabulate(drv, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+
+        if event == 'Путевые листы' :
+            print('------------------------------------------------------------------------------------')
+            phone = driver_phone(values[3].strip())
+            if not phone:
+                print('Водитель не найден.')
+            else:
+                waybills = driver_waybills(values[3].strip())
+                if waybills == []:
+                    print('Путевые листы со статусом в работе отсутствуют.')
+                else:
+                    waybills=DataFrame(waybills)
+                    print(tabulate(waybills, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+        if event == 'ВТК' :
+            print('------------------------------------------------------------------------------------')
+            phone = driver_phone(values[3].strip())
+            if not phone:
+                print('Водитель не найден.')
+            else:
+                try:
+                    cards = driver_cards(values[3].strip())
+                    cards = DataFrame(cards)
+                    print(tabulate(cards, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+                except RuntimeError as error:
+                    print(atr(error))
+
+        if event == 'Рейсы' :
             races = []
             print('------------------------------------------------------------------------------------')
-            phone = driver_phone(values[3])
+            phone = driver_phone(values[3].strip())
             if not phone:
-                print('Некорректный табельный номер')
+                print('Водитель не найден.')
             else:
                 races = all_races(values[3].strip())
 
@@ -186,7 +220,7 @@ def main():
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
-                print('Некорректный табельный номер')
+                print('Водитель не найден.')
             else:
                 # res = []
                 features = driver_features(values[3])
@@ -200,7 +234,7 @@ def main():
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
-                print('Некорректный табельный номер')
+                print('Водитель не найден.')
             else:
                 # res = []
                 features = driver_features(values[3])
@@ -220,7 +254,7 @@ def main():
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
-                print('Некорректный табельный номер')
+                print('Водитель не найден.')
             else:
                 # res = []
                 features = driver_features(values[3])
@@ -239,7 +273,7 @@ def main():
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
-                print('Некорректный табельный номер')
+                print('Водитель не найден.')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
                 if ot_id == []:
@@ -252,17 +286,17 @@ def main():
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
-                print('Некорректный табельный номер')
+                print('Водитель не найден.')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
                 if ot_id == []:
                     db_request(ot_insrt.format(values[3]))
-                    print('ШК ОТ/ВС водителя {0} прописан и поставлен на обновление.'.format(values[3]))
-                    logging.info('ШК ОТ/ВС водителя {0} прописан и поставлен на обновление.'.format(values[3]))
+                    print(f'ШК ОТ/ВС водителя {values[3]} прописан и поставлен на обновление.')
+                    logging.info(f'ШК ОТ/ВС водителя {values[3]} прописан и поставлен на обновление.')
                 else:
                     db_request(ot_upd.format(values[3]))
-                    print('ШК ОТ/ВС водителя {0} поставлен на обновление.'.format(values[3]))
-                    logging.info('ШК ОТ/ВС водителя {0} поставлен на обновление.'.format(values[3]))
+                    print(f'ШК ОТ/ВС водителя {values[3]} поставлен на обновление.')
+                    logging.info(f'ШК ОТ/ВС водителя {values[3]} поставлен на обновление.')
                 # event, values = window2.read()
                 # window2.close()
 
@@ -276,8 +310,8 @@ def main():
                 rst_result = driver_pwd_reset(phone=phone)
                 if rst_result == True:
                     send_sms(phone)
-                    print('Пароль водителя с телефоном {0} сброшен. Смс о сбросе отправлено.'.format(phone))
-                    logging.info('Пароль водителя с телефоном {0} сброшен. Смс о сбросе отправлено.'.format(phone))
+                    print(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
+                    logging.info(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
                 else:
                     print(rst_result)
 
@@ -290,8 +324,8 @@ def main():
 
                 send_sms(values[6], values[5].replace("\n", " "))
                 #print(values[5].replace("\n", " "))
-                print('СМС отправлено на номер {0}'.format(values[6]))
-                logging.info('СМС отправлено на номер {0}'.format(values[6]))
+                print(f'СМС отправлено на номер {values[6]}')
+                logging.info(f'СМС отправлено на номер {values[6]}')
             else:
                 print('Некорректные данные!!!Перепроверьте правильность ввода!')
 

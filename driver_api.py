@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 api_host = os.getenv("DRIVER_API_HOST")
 def api_pwd_recovery_request(phone: str):
-    api=f f'http://{api_host}}/api/v1/driver/password/recovery'
+    api=f'http://{api_host}/api/v1/driver/password/recovery'
 
     headers = {
         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ def api_pwd_verify(code, phone, verification_id : str):
 
 def api_pwd_create(password, verification_id: str):
 
-    api = f'http://{api_host}}/api/v1/driver/password/create'
+    api = f'http://{api_host}/api/v1/driver/password/create'
     headers = {
         'Content-Type': 'application/json',
         'Content-Length': '122',

@@ -1,9 +1,5 @@
-import requests
-
 from x5t_connect import db_request
-import psycopg2
-from pandas import DataFrame
-from tabulate import tabulate
+
 
 
 
@@ -14,7 +10,7 @@ ot_insrt = "insert into \"core-drivers-schema\".drivers_otvs (id,driver_id, dele
            "number = '{0}'), 'false', 'CREATE')"
 ot_upd = "update \"core-drivers-schema\".drivers_otvs set barcode = null, deleted = false, status = 'CREATE' where " \
          "driver_id = (select id from \"core-drivers-schema\".drivers where number = '{0}')"
-driver_phone_query = 'select phone from "core-drivers-schema".drivers where number = \'{0}\''
+
 
 def all_races(tab_num) -> list:
 
@@ -33,6 +29,7 @@ def all_races(tab_num) -> list:
 
     return temp
 
+
 def add_feature(tab_num,f_num):
     add_feature = ("insert into \"core-drivers-schema\".driver_features (driver_id, feature_id) \n"
                    "	values ((select id from \"core-drivers-schema\".drivers where number = '{0}'),'{1}')")
@@ -41,6 +38,7 @@ def add_feature(tab_num,f_num):
         return('Фича {1} добавлена водителю {0}'.format(tab_num,f_num))
     except psycopg2.errors.UniqueViolation:
         return 'Невозможно добавить фичу!!!'
+
 
 def remove_feature(tab_num,f_num):
     delete_feature = ('delete from "core-drivers-schema".driver_features '
@@ -51,6 +49,7 @@ def remove_feature(tab_num,f_num):
         return('Фича {1} удалена у водителя {0}'.format(tab_num,f_num))
     except psycopg2.errors.UniqueViolation:
         return 'Невозможно удалить фичу!!!'
+
 
 def feature_dictionary():
     feature_dictionary_query = """select id from "core-drivers-schema".driver_feature_dictionary order by id"""
@@ -74,6 +73,7 @@ def driver_features(tab_num) -> list:
 
     return temp
 
+
 def driver_phone(num: str):
     driver_phone_query = 'select phone from "core-drivers-schema".drivers where number = \'{0}\''
     try:
@@ -82,10 +82,52 @@ def driver_phone(num: str):
     except IndexError:
         return None
 
-#races = all_races('00642700')
-#print(DataFrame(races))
-#print(feature_dictionary())
-#print(remove_feature('02017180','1043'))
-#number = '900000301'
-#print(driver_phone.format(number))
-#print(driver_phone(number))
+
+def search_driver(input:str):
+    """Поиск по телефону или фио"""
+    search_by_name = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where name like \'%{input}%\'"
+    search_by_phone = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where phone like \'%{input}%\'"
+    search_by_num = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where \"number\" like \'%{input}%\'"
+    result = []
+
+    if input.isdigit() and len(input) == 10:
+        return db_request(search_by_phone)
+
+    elif input.replace(' ','').isalpha():
+        return db_request(search_by_name)
+
+    elif input.isdigit() and (4 <= len(input) < 10):
+        return db_request(search_by_num)
+
+    else:
+        return []
+
+
+def driver_waybills(num:str):
+    waybills_query = ('select \"number\" as \"waybill_number\",system_status as \"sys_st\", user_status as \"us_st\", '
+                      'vehicle_licence as \"veh_num\", trailer_licence as \"trail_num\", driver_number, '
+                      'start_date_plan as \"plan_start\",end_date_plan as \"plan_end\", start_date_fact as \"fact_start\", '
+                      'end_date_fact as \"fact_end\", is_mfp as \"mfp\", _type as \"type\" from \"core-waybills-schema\".waybills '
+                      f'where driver_number = \'{num}\' and user_status = \'E0002\' and _type <> \'TRC\'')
+    resolve = db_request(waybills_query)
+    #print(waybills_query.format(num))
+    return resolve
+
+def driver_cards(num:str):
+    fuel_cards_query = ('SELECT id, \"number\", code, company_id, azs_company_id, main, "fuel_type", fuel_limit, '
+                        'create_time, contract_type, vtk FROM \"core-vehicle-schema\".fuel_cards '
+                        'where (code in (\'{0}\', \'{1}\')) and (azs_company_id in (1000,1002)) '
+                        'and (expiration_time >= now()) and vtk = 1 ;')
+    waybills = driver_waybills(num)
+    if len(waybills) == 0:
+        raise RuntimeError('Нет ПЛ со статусом в работе.')
+    elif len(waybills) >= 2:
+        raise RuntimeError('Более 1 ПЛ со статусом в работе.')
+    else:
+        return db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
+
+
+
+
+
+#print(driver_cards('90000572'))
