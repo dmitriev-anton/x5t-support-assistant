@@ -128,8 +128,8 @@ def gpn_confirm_mpc(card_num: str, economist_code:str, session_id: str):
         return None
 
 
-def gpn_update_mpc(card_num: str, session_id: str):
-    """обновление мпк"""
+def gpn_reset_mpc(card_num: str, session_id: str):
+    """сброс мпк"""
 
 
     vtk = get_vtk_info(card_num)

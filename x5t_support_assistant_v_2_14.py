@@ -313,6 +313,17 @@ def main():
             settings['gpn_session_id'] = gpn_auth()
             print('ГПН сессия установлена.')
 
+        if event == 'ГПН.Сброс МПК':
+            print('------------------------------------------------------------------------------------')
+            if settings['gpn_session_id'] and values[4].strip():
+                try:
+                    response = gpn_reset_mpc(values[4].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введен номер карты.')
+
         if event == 'ГПН.Удаление МПК':
             print('------------------------------------------------------------------------------------')
             if settings['gpn_session_id'] and values[4].strip():

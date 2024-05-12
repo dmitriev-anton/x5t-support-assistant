@@ -31,7 +31,7 @@ def main_window():
 
     cards_tab_layout = [
         [SG.Text('Номер карты'), SG.InputText(size=(30, 3)), SG.Text('Код экономиста'), SG.InputText(size=(8, 3))],
-        [SG.Submit('ГПН.Авторизация'), SG.Submit('ГПН.Удаление МПК'), SG.Submit('ГПН.Выпуск МПК'),
+        [SG.Submit('ГПН.Авторизация'), SG.Submit('ГПН.Сброс МПК'), SG.Submit('ГПН.Выпуск МПК'),
          SG.Submit('ГПН.КОД Экономиста')]]
 
     sms_tab_layout = [
