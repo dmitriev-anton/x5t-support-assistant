@@ -4,16 +4,16 @@ import warnings
 
 from pandas import DataFrame
 from tabulate import tabulate
-import PySimpleGUI as sg
+import PySimpleGUI as SG
 from bee_sms import send_sms
 from driver import *
-from driver_api import driver_pwd_reset, api_driver_token
+from driver_api import driver_pwd_reset
 from vtk_api import *
 from invoice import Invoice, finish, checkpoints, checkpoints_aio, get_x5t_id
-from vehicle import car_num_to_latin, group_list, vehicle_counter, car_assign, car_drop
+from vehicle import car_num_to_latin, vehicle_counter, car_assign, car_drop
 from x5t_connect import db_request
 from x5t_tasks import tasks
-from gui import main_window, report_window, f_dict
+from gui import main_window, f_dict
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     )
     logging.info('Запуск приложения')
 
-    m_window, report = main_window(), None # вызов главного окна
+    m_window, report = main_window(), None  # вызов главного окна
 
     settings = {
         'driver-token': '',
@@ -35,12 +35,17 @@ def main():
 
     while True:  # The Event Loop
 
-        #window, event, values = sg.read_all_windows()
-        event, values = m_window.read()
-        vehicle_code = group = None
+        # window, event, values = SG.read_all_windows()
+        # event, values = m_window.read()
+        # vehicle_code = group = None
 
-        if event in ('Exit', 'Выход', sg.WIN_CLOSED):
-            break
+        window, event, values = SG.read_all_windows()
+        if event == SG.WIN_CLOSED or event == 'Exit':
+            window.close()
+            if window == report:  # if closing win 2, mark as closed
+                window2 = None
+            elif window == m_window:  # if closing win 1, exit program
+                break
 
         if event == 'Привязать':
             print('------------------------------------------------------------------------------------')
@@ -54,7 +59,7 @@ def main():
 
             else:
 
-                if values[1] == None:
+                if not values[1]:
                     db_request(car_drop.format(vehicle_code))
                     print(f'ТС {vehicle_code} отвязана.')
                     logging.info(f'ТС {vehicle_code} отвязана.')
@@ -65,12 +70,12 @@ def main():
                     logging.info(f'ТС {vehicle_code} привязана к группе {values[1]}.')
 
         if event == '-->X5T ID':
-            #print('------------------------------------------------------------------------------------')
-            x5tid = None
+            # print('------------------------------------------------------------------------------------')
+            # x5tid = None
             if not values[2].strip():
                 print('------------------------------------------------------------------------------------')
                 print('Неверный номер!!!')
-                #print(values)
+                # print(values)
             else:
                 x5tid = get_x5t_id(values[2].strip())
                 if x5tid:
@@ -114,7 +119,7 @@ def main():
                 logging.info(f'Рейс {values[2]} завершен')
 
         if event == 'Бафнуть Х5Т':
-            #print('Функционал отключен.')
+            # print('Функционал отключен.')
             tasks()
             logging.info('Запуск бафера')
 
@@ -124,7 +129,7 @@ def main():
                 print('Введите номер рейса х5т')
             else:
                 points = checkpoints(values[2])
-                if points != []:
+                if points:
                     points = DataFrame(points)
                     print(tabulate(points, headers='keys', tablefmt='tsv'))
                 else:
@@ -137,13 +142,17 @@ def main():
                 print('Введите данные для поиска.')
             else:
                 drv = search_driver(values[3].strip())
-                if drv == []:
+                if not drv:
                     print('Водитель не найден')
                 else:
-                    #report = report_window([[1,2],[3,4]])
-                    drv = DataFrame(drv)
-                    print(tabulate(drv, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+                    if len(drv) == 1:
+                        # если найден только 1 водитель подставлять табельный с нулями
+                        # print(drv[0]['number'])
+                        m_window[3].update(drv[0]['number'])
 
+                    drv = DataFrame(drv)
+                    # report = report_window('Поиск водителей', drv) # запускает новое окно табличного отчета
+                    print(tabulate(drv, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
 
         if event == 'Путевые листы':
             print('------------------------------------------------------------------------------------')
@@ -152,14 +161,13 @@ def main():
                 print('Водитель не найден.')
             else:
                 waybills = driver_waybills(values[3].strip())
-                if waybills == []:
+                if not waybills:
                     print('Путевые листы со статусом в работе отсутствуют.')
                 else:
-                    waybills=DataFrame(waybills)
+                    waybills = DataFrame(waybills)
                     print(tabulate(waybills, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
 
-
-        if event == 'ВТК' :
+        if event == 'ВТК':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3].strip())
             if not phone:
@@ -172,8 +180,8 @@ def main():
                 except RuntimeError as error:
                     print(error)
 
-        if event == 'Рейсы' :
-            races = []
+        if event == 'Рейсы':
+            # races = []
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3].strip())
             if not phone:
@@ -181,8 +189,8 @@ def main():
             else:
                 races = all_races(values[3].strip())
 
-                if races != []:
-                    races= DataFrame(races)
+                if races:
+                    races = DataFrame(races)
                     print(tabulate(races, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
                 else:
                     print('На активном ПЛ рейсы отсутствуют.')
@@ -196,7 +204,7 @@ def main():
             else:
                 # res = []
                 features = driver_features(values[3])
-                if features == []:
+                if not features:
                     print('У водителя дефолтный набор фич')
                 else:
                     features = DataFrame(features)
@@ -210,17 +218,16 @@ def main():
             else:
                 # res = []
                 features = driver_features(values[3])
-                if features == []:
+                if not features:
                     print('У водителя дефолтный набор фич')
 
                 elif values[4] not in f_dict:
                     print('Внимание!Некорректная фича!')
 
                 else:
-                    res = add_feature(values[3],values[4])
+                    res = add_feature(values[3], values[4])
                     print(res)
                     logging.info(res)
-
 
         if event == 'Удалить фичу':
             print('------------------------------------------------------------------------------------')
@@ -230,14 +237,14 @@ def main():
             else:
                 # res = []
                 features = driver_features(values[3])
-                if features == []:
+                if not features:
                     print('У водителя дефолтный набор фич')
 
                 elif values[4] not in f_dict:
                     print('Внимание!Некорректная фича!')
 
                 else:
-                    res = remove_feature(values[3],values[4])
+                    res = remove_feature(values[3], values[4])
                     print(res)
                     logging.info(res)
 
@@ -248,11 +255,11 @@ def main():
                 print('Водитель не найден.')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
-                if ot_id == []:
+                if not ot_id:
                     print('ШК ОТ/ВС отсутствует')
                 else:
                     print(ot_id[0])
-                    #print(tabulate(ot_id, headers='keys', tablefmt='tsv'))
+                    # print(tabulate(ot_id, headers='keys', tablefmt='tsv'))
 
         if event == 'Обновить ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
@@ -261,7 +268,7 @@ def main():
                 print('Водитель не найден.')
             else:
                 ot_id = db_request(ot_check.format(values[3]))
-                if ot_id == []:
+                if not ot_id:
                     db_request(ot_insrt.format(values[3]))
                     print(f'ШК ОТ/ВС водителя {values[3]} прописан и поставлен на обновление.')
                     logging.info(f'ШК ОТ/ВС водителя {values[3]} прописан и поставлен на обновление.')
@@ -274,7 +281,7 @@ def main():
 
         if event == 'Токен':
             print('------------------------------------------------------------------------------------')
-            #print(values[3])
+            # print(values[3])
             phone = driver_phone(values[3].strip())
             if not phone:
                 print('Некорректный табельный номер')
@@ -283,18 +290,18 @@ def main():
                     settings['driver_token'] = api_driver_token(phone)
                     print(f'Токен водителя {values[3].strip()}-{phone} загружен')
                     print(settings['driver_token'])
-                except Error as token_error:
+                except Exception as token_error:
                     print(token_error)
 
         if event == 'Сбросить пароль':
             print('------------------------------------------------------------------------------------')
-            #print(values[3])
+            # print(values[3])
             phone = driver_phone(values[3])
             if not phone:
                 print('Некорректный табельный номер')
             else:
                 rst_result = driver_pwd_reset(phone=phone)
-                if rst_result == True:
+                if rst_result:
                     send_sms(phone)
                     print(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
                     logging.info(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
@@ -306,16 +313,49 @@ def main():
             settings['gpn_session_id'] = gpn_auth()
             print('ГПН сессия установлена.')
 
+        if event == 'ГПН.Удаление МПК':
+            print('------------------------------------------------------------------------------------')
+            if settings['gpn_session_id'] and values[4].strip():
+                try:
+                    response = gpn_delete_mpc(values[4].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введен номер карты.')
+
+        if event == 'ГПН.Выпуск МПК':
+            print('------------------------------------------------------------------------------------')
+            if settings['gpn_session_id'] and values[4].strip():
+                try:
+                    response = gpn_init_mpc(values[4].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введен номер карты.')
+
+        if event == 'ГПН.КОД Экономиста':
+            print('------------------------------------------------------------------------------------')
+            if settings['gpn_session_id'] and values[4].strip() and values[5].strip():
+                try:
+                    response = gpn_confirm_mpc(values[4].strip(), values[5].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введены номер карты\код экономиста.')
 
         if event == 'Отправить СМС':
             print('------------------------------------------------------------------------------------')
-            #print(values)
-            if values['sms_receiver'].strip().isdigit() and len(values['sms_receiver']) == 10 and values['sms_body'] != None:
+            # print(values)
+            if values['sms_receiver'].strip().isdigit() and len(values['sms_receiver']) == 10 and values[
+                'sms_body'] is not None:
 
                 try:
                     send_sms(values['sms_receiver'].strip(), values['sms_body'].replace("\n", " "))
-                    print(f'СМС отправлено на номер {values['sms_receiver']}')
-                    logging.info(f'СМС отправлено на номер {values['sms_receiver']}')
+                    print('СМС отправлено на номер {0}'.format(values['sms_receiver'].strip()))
+                    logging.info('СМС отправлено на номер {0}'.format(values['sms_receiver'].strip()))
                 except Exception as error:
                     print(error)
             else:

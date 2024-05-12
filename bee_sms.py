@@ -39,6 +39,14 @@ def send_sms(phone_num, text=''):
     server.login(login, password)
 
     # send the message via the server.
-    server.sendmail(msg['From'], msg['To'], msg.as_string())
-    server.quit()
+    try:
+        server.sendmail(msg['From'], msg['To'], msg.as_string())
 
+    except smtplib.SMTPDataError as error:
+        raise RuntimeError("СМС не отправлено. Запрещено отправлять одинаковое содержимое в течение 1 минуты.")
+
+    finally:
+        server.quit()
+
+
+# send_sms('9127609251','test')

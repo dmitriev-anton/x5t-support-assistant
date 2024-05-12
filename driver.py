@@ -1,8 +1,6 @@
 from x5t_connect import db_request
 
 
-
-
 ot_check = "select id, driver_id, barcode, status, deleted from \"core-drivers-schema\".drivers_otvs where driver_id = (select id from " \
            "\"core-drivers-schema\".drivers where number = '{0}')"
 ot_insrt = "insert into \"core-drivers-schema\".drivers_otvs (id,driver_id, deleted, status) values ((select max(" \
@@ -104,11 +102,11 @@ def search_driver(input:str):
 
 
 def driver_waybills(num:str):
-    waybills_query = ('select \"number\" as \"waybill_number\",system_status as \"sys_st\", user_status as \"us_st\", '
+    waybills_query = ('select \"number\" as \"waybill_number\",system_status , user_status , '
                       'vehicle_licence as \"veh_num\", trailer_licence as \"trail_num\", driver_number, '
                       'start_date_plan as \"plan_start\",end_date_plan as \"plan_end\", start_date_fact as \"fact_start\", '
                       'end_date_fact as \"fact_end\", is_mfp as \"mfp\", _type as \"type\" from \"core-waybills-schema\".waybills '
-                      f'where driver_number = \'{num}\' and user_status = \'E0002\' and _type <> \'TRC\'')
+                      f'where driver_number = \'{num}\' and user_status = \'E0002\' and (_type not in (\'TRC\',\'MAINTENANCE\'))')
     resolve = db_request(waybills_query)
     #print(waybills_query.format(num))
     return resolve
@@ -128,6 +126,9 @@ def driver_cards(num:str):
 
 
 
+# remove_feature('02094956','1000')
 
-
-#print(driver_cards('90000572'))
+# try:
+#     print(driver_cards('01834403'))
+# except RuntimeError as error:
+#     print(error)
