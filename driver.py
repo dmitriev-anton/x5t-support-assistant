@@ -1,3 +1,4 @@
+from datetime import datetime
 from x5t_connect import db_request
 
 
@@ -121,6 +122,10 @@ def driver_cards(num:str):
         raise RuntimeError('Нет ПЛ со статусом в работе.')
     elif len(waybills) >= 2:
         raise RuntimeError('Более 1 ПЛ со статусом в работе.')
+    elif (len(waybills) == 1) and waybills[0]['plan_start'] > datetime.now():
+        raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'],waybills[0]['plan_start']))
+    elif (len(waybills) == 1) and waybills[0]['plan_end'] < datetime.now():
+        raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill_number'],waybills[0]['plan_end']))
     else:
         return db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
 
@@ -129,6 +134,6 @@ def driver_cards(num:str):
 # remove_feature('02094956','1000')
 
 # try:
-#     print(driver_cards('01834403'))
+#     print(driver_cards('01488006'))
 # except RuntimeError as error:
 #     print(error)

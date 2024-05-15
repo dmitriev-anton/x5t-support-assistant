@@ -56,10 +56,10 @@ def gpn_delete_mpc(card_num:str, session_id:str):
     url = "https://{0}/vip/v2/cards/{1}/deleteMPC".format(gpn_url, vtk['card_id'])
 
     headers = {
-        'contract_id': vtk['contract_id'],
+        'contract_id': vtk['azs_contract_id'],
         'Content-Type': 'application/json',
         'Host': gpn_url,
-        'api-key': gpn_key,
+        'api_key': gpn_key,
         'session_id': session_id
         }
 
@@ -79,10 +79,10 @@ def gpn_init_mpc(card_num: str, sess_id: str):
     url = "https://{0}/vip/v2/cards/{1}/initMPC".format(gpn_url, vtk['card_id'])
 
     headers = {
-        'contract_id': vtk['contract_id'],
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'contract_id': vtk['azs_contract_id'],
+        'Content-Type': 'application/json',
         'Host': gpn_url,
-        'api-key': gpn_key,
+        'api_key': gpn_key,
         'session_id': sess_id,
         'Cookie' : 'session-cookie=1758d005c3ff7477256ce8c118991a243e122dbe22a11716d5852fa58e676592a5af860934b4f64885ea6dc80d50e2ed'
         }
@@ -109,12 +109,12 @@ def gpn_confirm_mpc(card_num: str, economist_code:str, session_id: str):
 
     url = "https://{0}/vip/v2/cards/{1}/confirmMPC".format(gpn_url, vtk['card_id'])
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'contract_id': vtk['contract_id'],
+        'Content-Type': 'application/json',
+        'contract_id': vtk['azs_contract_id'],
         'Host': gpn_url,
         'api-key': gpn_key,
         'session_id': session_id,
-        'Cookie': cookie
+        'Cookie': 'session-cookie=1758d005c3ff7477256ce8c118991a243e122dbe22a11716d5852fa58e676592a5af860934b4f64885ea6dc80d50e2ed'
         }
 
     body = {
@@ -137,14 +137,13 @@ def gpn_reset_mpc(card_num: str, session_id: str):
     url = "https://{0}/vip/v2/cards/{1}/resetMPC?type = ResetCounterMPC".format(gpn_url, vtk['card_id'])
 
     headers = {
-        'contract_id': vtk['contract_id'],
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'contract_id': vtk['azs_contract_id'],
+        'Content-Type': 'application/json',
         'Host': gpn_url,
         'api-key': gpn_key,
         'session_id': session_id,
         'Cookie': 'session-cookie=1758d005c3ff7477256ce8c118991a243e122dbe22a11716d5852fa58e676592a5af860934b4f64885ea6dc80d50e2ed'
     }
-
     body = {
         'user_id': vtk['tech_driver_id'],
         'pin': vtk['pin'],
@@ -159,9 +158,15 @@ def gpn_reset_mpc(card_num: str, session_id: str):
         return None
 
 
-#auth = gpn_auth()
-#print(auth)
-
+# auth = gpn_auth()
+# # print(auth)
+#
 # card_num = '7005830901024257'
 # print(get_vtk_info(card_num))
+# try:
+#     print(gpn_confirm_mpc(card_num, '756540',  auth))
+# except Exception as error:
+#     print(error)
+
+
 

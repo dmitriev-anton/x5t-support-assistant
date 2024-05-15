@@ -30,9 +30,11 @@ def main_window():
     ]
 
     cards_tab_layout = [
-        [SG.Text('Номер карты'), SG.InputText(size=(30, 3)), SG.Text('Код экономиста'), SG.InputText(size=(8, 3))],
-        [SG.Submit('ГПН.Авторизация'), SG.Submit('ГПН.Сброс МПК'), SG.Submit('ГПН.Выпуск МПК'),
-         SG.Submit('ГПН.КОД Экономиста')]]
+        [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter'),
+         SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code')],
+        [SG.Submit('ГПН.Авторизация', key='gpn_auth'), SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
+         SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'), SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc')]
+    ]
 
     sms_tab_layout = [
         [SG.Multiline(default_text='Введите текст сообщения', size=(80, 3), no_scrollbar=True, key='sms_body'),

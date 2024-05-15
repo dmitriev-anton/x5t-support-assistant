@@ -47,7 +47,7 @@ def main():
             elif window == m_window:  # if closing win 1, exit program
                 break
 
-        if event == 'Привязать':
+        elif event == 'Привязать':
             print('------------------------------------------------------------------------------------')
             vehicle_code = car_num_to_latin(values[0].strip())
             m_window[0].update(vehicle_code)
@@ -69,7 +69,7 @@ def main():
                     print(f'ТС {vehicle_code} привязана к группе {values[1]}.')
                     logging.info(f'ТС {vehicle_code} привязана к группе {values[1]}.')
 
-        if event == '-->X5T ID':
+        elif event == '-->X5T ID':
             # print('------------------------------------------------------------------------------------')
             # x5tid = None
             if not values[2].strip():
@@ -85,7 +85,7 @@ def main():
                     print('------------------------------------------------------------------------------------')
                     print('Номер не найден!')
 
-        if event == 'Прожать':
+        elif event == 'Прожать':
             print('------------------------------------------------------------------------------------')
             if not values[2].strip():
                 print('Введите номер рейса х5т')
@@ -100,7 +100,7 @@ def main():
                 print(f'Рейс {values[2]} прожат')
                 logging.info(f'Рейс {values[2]} прожат')
 
-        if event == 'Отменить':
+        elif event == 'Отменить':
             print('------------------------------------------------------------------------------------')
             if not values[2].strip():
                 print('Введите номер рейса х5т')
@@ -109,7 +109,7 @@ def main():
                 print(f'Рейс {values[2]} отменен')
                 logging.info(f'Рейс {values[2]} отменен')
 
-        if event == 'Завершить':
+        elif event == 'Завершить':
             print('------------------------------------------------------------------------------------')
             if not values[2].strip():
                 print('Введите номер рейса х5т')
@@ -118,12 +118,12 @@ def main():
                 print(f'Рейс {values[2]} завершен')
                 logging.info(f'Рейс {values[2]} завершен')
 
-        if event == 'Бафнуть Х5Т':
+        elif event == 'Бафнуть Х5Т':
             # print('Функционал отключен.')
             tasks()
             logging.info('Запуск бафера')
 
-        if event == 'Чекпоинты':
+        elif event == 'Чекпоинты':
             print('--------------------------------------------------------------------------------------')
             if not values[2]:
                 print('Введите номер рейса х5т')
@@ -135,7 +135,7 @@ def main():
                 else:
                     print('Прожатия отсутствуют!')
 
-        if event == 'Поиск':
+        elif event == 'Поиск':
             print('------------------------------------------------------------------------------------')
             # print(values)
             if not values[3].strip():
@@ -154,7 +154,7 @@ def main():
                     # report = report_window('Поиск водителей', drv) # запускает новое окно табличного отчета
                     print(tabulate(drv, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
 
-        if event == 'Путевые листы':
+        elif event == 'Путевые листы':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3].strip())
             if not phone:
@@ -167,7 +167,7 @@ def main():
                     waybills = DataFrame(waybills)
                     print(tabulate(waybills, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
 
-        if event == 'ВТК':
+        elif event == 'ВТК':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3].strip())
             if not phone:
@@ -180,7 +180,7 @@ def main():
                 except RuntimeError as error:
                     print(error)
 
-        if event == 'Рейсы':
+        elif event == 'Рейсы':
             # races = []
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3].strip())
@@ -196,7 +196,7 @@ def main():
                     print('На активном ПЛ рейсы отсутствуют.')
                 # report = report_window(sorted_races[0], sorted_races[1:])
 
-        if event == 'Фичи':
+        elif event == 'Фичи':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
@@ -210,7 +210,7 @@ def main():
                     features = DataFrame(features)
                     print(tabulate(features, headers='keys', tablefmt='tsv'))
 
-        if event == 'Добавить фичу':
+        elif event == 'Добавить фичу':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
@@ -229,7 +229,7 @@ def main():
                     print(res)
                     logging.info(res)
 
-        if event == 'Удалить фичу':
+        elif event == 'Удалить фичу':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
@@ -248,7 +248,7 @@ def main():
                     print(res)
                     logging.info(res)
 
-        if event == 'ШК ОТ/ВС':
+        elif event == 'ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
@@ -261,7 +261,7 @@ def main():
                     print(ot_id[0])
                     # print(tabulate(ot_id, headers='keys', tablefmt='tsv'))
 
-        if event == 'Обновить ШК ОТ/ВС':
+        elif event == 'Обновить ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values[3])
             if not phone:
@@ -279,7 +279,7 @@ def main():
                 # event, values = window2.read()
                 # window2.close()
 
-        if event == 'Токен':
+        elif event == 'Токен':
             print('------------------------------------------------------------------------------------')
             # print(values[3])
             phone = driver_phone(values[3].strip())
@@ -293,7 +293,7 @@ def main():
                 except Exception as token_error:
                     print(token_error)
 
-        if event == 'Сбросить пароль':
+        elif event == 'Сбросить пароль':
             print('------------------------------------------------------------------------------------')
             # print(values[3])
             phone = driver_phone(values[3])
@@ -308,56 +308,68 @@ def main():
                 else:
                     print(rst_result)
 
-        if event == 'ГПН.Авторизация':
+        elif event == 'gpn_auth':
             print('------------------------------------------------------------------------------------')
+            print('Отправлен запрос на авторизацию ГПН')
             settings['gpn_session_id'] = gpn_auth()
-            print('ГПН сессия установлена.')
-
-        if event == 'ГПН.Сброс МПК':
             print('------------------------------------------------------------------------------------')
-            if settings['gpn_session_id'] and values[4].strip():
-                try:
-                    response = gpn_reset_mpc(values[4].strip(), settings['gpn_session_id'])
-                    print(response)
-                except Exception as error:
-                    print(error)
+            print('Сессия ГПН установлена')
+
+
+        elif event == 'gpn_reset_counter':
+            print('------------------------------------------------------------------------------------')
+            if settings['gpn_session_id'] and values['vtk'].strip():
+                print('Отправка запроса на сброс МПК карты {0}.'.format(values['vtk'].strip()))
+                print(values)
+                # try:
+                #     response = gpn_reset_mpc(values['vtk'].strip(), settings['gpn_session_id'])
+                #     print(response)
+                # except Exception as error:
+                #     print(error)
             else:
                 print('Сессия не установлена или не введен номер карты.')
 
-        if event == 'ГПН.Удаление МПК':
+        elif event == 'gpn_delete_mpc':
             print('------------------------------------------------------------------------------------')
-            if settings['gpn_session_id'] and values[4].strip():
-                try:
-                    response = gpn_delete_mpc(values[4].strip(), settings['gpn_session_id'])
-                    print(response)
-                except Exception as error:
-                    print(error)
+            if settings['gpn_session_id'] and values['vtk'].strip():
+                print('Отправка запроса на удаление карты {0}.'.format(values['vtk'].strip()))
+                print(values)
+                # try:
+                #     response = gpn_delete_mpc(values['vtk'].strip(), settings['gpn_session_id'])
+                #     print(response)
+                #     print(values)
+                # except Exception as error:
+                #     print(error)
             else:
                 print('Сессия не установлена или не введен номер карты.')
 
-        if event == 'ГПН.Выпуск МПК':
+        elif event == 'gpn_init_mpc':
             print('------------------------------------------------------------------------------------')
-            if settings['gpn_session_id'] and values[4].strip():
-                try:
-                    response = gpn_init_mpc(values[4].strip(), settings['gpn_session_id'])
-                    print(response)
-                except Exception as error:
-                    print(error)
+            if settings['gpn_session_id'] and values['vtk'].strip():
+                print('Отправка запроса на выпуск карты {0}.'.format(values['vtk'].strip()))
+                print(values)
+                # try:
+                #     response = gpn_init_mpc(values['vtk'].strip(), settings['gpn_session_id'])
+                #     print(response)
+                # except Exception as error:
+                #     print(error)
             else:
                 print('Сессия не установлена или не введен номер карты.')
 
-        if event == 'ГПН.КОД Экономиста':
+        elif event == 'gpn_confirm_mpc':
             print('------------------------------------------------------------------------------------')
-            if settings['gpn_session_id'] and values[4].strip() and values[5].strip():
-                try:
-                    response = gpn_confirm_mpc(values[4].strip(), values[5].strip(), settings['gpn_session_id'])
-                    print(response)
-                except Exception as error:
-                    print(error)
+            if settings['gpn_session_id'] and values['vtk'].strip() and values['economist_code'].strip():
+                print('Отправка кода экономиста.')
+                print(values)
+                # try:
+                #     response = gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(), settings['gpn_session_id'])
+                #     print(response)
+                # except Exception as error:
+                #     print(error)
             else:
                 print('Сессия не установлена или не введены номер карты\код экономиста.')
 
-        if event == 'Отправить СМС':
+        elif event == 'Отправить СМС':
             print('------------------------------------------------------------------------------------')
             # print(values)
             if values['sms_receiver'].strip().isdigit() and len(values['sms_receiver']) == 10 and values[
