@@ -320,12 +320,12 @@ def main():
             print('------------------------------------------------------------------------------------')
             if settings['gpn_session_id'] and values['vtk'].strip():
                 print('Отправка запроса на сброс МПК карты {0}.'.format(values['vtk'].strip()))
-                print(values)
-                # try:
-                #     response = gpn_reset_mpc(values['vtk'].strip(), settings['gpn_session_id'])
-                #     print(response)
-                # except Exception as error:
-                #     print(error)
+                # print(values)
+                try:
+                    response = gpn_reset_mpc(values['vtk'].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
             else:
                 print('Сессия не установлена или не введен номер карты.')
 
@@ -333,13 +333,13 @@ def main():
             print('------------------------------------------------------------------------------------')
             if settings['gpn_session_id'] and values['vtk'].strip():
                 print('Отправка запроса на удаление карты {0}.'.format(values['vtk'].strip()))
-                print(values)
-                # try:
-                #     response = gpn_delete_mpc(values['vtk'].strip(), settings['gpn_session_id'])
-                #     print(response)
-                #     print(values)
-                # except Exception as error:
-                #     print(error)
+                # print(values)
+                try:
+                    response = gpn_delete_mpc(values['vtk'].strip(), settings['gpn_session_id'])
+                    print(response)
+                    print(values)
+                except Exception as error:
+                    print(error)
             else:
                 print('Сессия не установлена или не введен номер карты.')
 
@@ -347,12 +347,12 @@ def main():
             print('------------------------------------------------------------------------------------')
             if settings['gpn_session_id'] and values['vtk'].strip():
                 print('Отправка запроса на выпуск карты {0}.'.format(values['vtk'].strip()))
-                print(values)
-                # try:
-                #     response = gpn_init_mpc(values['vtk'].strip(), settings['gpn_session_id'])
-                #     print(response)
-                # except Exception as error:
-                #     print(error)
+                # print(values)
+                try:
+                    response = gpn_init_mpc(values['vtk'].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
             else:
                 print('Сессия не установлена или не введен номер карты.')
 
@@ -360,12 +360,12 @@ def main():
             print('------------------------------------------------------------------------------------')
             if settings['gpn_session_id'] and values['vtk'].strip() and values['economist_code'].strip():
                 print('Отправка кода экономиста.')
-                print(values)
-                # try:
-                #     response = gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(), settings['gpn_session_id'])
-                #     print(response)
-                # except Exception as error:
-                #     print(error)
+                # print(values)
+                try:
+                    response = gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(), settings['gpn_session_id'])
+                    print(response)
+                except Exception as error:
+                    print(error)
             else:
                 print('Сессия не установлена или не введены номер карты\код экономиста.')
 
