@@ -29,7 +29,7 @@ def main():
     m_window, report = main_window(), None  # вызов главного окна
 
     settings = {
-        'driver-token': '',
+        'driver_token': '',
         'gpn_session_id': '',
     }
 
@@ -289,7 +289,9 @@ def main():
                 try:
                     settings['driver_token'] = api_driver_token(phone)
                     print(f'Токен водителя {values[3].strip()}-{phone} загружен')
-                    print(settings['driver_token'])
+                    logging.info(f'Токен водителя {values[3].strip()}-{phone} загружен')
+                    logging.info(settings['driver_token'])
+                    # print(settings['driver_token'])
                 except Exception as token_error:
                     print(token_error)
 
@@ -309,12 +311,22 @@ def main():
                     print(rst_result)
 
         elif event == 'gpn_auth':
-            print('------------------------------------------------------------------------------------')
-            print('Отправлен запрос на авторизацию ГПН')
             settings['gpn_session_id'] = gpn_auth()
             print('------------------------------------------------------------------------------------')
             print('Сессия ГПН установлена')
+            logging.info('Сессия ГПН установлена')
+            logging.info(settings['gpn_session_id'])
 
+        elif event == 'barcode':
+            print('------------------------------------------------------------------------------------')
+            if settings['driver_token'] and values['vtk'].strip():
+                try:
+                    response = get_vtk_barcode(values['vtk'].strip(), settings['driver_token'])
+                    print(response)
+                except Exception as error:
+                    print(error)
+            else:
+                print('Токен не получен или отсутствует номер карты.')
 
         elif event == 'gpn_reset_counter':
             print('------------------------------------------------------------------------------------')

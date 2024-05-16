@@ -30,8 +30,8 @@ def main_window():
     ]
 
     cards_tab_layout = [
-        [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter'),
-         SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code')],
+        [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('Получить баркод',key='barcode'),
+         SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code'),SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter')],
         [SG.Submit('ГПН.Авторизация', key='gpn_auth'), SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
          SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'), SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc')]
     ]

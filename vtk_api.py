@@ -14,7 +14,7 @@ gpn_login = os.getenv("GPN_LOGIN")
 gpn_pwd = os.getenv("GPN_PWD")
 gpn_url = os.getenv("GPN_URL")
 gpn_key = os.getenv("GPN_API_KEY")
-
+barcode_api = os.getenv("BARCODE_API")
 
 def gpn_auth():
 
@@ -53,6 +53,8 @@ def gpn_delete_mpc(card_num:str, session_id:str):
 
     vtk = get_vtk_info(card_num)
 
+    if vtk['azs_company_id'] != 1002: raise RuntimeError('Карта не ГПН.')
+
     url = "https://{0}/vip/v2/cards/{1}/deleteMPC".format(gpn_url, vtk['card_id'])
 
     headers = {
@@ -76,6 +78,9 @@ def gpn_init_mpc(card_num: str, sess_id: str):
 
 
     vtk = get_vtk_info(card_num)
+
+    if vtk['azs_company_id'] != 1002: raise RuntimeError('Карта не ГПН.')
+
     url = "https://{0}/vip/v2/cards/{1}/initMPC".format(gpn_url, vtk['card_id'])
 
     headers = {
@@ -107,6 +112,8 @@ def gpn_confirm_mpc(card_num: str, economist_code:str, session_id: str):
 
     vtk = get_vtk_info(card_num)
 
+    if vtk['azs_company_id'] != 1002: raise RuntimeError('Карта не ГПН.')
+
     url = "https://{0}/vip/v2/cards/{1}/confirmMPC".format(gpn_url, vtk['card_id'])
     headers = {
         'Content-Type': 'application/json',
@@ -134,6 +141,8 @@ def gpn_reset_mpc(card_num: str, session_id: str):
 
     vtk = get_vtk_info(card_num)
 
+    if vtk['azs_company_id'] != 1002: raise RuntimeError('Карта не ГПН.')
+
     url = "https://{0}/vip/v2/cards/{1}/resetMPC?type = ResetCounterMPC".format(gpn_url, vtk['card_id'])
 
     headers = {
@@ -156,6 +165,40 @@ def gpn_reset_mpc(card_num: str, session_id: str):
         return response.json()
     except requests.exceptions.SSLError:
         return None
+
+
+def get_vtk_barcode(card_num: str, token: str):
+    """" проверка получение ШК ВТК"""
+
+    vtk = get_vtk_info(card_num)
+
+    # Проверяем компанию
+    if vtk['azs_company_id'] == 1002:
+        url = f'https://{barcode_api}/gpn'
+
+    elif vtk['azs_company_id'] == 1000:
+        url = f'https://{barcode_api}/rosneft'
+
+    else:
+        raise RuntimeError('Карта не ВТК!')
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Cookie': '53d4e18adf1674a3b93e63371b741a75=02e4c91cb6754b198c3303ec9b664f59; NSC_ESNS=2d5d4a6b-3031-13c9-9678-00e0ed6806e6_2011328032_1682857824_00000000000760926456',
+        'Authorization' : f'Bearer {token}'
+        }
+    body = {
+        'fuelCardNumber': vtk['card_num'],
+        'vehicleNumber' : '"X999XX999"' # поле обязательное но сам номер значения не имеет
+        }
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
+        return response.json()
+    except requests.exceptions.SSLError:
+        return None
+
+
 
 
 # auth = gpn_auth()
