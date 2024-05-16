@@ -3,7 +3,7 @@ import psycopg2.extras
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path='.env')
 
 def db_request(sql_request: str) -> object:
     """

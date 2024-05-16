@@ -7,7 +7,7 @@ from x5t_connect import db_request
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path='.env')
 reg_api = os.getenv("DRIVER_REG_API")
 info_api = os.getenv("DRIVER_INFO_API")
 

@@ -9,7 +9,7 @@ import asyncio
 from x5t_connect import db_request
 from driver_api import api_driver_token
 
-load_dotenv()
+load_dotenv(dotenv_path='.env')
 gpn_login = os.getenv("GPN_LOGIN")
 gpn_pwd = os.getenv("GPN_PWD")
 gpn_url = os.getenv("GPN_URL")
