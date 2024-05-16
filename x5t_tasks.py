@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, date, time, timedelta
 from x5t_connect import db_request
 from invoice import auto_et_finish

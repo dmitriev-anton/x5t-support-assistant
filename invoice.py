@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from x5t_connect import db_request
 
 total_insert = []

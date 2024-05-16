@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import PySimpleGUI as SG
 from driver import feature_dictionary
 from vehicle import group_list
