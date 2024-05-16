@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
+
 from dotenv import load_dotenv
 import requests
 import psycopg2
@@ -9,7 +11,10 @@ import asyncio
 from x5t_connect import db_request
 from driver_api import api_driver_token
 
-load_dotenv(dotenv_path='.env')
+extDataDir = os.getcwd()
+if getattr(sys, 'frozen', False):
+    extDataDir = sys._MEIPASS
+load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
 gpn_login = os.getenv("GPN_LOGIN")
 gpn_pwd = os.getenv("GPN_PWD")
 gpn_url = os.getenv("GPN_URL")

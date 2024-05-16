@@ -1,3 +1,7 @@
+import os
+import sys
+
+
 def send_sms(phone_num, text=''):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
@@ -12,7 +16,11 @@ def send_sms(phone_num, text=''):
     номера телефона. Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля.'''
 
     postfix = '@sms.beeline.amega-inform.ru'
-    load_dotenv(dotenv_path='.env')
+
+    extDataDir = os.getcwd()
+    if getattr(sys, 'frozen', False):
+        extDataDir = sys._MEIPASS
+    load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
     link = os.getenv("SMS_LINK")
     login = os.getenv("SMS_USERNAME")
     password = os.getenv("SMS_PASSWORD")
