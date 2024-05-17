@@ -138,11 +138,14 @@ def driver_cards(num: str):
                         'where (code in (\'{0}\', \'{1}\')) and (azs_company_id in (1000,1002)) '
                         'and (expiration_time >= now()) and vtk = 1 ;')
     waybills = driver_waybills(num)
+    if waybills[0]['fact_start']: real_start = waybills[0]['fact_start']
+    else real_start = waybills[0]['plan_start']
+
     if len(waybills) == 0:
         raise RuntimeError('Нет ПЛ со статусом в работе.')
     elif len(waybills) >= 2:
         raise RuntimeError('Более 1 ПЛ со статусом в работе.')
-    elif (len(waybills) == 1) and waybills[0]['plan_start'] > datetime.now():
+    elif (len(waybills) == 1) and real_start > datetime.now():
         raise RuntimeError(
             'Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'], waybills[0]['plan_start']))
     elif (len(waybills) == 1) and waybills[0]['plan_end'] < datetime.now():
