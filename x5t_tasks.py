@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, date, time, timedelta
 from x5t_connect import db_request
-from invoice import auto_et_finish
-import threading
+from invoice import finish
 
 bad_et_check = """select id from "core-invoices-schema".invoice where type_code = 'ET' and plan_start_date between (
 now() - interval '2 day') and (NOW() + interval '1 day') and expect_driver_date < plan_start_date """
@@ -35,18 +34,42 @@ sap_rejected_bug_check = """select invoice_id from "core-invoices-schema".own_tr
 sap_rejected_bug = """update "core-invoices-schema".own_trip set status  = 'SAP_CHECKED',driver_status = 'NEW', 
 driver_version = 0 where (status = 'SAP_REJECTED') and sap_message like  ('%Обработка заявки типа%') """
 
+def auto_et_finish()-> list:
+
+    from datetime import datetime, date, time, timedelta
+    actual_et_ids = """select invoice_id from "core-invoices-schema".own_trip where status = 'PLANER_CHECKED' 
+                    and driver_status in ('APPROVED','NEW') and invoice_id in 
+                    (select id from "core-invoices-schema".invoice where type_code = 'ET' 
+                        and plan_start_date between (now() - interval '2 day') and NOW() order by plan_start_date)"""
+
+    counter_et_ids = """select count(invoice_id) from "core-invoices-schema".own_trip where status = 'PLANER_CHECKED' 
+                        and driver_status in ('APPROVED','NEW') and invoice_id in 
+                        (select id from "core-invoices-schema".invoice where type_code = 'ET' 
+                            and plan_start_date between (now() - interval '2 day') and NOW() order by plan_start_date)"""
+
+    temp = db_request(actual_et_ids)
+    res = []
+
+    if int(db_request(counter_et_ids)[0]['count']) > 0:
+
+        #print(datetime.now(), 'Порожние рейсы')
+        for i in temp:
+            finish(i['invoice_id'])
+            res.append(i['invoice_id'])
+
+    return res
 
 def tasks():
     """Массовые фиксапдейты"""
 
     from datetime import datetime, date, time, timedelta
     #print('------------------------------------------------------------------------------------')
-    print('Запуск бафера.')
+    # result = ''
+    # print('Запуск бафера.')
 
     bad_ets = db_request(bad_et_check)
     if bad_ets != []:
         db_request(bad_et_upd)
-        print(datetime.now(), "Баг некорректного начала порожних рейсов", bad_ets)
 
     ids_1970 = []
     counter = 0
@@ -61,20 +84,19 @@ def tasks():
             db_request(bug_1970_id.format(i['id']))
             #print(bug_1970_id.format(i['id']))
             #print(db_request(bug_1970_id.format(i['id'])))
-        print(datetime.now(), 'Баф по багу 1970 год', ids_1970)
 
     ets = auto_et_finish()
     #print(ets)
-    if ets != []:
-        print(datetime.now(),  'Завершение порожних рейсов', end='\t')
-        print(ets)
+    # if ets != []:
+    #     print(datetime.now(),  'Завершение порожних рейсов', end='\t')
+    #     print(ets)
 
     bad_vtk_counter = int(db_request(vtk_bug_check)[0]['count'])
     if bad_vtk_counter > 0:
         db_request(vtk_bug)
-        print(datetime.now(), 'Исправление бага ВТК: ', bad_vtk_counter)
+
 
     sap_rejected_bug_counter = db_request(sap_rejected_bug_check)
     if sap_rejected_bug_counter != []:
-        print(datetime.now(), 'Баг "Обработка заявки типа "Назначенная" не возможна" ', sap_rejected_bug_counter)
         db_request(sap_rejected_bug)
+

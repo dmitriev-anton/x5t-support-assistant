@@ -17,12 +17,9 @@ class Invoice:
 
         self.invoice = db_request(self.inv_req.format(str(invoice_id)))[0]
         self.points = db_request(self.p_req.format(str(invoice_id), str(self.invoice['system_version'])))
-#            self.points.append(i['internal_point_id'])
         for i in self.points:
             self.plants.append(db_request(self.plants_req.format(i['internal_point_id'])))
- #       for plant in self.points: self.plants.append(db_request(self.plants_req.format()))
 
-#        print(self.p_req.format(str(invoice_id), str(self.invoice['system_version'])))
 
 
 def checkpoints_aio(invoice: Invoice) -> list:
@@ -122,44 +119,33 @@ def get_x5t_id(inv_id):
 
     return x5tid
 
-def auto_et_finish()-> list:
-    from x5t_connect import db_request
-    from invoice import finish
-    from datetime import datetime, date, time, timedelta
-    actual_et_ids = """select invoice_id from "core-invoices-schema".own_trip where status = 'PLANER_CHECKED' 
-                    and driver_status in ('APPROVED','NEW') and invoice_id in 
-                    (select id from "core-invoices-schema".invoice where type_code = 'ET' 
-                        and plan_start_date between (now() - interval '2 day') and NOW() order by plan_start_date)"""
-
-    counter_et_ids = """select count(invoice_id) from "core-invoices-schema".own_trip where status = 'PLANER_CHECKED' 
-                        and driver_status in ('APPROVED','NEW') and invoice_id in 
-                        (select id from "core-invoices-schema".invoice where type_code = 'ET' 
-                            and plan_start_date between (now() - interval '2 day') and NOW() order by plan_start_date)"""
-
-    temp = db_request(actual_et_ids)
-    res = []
-
-    if int(db_request(counter_et_ids)[0]['count']) > 0:
-
-        #print(datetime.now(), 'Порожние рейсы')
-        for i in temp:
-            finish(i['invoice_id'])
-            res.append(i['invoice_id'])
-
-    return res
+def cure_invoice(invoice:Invoice):
+    """"""
+    try:
+        db_request(checkpoints_aio(invoice))
+        return True
+    except Exception as error:
+        return error
 
 
-#print(auto_et_finish())
-#inv_id = '12100439'
-#print(get_x5t_id(inv_id))
 
-#inv_id = '000050020367'
-#print(inv_id.strip().lstrip('0'))
-#print(get_x5t_id(inv_id))
 
-#inv_id = '15510084'
-#print(get_x5t_id(inv_id))
+# print(auto_et_finish())
+# inv_id = '12100439'
+# print(get_x5t_id(inv_id))
+#
+# inv_id = '000050020367'
+# print(inv_id.strip().lstrip('0'))
+# print(get_x5t_id(inv_id))
+#
+# inv_id = '15510084'
+# print(get_x5t_id(inv_id))
 
-#print(checkpoints(11664535))
+
+# cur_invoice = Invoice('13245730')
+# print(type(checkpoints_aio(cur_invoice)))
+# print(cure_invoice(Invoice('13245730')))
+
+
 
 

@@ -12,22 +12,24 @@ def main_window():
     """App gui"""
 
     SG.theme('DarkGreen5')
+
+    vehicle_tab_layout = [
+        [SG.Text('ТС'), SG.InputText(k='vehicle'), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True, k='groups'),
+         SG.Submit('Привязать')]
+    ]
+
     invoice_tab_layout = [
-        [SG.Text('Id_invoice'), SG.InputText(), SG.Submit('-->X5T ID')],
+        [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID')],
         [SG.Submit('Прожать'), SG.Submit('Отменить'), SG.Submit('Завершить'), SG.Submit('Чекпоинты'),
          SG.Submit('Бафнуть Х5Т')]
     ]
 
-    vehicle_tab_layout = [
-        [SG.Text('ТС'), SG.InputText(), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True),
-         SG.Submit('Привязать')]
-    ]
-
     drivers_tab_layout = [
-        [SG.Text('Таб.н.'), SG.InputText(), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
+        [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
          SG.Submit('ВТК'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
-        [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True), SG.Submit('Добавить фичу'),
-         SG.Submit('Удалить фичу'), SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), ]
+        [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature_list'), SG.Submit('Добавить фичу'),
+         SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
+         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС') ]
     ]
 
     cards_tab_layout = [
@@ -50,7 +52,8 @@ def main_window():
         [SG.Output(size=(140, 20))]
     ]
 
-    return SG.Window('X5T support assistant v2.14 by A.Dmitriev', main_layout, finalize=True)
+    return SG.Window('X5T support assistant v2.15 by A.Dmitriev', main_layout, finalize=True)
+    return SG.Window('X5T support assistant v2.15 by A.Dmitriev', main_layout, finalize=True)
 
 
 def report_window(title: str, df: DataFrame):

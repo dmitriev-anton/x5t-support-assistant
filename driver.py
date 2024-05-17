@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
-from x5t_connect import db_request
+from typing import Union, List, Any
 
+from x5t_connect import db_request
 
 ot_check = "select id, driver_id, barcode, status, deleted from \"core-drivers-schema\".drivers_otvs where driver_id = (select id from " \
            "\"core-drivers-schema\".drivers where number = '{0}')"
@@ -11,8 +13,13 @@ ot_upd = "update \"core-drivers-schema\".drivers_otvs set barcode = null, delete
          "driver_id = (select id from \"core-drivers-schema\".drivers where number = '{0}')"
 
 
-def all_races(tab_num) -> list:
+def default_features_set() -> list:
+    dft_feature_dict_query = """SELECT feature_id FROM \"core-drivers-schema\".driver_type_features where driver_type = \'0\' order by feature_id """
+    response = db_request(dft_feature_dict_query)
+    return [i['feature_id'] for i in response]
 
+
+def all_races(tab_num) -> list:
     active_pl_races = """  select t4.id ,t4.sap_number as sap, t4.tms_number as tms, t2.status as sap_status, t2.driver_status, 
                             t4.plan_start_date as plan_start,t5.status,t4.system_version as sys_ver, t2."version" as own_ver, 
                             t2.driver_version as dr_ver, t4.sap_status_code as sapCode,  t3.is_mfp,  t2.waybillid as PL
@@ -29,38 +36,49 @@ def all_races(tab_num) -> list:
     return temp
 
 
-def add_feature(tab_num,f_num):
+def add_feature(tab_num: str, f_num: Union[str, list[str]]):
     add_feature = ("insert into \"core-drivers-schema\".driver_features (driver_id, feature_id) \n"
-                   "	values ((select id from \"core-drivers-schema\".drivers where number = '{0}'),'{1}')")
+                   "	values ((select id from \"core-drivers-schema\".drivers where number = '{0}'),'{1}');")
+    if type(f_num) == str:
+        total_query = ''
+        total_query = add_feature.format(tab_num, f_num)
+    elif type(f_num) == list:
+        total_query = [add_feature.format(tab_num, f) for f in f_num]
+
     try:
-        db_request(add_feature.format(tab_num,f_num))
-        return('Фича {1} добавлена водителю {0}'.format(tab_num,f_num))
-    except psycopg2.errors.UniqueViolation:
+        db_request(total_query)
+        return (f'Водителю {tab_num} добавлены фичи {f_num}')
+    except Exception:
         return 'Невозможно добавить фичу!!!'
 
 
-def remove_feature(tab_num,f_num):
+def remove_feature(tab_num: str, f_num=None):
     delete_feature = ('delete from "core-drivers-schema".driver_features '
-                   'where driver_id = (select id from "core-drivers-schema".drivers where number = \'{0}\') '
-                   'and (feature_id = \'{1}\')')
+                      'where driver_id = (select id from "core-drivers-schema".drivers where number = \'{0}\') '
+                      'and (feature_id = \'{1}\')')
+    delete_all_features_query = (f'delete from "core-drivers-schema".driver_features where driver_id = (select id from '
+                                 f'"core-drivers-schema".drivers where number = \'{tab_num}\')')
+
+    if not f_num:
+        total_query = delete_all_features_query.format(tab_num)
+
+    else:
+        total_query = delete_feature.format(tab_num, f_num)
+
     try:
-        db_request(delete_feature.format(tab_num,f_num))
-        return('Фича {1} удалена у водителя {0}'.format(tab_num,f_num))
-    except psycopg2.errors.UniqueViolation:
-        return 'Невозможно удалить фичу!!!'
+        db_request(total_query)
+        return f'Удаление фич водителю {tab_num}'
+    except Exception as error:
+        return error
 
 
 def feature_dictionary():
+    """кортеж всех фич"""
     feature_dictionary_query = """select id from "core-drivers-schema".driver_feature_dictionary order by id"""
-    result = []
-    response = db_request(feature_dictionary_query)
-    for i in response:
-        result.append(i['id'])
-    return result
+    return [i['id'] for i in db_request(feature_dictionary_query)]
 
 
 def driver_features(tab_num) -> list:
-
     driver_features_query = """SELECT dr."number", df.feature_id, dfd.name, dfd.description  
                             FROM "core-drivers-schema".driver_features df 
                                 inner join "core-drivers-schema".drivers dr on df.driver_id = dr.id
@@ -73,7 +91,7 @@ def driver_features(tab_num) -> list:
     return temp
 
 
-def driver_phone(num: str):
+def driver_phone(num: str) -> Union[str, None]:
     driver_phone_query = 'select phone from "core-drivers-schema".drivers where number = \'{0}\''
     try:
         resolve = db_request(driver_phone_query.format(num))
@@ -82,7 +100,7 @@ def driver_phone(num: str):
         return None
 
 
-def search_driver(input:str):
+def search_driver(input: str) -> Union[object, list[Any]]:
     """Поиск по телефону или фио"""
     search_by_name = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where name like \'%{input}%\'"
     search_by_phone = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where phone like \'%{input}%\'"
@@ -92,7 +110,7 @@ def search_driver(input:str):
     if input.isdigit() and len(input) == 10:
         return db_request(search_by_phone)
 
-    elif input.replace(' ','').isalpha():
+    elif input.replace(' ', '').isalpha():
         return db_request(search_by_name)
 
     elif input.isdigit() and (4 <= len(input) < 10):
@@ -102,7 +120,8 @@ def search_driver(input:str):
         return []
 
 
-def driver_waybills(num:str):
+def driver_waybills(num: str) -> list:
+    """Путевые листы водителя"""
     waybills_query = ('select \"number\" as \"waybill_number\",system_status , user_status , '
                       'vehicle_licence as \"veh_num\", trailer_licence as \"trail_num\", driver_number, '
                       'start_date_plan as \"plan_start\",end_date_plan as \"plan_end\", start_date_fact as \"fact_start\", '
@@ -112,7 +131,8 @@ def driver_waybills(num:str):
     #print(waybills_query.format(num))
     return resolve
 
-def driver_cards(num:str):
+
+def driver_cards(num: str):
     fuel_cards_query = ('SELECT id, \"number\", code, company_id, azs_company_id, main, "fuel_type", fuel_limit, '
                         'create_time, contract_type, vtk FROM \"core-vehicle-schema\".fuel_cards '
                         'where (code in (\'{0}\', \'{1}\')) and (azs_company_id in (1000,1002)) '
@@ -123,17 +143,14 @@ def driver_cards(num:str):
     elif len(waybills) >= 2:
         raise RuntimeError('Более 1 ПЛ со статусом в работе.')
     elif (len(waybills) == 1) and waybills[0]['plan_start'] > datetime.now():
-        raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'],waybills[0]['plan_start']))
+        raise RuntimeError(
+            'Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'], waybills[0]['plan_start']))
     elif (len(waybills) == 1) and waybills[0]['plan_end'] < datetime.now():
-        raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill_number'],waybills[0]['plan_end']))
+        raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill_number'], waybills[0]['plan_end']))
     else:
         return db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
 
 
-
-# remove_feature('02094956','1000')
-
-# try:
-#     print(driver_cards('01488006'))
-# except RuntimeError as error:
-#     print(error)
+# print(default_features_set())
+# print(remove_feature('90000156'))
+# print(add_feature('02290582', default_features_set()))

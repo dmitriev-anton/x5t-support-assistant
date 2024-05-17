@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import Any, Generator
+
 from x5t_connect import db_request
 
 car_assign = "UPDATE \"core-vehicle-schema\".vehicle SET group_number='{0}' WHERE code = '{1}'"
@@ -13,13 +15,10 @@ def car_num_to_latin(car_num:str):
             res = res.replace(res[i],ru_lat_dict[res[i]])
     return res
 
-def group_list() -> list:
+def group_list() -> tuple:
     group_list_query = """select distinct group_number 
                         from "core-vehicle-schema".vehicle order by group_number"""
-    result = []
-    for i in db_request(group_list_query):
-        result.append(i['group_number'])
-    return result
+    return [i['group_number'] for i in db_request(group_list_query)]
 
 def vehicle_counter(code: str) -> int:
     counter = "select count(*) from \"core-vehicle-schema\".vehicle where code = \'{0}\'"

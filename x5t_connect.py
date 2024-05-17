@@ -4,50 +4,46 @@ import psycopg2.extras
 import os
 import sys
 from dotenv import load_dotenv
+from typing import Union
 
 extDataDir = os.getcwd()
 if getattr(sys, 'frozen', False):
     extDataDir = sys._MEIPASS
 load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
 
-def db_request(sql_request: str) -> object:
-    """
 
-    query function
-    """
-    dict_result = []
+def db_request(sql_request: Union[str, list[str]]) -> Union[list[dict], None]:
+    """Шлат запрос или много запросов в зависимости от типа sql_request    """
+    list_result = []
     conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USERNAME"),
                             password=os.getenv("DB_PASSWORD"), host=os.getenv("DB_HOST"))
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute(sql_request)
-    conn.commit()
-    try:
-        ans = cur.fetchall()
-        for row in ans:
-            dict_result.append(dict(row))
-        return dict_result
+    with conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as curs:
 
-    except psycopg2.ProgrammingError:
-        return None
+            if type(sql_request) == str:
+                    curs.execute(sql_request)
+                    try:
+                        ans = curs.fetchall()
+                        for row in ans:
+                            list_result.append(dict(row))
+                        return list_result
 
-    cur.close()
-    conn.close()
+                    except Exception as error:
+                        return None
 
+            elif type(sql_request) == list:
+                try:
+                    for r in sql_request:
+                        curs.execute(r)
+                    return None
+                except Exception as error:
+                    raise RuntimeError(error)
+            else:
+                raise RuntimeError('Incorrect request')
 
-
-def get_dict_resultset(sql):
-    conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USERNAME"),
-                            password=os.getenv("DB_PASSWORD"), host=os.getenv("DB_HOST"))
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute(sql)
-    ans = cur.fetchall()
-    dict_result = []
-    for row in ans:
-        dict_result.append(dict(row))
-    return dict_result
 
 def str_dict(dict) -> str:
-    result=''
+    result = ''
     for k in dict[0].keys():
         result += k
         result += ' '
@@ -55,12 +51,11 @@ def str_dict(dict) -> str:
     for i in dict:
 
         for k, v in i.items():
-            result = result + str(v) +  "  "
+            result = result + str(v) + "  "
 
         result += "\n"
 
     return result
-
 
 
 _SQL = """select "number" , "name" , phone, licence, auth_user_id, 
@@ -79,10 +74,3 @@ _SQL3 = """SELECT df.feature_id,dfd."name", dfd.description  FROM "core-drivers-
     inner join "core-drivers-schema".drivers dr on df.driver_id = dr.id
     inner join "core-drivers-schema".driver_feature_dictionary dfd on dfd.id = df.feature_id 
     where dr.number = '{0}'"""
-
-
-
-
-
-
-
