@@ -154,9 +154,11 @@ def driver_cards(num: str):
     elif real_start and waybills[0]['plan_end'] < datetime.now():
         raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill_number'], waybills[0]['plan_end']))
     else:
-        return db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
+        res=db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
+        if not res: raise RuntimeError('Виртуальные карты к ТС не привязаны.')
+        else: return res
 
 
 # print(feature_dictionary())
 # print(add_feature('00942766', '1044'))
-# print(remove_feature('00942766'), '1044')
+# print(driver_cards('02286799'))
