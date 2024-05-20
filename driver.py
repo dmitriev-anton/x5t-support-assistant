@@ -138,22 +138,25 @@ def driver_cards(num: str):
                         'where (code in (\'{0}\', \'{1}\')) and (azs_company_id in (1000,1002)) '
                         'and (expiration_time >= now()) and vtk = 1 ;')
     waybills = driver_waybills(num)
-    if waybills[0]['fact_start']: real_start = waybills[0]['fact_start']
-    else real_start = waybills[0]['plan_start']
+    real_start = None
+
+    if len(waybills) == 1 and waybills[0]['fact_start']:
+        real_start = waybills[0]['fact_start']
+    elif len(waybills) == 1 and not waybills[0]['fact_start']:
+        real_start = waybills[0]['plan_start']
 
     if len(waybills) == 0:
         raise RuntimeError('Нет ПЛ со статусом в работе.')
     elif len(waybills) >= 2:
         raise RuntimeError('Более 1 ПЛ со статусом в работе.')
-    elif (len(waybills) == 1) and real_start > datetime.now():
-        raise RuntimeError(
-            'Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'], waybills[0]['plan_start']))
-    elif (len(waybills) == 1) and waybills[0]['plan_end'] < datetime.now():
+    elif real_start > datetime.now():
+        raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'], real_start))
+    elif real_start and waybills[0]['plan_end'] < datetime.now():
         raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill_number'], waybills[0]['plan_end']))
     else:
         return db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
 
 
-# print(default_features_set())
+# print(driver_cards('00651225'))
 # print(remove_feature('90000156'))
 # print(add_feature('02290582', default_features_set()))
