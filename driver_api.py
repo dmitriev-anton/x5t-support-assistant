@@ -3,10 +3,13 @@ import requests
 import json
 from x5t_connect import db_request
 import os
+import sys
 from dotenv import load_dotenv
 
-
-load_dotenv()
+extDataDir = os.getcwd()
+if getattr(sys, 'frozen', False):
+    extDataDir = sys._MEIPASS
+load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
 reg_api = os.getenv("DRIVER_REG_API")
 info_api = os.getenv("DRIVER_INFO_API")
 

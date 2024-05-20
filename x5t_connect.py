@@ -2,11 +2,15 @@
 import psycopg2
 import psycopg2.extras
 import os
+import sys
 
 from dotenv import load_dotenv
 from typing import Union
 
-load_dotenv()
+extDataDir = os.getcwd()
+if getattr(sys, 'frozen', False):
+    extDataDir = sys._MEIPASS
+load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
 
 
 def db_request(sql_request: Union[str, list[str]]) -> Union[list[dict], None]:
