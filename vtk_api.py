@@ -205,9 +205,9 @@ def get_vtk_barcode(card_num: str, token: str):
 
 
 # auth = gpn_auth()
-# # print(auth)
-#
-# card_num = '7005830901024257'
+# # # print(auth)
+# #
+# card_num = '7005830901840975'
 # print(get_vtk_info(card_num))
 # try:
 #     print(gpn_confirm_mpc(card_num, '756540',  auth))

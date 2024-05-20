@@ -118,7 +118,7 @@ def main():
             print('Фиксы применены')
 
         elif event == 'Чекпоинты':
-            print('--------------------------------------------------------------------------------------')
+            print('-------------------------------------------------------------------------------------')
             if not values['invoice_number']:
                 print('Введите номер рейса х5т')
             else:
@@ -216,7 +216,8 @@ def main():
                     print('У водителя дефолтный набор фич')
                 else:
                     try:
-                        res = add_feature(values['driver_number'], values['feature_list'])
+                        # print(values['driver_number'], values['feature'])
+                        res = add_feature(values['driver_number'], values['feature'])
                         print(res)
                         logging.info(res)
                     except Exception as error:
@@ -251,7 +252,6 @@ def main():
                 else:
                     print('Удаление невозможно.У водителя отсутствуют фичи.')
 
-
         elif event == 'Удалить фичу':
             print('------------------------------------------------------------------------------------')
             phone = driver_phone(values['driver_number'])
@@ -260,16 +260,19 @@ def main():
             else:
                 # res = []
                 features = driver_features(values['driver_number'])
+
                 if not features:
                     print('У водителя дефолтный набор фич')
 
-                elif values['feature_list'] not in f_dict:
-                    print('Внимание!Некорректная фича!')
-
                 else:
-                    res = remove_feature(values['driver_number'], values['feature_list'])
-                    print(res)
-                    logging.info(res)
+                    try:
+                        # print(values['driver_number'], values['feature_list'])
+                        res = remove_feature(values['driver_number'], values['feature'])
+                        print(res)
+                        logging.info(res)
+                    except Exception as error:
+                        # print(values)
+                        print(error)
 
         elif event == 'ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
@@ -413,7 +416,6 @@ def main():
                 # print(values)
                 try:
                     window.start_thread(lambda: gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(), settings['gpn_session_id']), '-gpn_confirm_mpc-')
-                    print(response)
                 except Exception as error:
                     print(error)
             else:

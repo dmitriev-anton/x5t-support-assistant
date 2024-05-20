@@ -40,8 +40,8 @@ def add_feature(tab_num: str, f_num: Union[str, list[str]]):
     add_feature = ("insert into \"core-drivers-schema\".driver_features (driver_id, feature_id) \n"
                    "	values ((select id from \"core-drivers-schema\".drivers where number = '{0}'),'{1}');")
     if type(f_num) == str:
-        total_query = ''
         total_query = add_feature.format(tab_num, f_num)
+        # print(total_query) check
     elif type(f_num) == list:
         total_query = [add_feature.format(tab_num, f) for f in f_num]
 
@@ -49,22 +49,22 @@ def add_feature(tab_num: str, f_num: Union[str, list[str]]):
         db_request(total_query)
         return (f'Водителю {tab_num} добавлены фичи {f_num}')
     except Exception:
+        print(total_query)
         return 'Невозможно добавить фичу!!!'
 
 
 def remove_feature(tab_num: str, f_num=None):
     delete_feature = ('delete from "core-drivers-schema".driver_features '
-                      'where driver_id = (select id from "core-drivers-schema".drivers where number = \'{0}\') '
-                      'and (feature_id = \'{1}\')')
+                      f'where driver_id = (select id from "core-drivers-schema".drivers where number = \'{tab_num}\') '
+                      f'and (feature_id = \'{f_num}\')')
     delete_all_features_query = (f'delete from "core-drivers-schema".driver_features where driver_id = (select id from '
                                  f'"core-drivers-schema".drivers where number = \'{tab_num}\')')
 
     if not f_num:
-        total_query = delete_all_features_query.format(tab_num)
-
+        total_query = delete_all_features_query
     else:
-        total_query = delete_feature.format(tab_num, f_num)
-
+        total_query = delete_feature
+    # print(total_query) check
     try:
         db_request(total_query)
         return f'Удаление фич водителю {tab_num}'
@@ -75,7 +75,7 @@ def remove_feature(tab_num: str, f_num=None):
 def feature_dictionary():
     """кортеж всех фич"""
     feature_dictionary_query = """select id from "core-drivers-schema".driver_feature_dictionary order by id"""
-    return [i['id'] for i in db_request(feature_dictionary_query)]
+    return [str(i['id']) for i in db_request(feature_dictionary_query)]
 
 
 def driver_features(tab_num) -> list:
@@ -157,6 +157,6 @@ def driver_cards(num: str):
         return db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
 
 
-# print(driver_cards('00651225'))
-# print(remove_feature('90000156'))
-# print(add_feature('02290582', default_features_set()))
+# print(feature_dictionary())
+# print(add_feature('00942766', '1044'))
+# print(remove_feature('00942766'), '1044')

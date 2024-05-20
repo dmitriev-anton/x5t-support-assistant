@@ -27,9 +27,9 @@ def main_window():
     drivers_tab_layout = [
         [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
          SG.Submit('ВТК'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
-        [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature_list'), SG.Submit('Добавить фичу'),
+        [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
          SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
-         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС') ]
+         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС')]
     ]
 
     cards_tab_layout = [
