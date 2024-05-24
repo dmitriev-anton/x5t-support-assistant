@@ -10,7 +10,7 @@ g_list = group_list()
 
 def main_window():
     """App gui"""
-    # SG.set_options(font=("DejaVu Sans Mono", 10))
+    SG.set_options(font=("Segoe UI", 11))
     SG.theme('DarkGreen5')
 
     vehicle_tab_layout = [
