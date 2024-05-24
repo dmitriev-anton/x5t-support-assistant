@@ -52,7 +52,7 @@ def main_window():
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
 
-    return SG.Window('X5T support assistant v2.15 by A.Dmitriev', main_layout, finalize=True)
+    return SG.Window('X5T support assistant v2.16 by A.Dmitriev', main_layout, finalize=True)
 
 
 
