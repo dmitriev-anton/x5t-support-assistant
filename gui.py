@@ -10,7 +10,7 @@ g_list = group_list()
 
 def main_window():
     """App gui"""
-
+    # SG.set_options(font=("DejaVu Sans Mono", 10))
     SG.theme('DarkGreen5')
 
     vehicle_tab_layout = [
@@ -49,11 +49,11 @@ def main_window():
         [SG.TabGroup([[SG.Tab('Привязка ТС', vehicle_tab_layout), SG.Tab('Рейс', invoice_tab_layout),
                        SG.Tab('Водители', drivers_tab_layout), SG.Tab('ВТК', cards_tab_layout),
                        SG.Tab('SMS', sms_tab_layout)]])],
-        [SG.Output(size=(140, 20))]
+        [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
 
     return SG.Window('X5T support assistant v2.15 by A.Dmitriev', main_layout, finalize=True)
-    return SG.Window('X5T support assistant v2.15 by A.Dmitriev', main_layout, finalize=True)
+
 
 
 def report_window(title: str, df: DataFrame):

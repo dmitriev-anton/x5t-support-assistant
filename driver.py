@@ -123,9 +123,9 @@ def search_driver(input: str) -> Union[object, list[Any]]:
 def driver_waybills(num: str) -> list:
     """Путевые листы водителя"""
     waybills_query = ('select \"number\" as \"waybill_number\",system_status , user_status , '
-                      'vehicle_licence as \"veh_num\", trailer_licence as \"trail_num\", driver_number, '
+                      'vehicle_licence as \"veh_num\", trailer_licence as \"trail_num\", '
                       'start_date_plan as \"plan_start\",end_date_plan as \"plan_end\", start_date_fact as \"fact_start\", '
-                      'end_date_fact as \"fact_end\", is_mfp as \"mfp\", _type as \"type\" from \"core-waybills-schema\".waybills '
+                      'end_date_fact as \"fact_end\", is_mfp as \"mfp\" from \"core-waybills-schema\".waybills '
                       f'where driver_number = \'{num}\' and user_status = \'E0002\' and (_type not in (\'TRC\',\'MAINTENANCE\'))')
     resolve = db_request(waybills_query)
     #print(waybills_query.format(num))
@@ -134,7 +134,7 @@ def driver_waybills(num: str) -> list:
 
 def driver_cards(num: str):
     fuel_cards_query = ('SELECT id, \"number\", code, company_id, azs_company_id, main, "fuel_type", fuel_limit, '
-                        'create_time, contract_type, vtk FROM \"core-vehicle-schema\".fuel_cards '
+                        'create_time, vtk FROM \"core-vehicle-schema\".fuel_cards '
                         'where (code in (\'{0}\', \'{1}\')) and (azs_company_id in (1000,1002)) '
                         'and (expiration_time >= now()) and vtk = 1 ;')
     waybills = driver_waybills(num)

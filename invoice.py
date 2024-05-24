@@ -96,7 +96,7 @@ def checkpoints(invoice_id) -> list:
     from x5t_connect import db_request
 
     checkpoints_query = ("select invoice_version as inv_ver, invoice_point_sequence as seq, internal_point_id as int_p, "
-                         "external_point_id as ext_p, stage_id, create_time as cr_time, longitude as lng, latitude as lat, "
+                         "external_point_id as ext_p, stage_id, create_time , longitude, latitude, "
                          "credentials as creds FROM \"core-invoices-schema\".driver_checkpoint where invoice_id = '{0}' "
                          "order by seq desc")
     temp = []

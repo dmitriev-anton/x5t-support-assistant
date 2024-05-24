@@ -32,6 +32,7 @@ def main():
         'driver_token': '',
         'gpn_session_id': '',
     }
+    tablefmt="plain"  # 'simple', 'tsv' - подходят
 
     while True:  # The Event Loop
 
@@ -118,14 +119,14 @@ def main():
             print('Фиксы применены')
 
         elif event == 'Чекпоинты':
-            print('-------------------------------------------------------------------------------------')
+            print('------------------------------------------------------------------------------------')
             if not values['invoice_number']:
                 print('Введите номер рейса х5т')
             else:
                 points = checkpoints(values['invoice_number'])
                 if points:
                     points = DataFrame(points)
-                    print(tabulate(points, headers='keys', tablefmt='tsv'))
+                    print(tabulate(points, headers='keys', tablefmt=tablefmt))
                 else:
                     print('Прожатия отсутствуют!')
 
@@ -146,7 +147,7 @@ def main():
 
                     drv = DataFrame(drv)
                     # report = report_window('Поиск водителей', drv) # запускает новое окно табличного отчета
-                    print(tabulate(drv, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+                    print(tabulate(drv, headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
 
         elif event == 'Путевые листы':
             print('------------------------------------------------------------------------------------')
@@ -159,7 +160,7 @@ def main():
                     print('Путевые листы со статусом в работе отсутствуют.')
                 else:
                     waybills = DataFrame(waybills)
-                    print(tabulate(waybills, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+                    print(tabulate(waybills, headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
 
         elif event == 'ВТК':
             print('------------------------------------------------------------------------------------')
@@ -170,7 +171,7 @@ def main():
                 try:
                     cards = driver_cards(values['driver_number'].strip())
                     cards = DataFrame(cards)
-                    print(tabulate(cards, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+                    print(tabulate(cards, headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
                 except RuntimeError as error:
                     print(error)
 
@@ -185,7 +186,7 @@ def main():
 
                 if races:
                     races = DataFrame(races)
-                    print(tabulate(races, headers='keys', showindex=False, tablefmt='tsv', numalign='left'))
+                    print(tabulate(races, headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
                 else:
                     print('На активном ПЛ рейсы отсутствуют.')
                 # report = report_window(sorted_races[0], sorted_races[1:])
@@ -202,7 +203,7 @@ def main():
                     print('У водителя дефолтный набор фич')
                 else:
                     features = DataFrame(features)
-                    print(tabulate(features, headers='keys', tablefmt='tsv'))
+                    print(tabulate(features, headers='keys', tablefmt=tablefmt))
 
         elif event == 'Добавить фичу':
             print('------------------------------------------------------------------------------------')
@@ -285,7 +286,7 @@ def main():
                     print('ШК ОТ/ВС отсутствует')
                 else:
                     print(ot_id[0])
-                    # print(tabulate(ot_id, headers='keys', tablefmt='tsv'))
+                    # print(tabulate(ot_id, headers='keys', tablefmt=tablefmt))
 
         elif event == 'Обновить ШК ОТ/ВС':
             print('------------------------------------------------------------------------------------')
