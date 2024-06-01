@@ -12,6 +12,8 @@ ot_insrt = "insert into \"core-drivers-schema\".drivers_otvs (id,driver_id, dele
 ot_upd = "update \"core-drivers-schema\".drivers_otvs set barcode = null, deleted = false, status = 'CREATE' where " \
          "driver_id = (select id from \"core-drivers-schema\".drivers where number = '{0}')"
 
+auth_id_to_null = "UPDATE \"core-drivers-schema\".drivers set auth_user_id=NULL where number = '{0}'"
+
 
 def default_features_set() -> list:
     dft_feature_dict_query = """SELECT feature_id FROM \"core-drivers-schema\".driver_type_features where driver_type = \'0\' order by feature_id """
@@ -161,4 +163,9 @@ def driver_cards(num: str):
 
 # print(feature_dictionary())
 # print(add_feature('00942766', '1044'))
-# print(driver_cards('02286799'))
+# print(search_driver('02286799')[0]['auth_user_id'])
+# print(auth_id_to_null.format('02286799'))
+# db_request(auth_id_to_null.format('02286799'))
+# print(search_driver('02286799')[0]['auth_user_id'])
+
+# f25300be-5d5f-48b3-9e4f-9f3ba57414f3
