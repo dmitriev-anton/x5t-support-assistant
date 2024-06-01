@@ -17,11 +17,11 @@ from gui import main_window, f_dict
 
 
 def main():
-    username = os.getlogin()
+    username = os.getlogin() # получаем логин юзера
     logging.basicConfig(
         level=logging.DEBUG,
         filename="log.log",
-        format=f"%(asctime)s - {username} - %(module)s - %(levelname)s : %(message)s",
+        format=f'%(asctime)s - {username} - %(module)s - %(levelname)s : %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S',
     )
     logging.info('Запуск приложения')
