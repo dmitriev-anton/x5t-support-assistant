@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import warnings
 
 import PySimpleGUI as SG
 from pandas import DataFrame
@@ -17,6 +18,8 @@ from gui import main_window, f_dict
 
 
 def main():
+    warnings.filterwarnings("ignore") # игнор ненужных уведомлений
+
     username = os.getlogin() # получаем логин юзера
     logging.basicConfig(
         level=logging.DEBUG,
