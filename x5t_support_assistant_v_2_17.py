@@ -89,7 +89,7 @@ def main():
             else:
                 window.start_thread(lambda : cure_invoice(Invoice(int(values['invoice_number'].strip()))), '-cure_invoice-')
                 print(delimiter)
-                print('Запуск в фоне')
+                print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-cure_invoice-':
             print(delimiter)
@@ -338,7 +338,7 @@ def main():
                 try:
                     window.start_thread(lambda: api_driver_token(phone), '-driver_token-')
                     print(delimiter)
-                    print('Запуск в фоне')
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as token_error:
                     print(token_error)
 
@@ -358,7 +358,7 @@ def main():
             else:
                 window.start_thread(lambda :driver_pwd_reset(phone=phone), '-pwd_reset-')
                 print(delimiter)
-                print('Запуск в фоне')
+                print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-pwd_reset-':
             send_sms(phone)
@@ -370,7 +370,7 @@ def main():
         elif event == 'gpn_auth':
             window.start_thread(lambda: gpn_auth(), '-auth_done-')
             print(delimiter)
-            print('Запуск в фоне')
+            print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-auth_done-':
             settings['gpn_session_id'] = values[event]
@@ -398,7 +398,7 @@ def main():
                 try:
                     window.start_thread(lambda: gpn_reset_mpc(values['vtk'].strip(), settings['gpn_session_id']), '-gpn_reset_counter-')
                     print(delimiter)
-                    print('Запуск в фоне')
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
                 except Exception as error:
                     print(error)
@@ -416,7 +416,7 @@ def main():
                 try:
                     window.start_thread(lambda: gpn_delete_mpc(values['vtk'].strip(), settings['gpn_session_id']), '-gpn_delete_mpc-')
                     print(delimiter)
-                    print('Запуск в фоне')
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
                     print(error)
             else:
@@ -433,7 +433,7 @@ def main():
                 try:
                     window.start_thread(lambda: gpn_init_mpc(values['vtk'].strip(), settings['gpn_session_id']), '-gpn_init_mpc-')
                     print(delimiter)
-                    print('Запуск в фоне')
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
                     print(error)
             else:
@@ -450,7 +450,7 @@ def main():
                 try:
                     window.start_thread(lambda: gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(), settings['gpn_session_id']), '-gpn_confirm_mpc-')
                     print(delimiter)
-                    print('Запуск в фоне')
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
                     print(error)
             else:
