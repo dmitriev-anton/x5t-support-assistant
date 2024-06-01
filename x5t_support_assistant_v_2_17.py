@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-import warnings
+import os
 
 import PySimpleGUI as SG
 from pandas import DataFrame
@@ -17,11 +17,11 @@ from gui import main_window, f_dict
 
 
 def main():
-    warnings.filterwarnings('ignore')
+    username = os.getlogin()
     logging.basicConfig(
         level=logging.DEBUG,
         filename="log.log",
-        format="%(asctime)s - %(module)s - %(levelname)s - %(funcName)s: %(message)s",
+        format=f"%(asctime)s - {username} - %(module)s - %(levelname)s : %(message)s",
         datefmt='%d-%m-%Y %H:%M:%S',
     )
     logging.info('Запуск приложения')
