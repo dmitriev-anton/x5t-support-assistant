@@ -21,7 +21,7 @@ def main_window():
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID')],
         [SG.Submit('Прожать'), SG.Submit('Отменить'), SG.Submit('Завершить'), SG.Submit('Точки'),
-         SG.Submit('Чекпоинты'), SG.Submit('Бафнуть Х5Т')]
+         SG.Submit('Прожатия'), SG.Submit('Бафнуть Х5Т')]
     ]
 
     drivers_tab_layout = [
@@ -29,7 +29,7 @@ def main_window():
          SG.Submit('ВТК'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
         [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
          SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
-         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Затереть auth_user_id')]
+         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Стереть AUTH_USER_ID')]
     ]
 
     cards_tab_layout = [

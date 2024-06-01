@@ -125,7 +125,7 @@ def main():
             print(delimiter)
             print('Фиксы применены')
 
-        elif event == 'Чекпоинты':
+        elif event == 'Прожатия':
             print(delimiter)
             if not values['invoice_number']:
                 print('Введите номер рейса х5т')
@@ -318,15 +318,15 @@ def main():
                 # event, values = window2.read()
                 # window2.close()
 
-        elif event == 'Затереть auth_user_id':
+        elif event == 'Стереть AUTH_USER_ID':
             print(delimiter)
             phone = driver_phone(values['driver_number'])
             if not phone:
                 print('Водитель не найден.')
             else:
                 db_request(auth_id_to_null.format(values['driver_number']))
-                print('Auth_user_id водителя {0} стерта'.format(values['driver_number']))
-                logging.info('Auth_user_id водителя {0} стерта'.format(values['driver_number']))
+                print('Стирание AUTH_USER_ID водителя {0} выполнено'.format(values['driver_number']))
+                logging.info('Стирание AUTH_USER_ID водителя {0} выполнено'.format(values['driver_number']))
 
         elif event == 'Токен':
             # print(values['driver_number'])
