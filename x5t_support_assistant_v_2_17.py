@@ -117,6 +117,7 @@ def main():
         elif event == 'Бафнуть Х5Т':
             # print('Функционал отключен.')
             window.perform_long_operation(tasks, '-tasks-')
+            print(delimiter)
             print('Запуск бафера')
             logging.info('Запуск бафера')
 
