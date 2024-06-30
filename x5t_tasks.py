@@ -19,7 +19,7 @@ bug_1970_id= """update "core-invoices-schema".invoice set plan_start_date = expe
             where (plan_start_date = '1970-01-01 03:00:00.000')and id = '{0}'"""
 
 
-vtk_bug_check = """select count(fc.number) from "core-vehicle-schema".fuel_cards fc 
+vtk_bug_check = """select count(fc.number) from "core-azs".fuel_cards fc 
                 inner join "core-azs".vtk_request vr on vr.card_num like concat('%',fc.number::varchar) 
                 where (fc.azs_company_id in (1000,1002)) and (fc.expiration_time >= now()) and fc.vtk = 0"""
 
