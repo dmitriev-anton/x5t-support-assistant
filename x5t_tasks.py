@@ -23,8 +23,8 @@ vtk_bug_check = """select count(fc.number) from "core-azs".fuel_cards fc
                 inner join "core-azs".vtk_request vr on vr.card_num like concat('%',fc.number::varchar) 
                 where (fc.azs_company_id in (1000,1002)) and (fc.expiration_time >= now()) and fc.vtk = 0"""
 
-vtk_bug = """update "core-vehicle-schema".fuel_cards fc set vtk = 1 where fc."number" in 
-            (select fc.number from "core-vehicle-schema".fuel_cards fc
+vtk_bug = """update "core-azs".fuel_cards fc set vtk = 1 where fc."number" in 
+            (select fc.number from "core-azs".fuel_cards fc
                 inner join "core-azs".vtk_request vr on vr.card_num like concat('%',fc.number::varchar) 
                 where (fc.azs_company_id in (1000,1002)) and (fc.expiration_time >= now()) and fc.vtk = 0)"""
 
