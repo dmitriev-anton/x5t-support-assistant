@@ -104,9 +104,9 @@ def driver_phone(num: str) -> Union[str, None]:
 
 def search_driver(input: str) -> Union[object, list[Any]]:
     """Поиск по телефону или фио"""
-    search_by_name = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where name like \'%{input}%\'"
-    search_by_phone = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where phone like \'%{input}%\'"
-    search_by_num = f"SELECT id, \"number\", \"name\", phone, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where \"number\" like \'%{input}%\'"
+    search_by_name = f"SELECT id, \"number\", \"name\", phone, ut, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where name like \'%{input}%\'"
+    search_by_phone = f"SELECT id, \"number\", \"name\", phone, ut, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where phone like \'%{input}%\'"
+    search_by_num = f"SELECT id, \"number\", \"name\", phone, ut, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where \"number\" like \'%{input}%\'"
     result = []
 
     if input.isdigit() and len(input) == 10:
