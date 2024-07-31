@@ -110,7 +110,7 @@ def api_driver_token(phone: str) -> str:
     headers = {
         'Content-Type': 'application/json',
         'Cookie': '17b4e09f4ad0242ff0dcd2969ae02791=5dc45d0378d1e3bd72bbffecd742833e',
-        'User-Agent': 'X5 Transport NEW/123',
+        'User-Agent': 'X5 Transport NEW/versionName=24.7.15 versionCode=2407015',
         #'Host': info_api,
     }
     body = {
