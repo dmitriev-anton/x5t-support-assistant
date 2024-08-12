@@ -6,6 +6,7 @@ from pandas import DataFrame
 
 f_dict = feature_dictionary()
 g_list = group_list()
+s_list = ['NEW','FINISHED','DESTROYED']
 
 
 def main_window():
@@ -20,8 +21,8 @@ def main_window():
 
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID')],
-        [SG.Submit('Прожать'), SG.Submit('Отменить'), SG.Submit('Завершить'), SG.Submit('Точки'),
-         SG.Submit('Прожатия'), SG.Submit('Бафнуть Х5Т')]
+        [SG.Text('Статус'), SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить'), SG.Submit('Точки'),
+         SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Бафнуть Х5Т')]
     ]
 
     drivers_tab_layout = [
@@ -52,26 +53,26 @@ def main_window():
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
 
-    return SG.Window('X5T support assistant v2.18 by A.Dmitriev', main_layout, finalize=True)
+    return SG.Window('X5T support assistant v2.19 by A.Dmitriev', main_layout, finalize=True)
 
 
 
-def report_window(title: str, df: DataFrame):
-    headings = df.columns.tolist()
-    data = df.values.tolist()
-
-    layout = [[SG.Table(values=data,
-                        auto_size_columns=True,
-                        headings=headings,
-                        enable_events=True,
-                        enable_click_events=True,
-                        justification='left',
-                        right_click_menu=['&Right', ['Copy']],
-                        select_mode=SG.TABLE_SELECT_MODE_BROWSE,
-                        expand_x=True,
-                        expand_y=True,
-                        key='-TABLE-'
-                        )
-               ]]
-
-    return SG.Window(title, layout, finalize=True, resizable=True)
+# def report_window(title: str, df: DataFrame):
+#     headings = df.columns.tolist()
+#     data = df.values.tolist()
+#
+#     layout = [[SG.Table(values=data,
+#                         auto_size_columns=True,
+#                         headings=headings,
+#                         enable_events=True,
+#                         enable_click_events=True,
+#                         justification='left',
+#                         right_click_menu=['&Right', ['Copy']],
+#                         select_mode=SG.TABLE_SELECT_MODE_BROWSE,
+#                         expand_x=True,
+#                         expand_y=True,
+#                         key='-TABLE-'
+#                         )
+#                ]]
+#
+#     return SG.Window(title, layout, finalize=True, resizable=True)

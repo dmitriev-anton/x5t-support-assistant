@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, date, time, timedelta
 from x5t_connect import db_request
-from invoice import finish
+from invoice import update_status
 
 bad_et_check = """select id from "core-invoices-schema".invoice where type_code = 'ET' and plan_start_date between (
 now() - interval '2 day') and (NOW() + interval '1 day') and expect_driver_date < plan_start_date """
@@ -54,7 +54,7 @@ def auto_et_finish()-> list:
 
         #print(datetime.now(), 'Порожние рейсы')
         for i in temp:
-            finish(i['invoice_id'])
+            update_status(i['invoice_id'], 'FINISH')
             res.append(i['invoice_id'])
 
     return res

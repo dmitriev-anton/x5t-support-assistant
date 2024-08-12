@@ -99,23 +99,20 @@ def main():
             print('Рейс {0} прожат'.format(values['invoice_number']))
             logging.info('Рейс {0} прожат'.format(values['invoice_number']))
 
-        elif event == 'Отменить':
+        elif event == 'Изменить':
             print(delimiter)
-            if not values['invoice_number'].strip():
-                print('Введите номер рейса х5т')
-            else:
-                finish(values['invoice_number'].strip(), True)
-                print('Рейс {0} отменен'.format(values['invoice_number']))
-                logging.info('Рейс {0} отменен'.format(values['invoice_number']))
 
-        elif event == 'Завершить':
-            print(delimiter)
             if not values['invoice_number'].strip():
                 print('Введите номер рейса х5т')
             else:
-                finish(values['invoice_number'].strip())
-                print('Рейс {0} завершен'.format(values['invoice_number']))
-                logging.info('Рейс {0} завершен'.format(values['invoice_number']))
+                try:
+                    update_status(values['invoice_number'].strip(), values['status'])
+                    print('Рейсу {0} присвоен статус {1}'.format(values['invoice_number'],values['status']))
+                    logging.info('Рейсу {0} присвоен статус {1}'.format(values['invoice_number'],values['status']))
+
+                except TypeError as error:
+                    print(error)
+
 
         elif event == 'Бафнуть Х5Т':
             # print('Функционал отключен.')

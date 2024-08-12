@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from x5t_connect import db_request
+from typing import Union
 
 total_insert = []
 
@@ -60,10 +61,10 @@ def checkpoints_aio(invoice: Invoice) -> list:
 
 # print(insert_one_checkpoint(1334, 1, 2, '0212', 1)
 
-def finish(invoice_id, to_destroy=False) -> None:
-    from x5t_connect import db_request
+def update_status(invoice_id: str, status : str) -> None:
 
-    ot_driver_status = """select driver_status from "core-invoices-schema".own_trip where status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED') and driver_status in ('NEW', 'APPROVED') and invoice_id = '{0}'"""
+    ot_driver_status = """select driver_status from "core-invoices-schema".own_trip where status in ('SAP_CHECKED',
+        'PLANER_CHECKED','PLANNER_CONFIRMED') and driver_status in ('NEW', 'APPROVED') and invoice_id = '{0}'"""
 
     driver_status_upd = """update "core-drivers-schema".driver_status set STATUS = 'READY' 
                         where status in ('IN_TRIP','NOT_READY') and waybill_id in 
@@ -71,8 +72,13 @@ def finish(invoice_id, to_destroy=False) -> None:
                         where (status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED')) 
                         and (driver_status in ('NEW', 'APPROVED','CHANGED')) and (invoice_id = '{0}'))"""
 
-    own_trip_upd = """update "core-invoices-schema".own_trip set status = 'FINISHED', driver_status = 'APPROVED' where status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
-    destr_upd = """update "core-invoices-schema".own_trip set status = 'DESTROYED', driver_status = 'CANCELED' where status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
+    finish_upd = """update "core-invoices-schema".own_trip set status = 'FINISHED', driver_status = 'APPROVED' where 
+        status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
+    destr_upd = """update "core-invoices-schema".own_trip set status = 'DESTROYED', driver_status = 'CANCELED' where 
+        status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
+    new_upd = """update "core-invoices-schema".own_trip set status = 'SAP_CHECKED', driver_status = 'NEW' where 
+        driver_status = 'APPROVED' and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and 
+        invoice_id = '{0}'"""
 
     try:
         trigger = db_request(ot_driver_status.format(invoice_id))[0]['driver_status']
@@ -85,14 +91,17 @@ def finish(invoice_id, to_destroy=False) -> None:
         db_request(driver_status_upd.format(invoice_id))
 
     #print(own_trip_upd.format(invoice_id))
-    if to_destroy == True:
+    if status == 'DESTROYED':
         db_request(destr_upd.format(invoice_id))
+    elif status == 'FINISHED':
+        db_request(finish_upd.format(invoice_id))
+    elif status == 'NEW':
+        db_request(new_upd.format(invoice_id))
     else:
-        db_request(own_trip_upd.format(invoice_id))
+        raise TypeError('Некорректный статус!')
 
 
 def checkpoints(invoice_id:str) -> list:
-    from x5t_connect import db_request
 
     checkpoints_query = (
         "select invoice_version as inv_ver, invoice_point_sequence as seq, internal_point_id as int_p, "
