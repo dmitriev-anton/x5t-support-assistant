@@ -54,7 +54,7 @@ def auto_et_finish()-> list:
 
         #print(datetime.now(), 'Порожние рейсы')
         for i in temp:
-            update_status(i['invoice_id'], 'FINISH')
+            update_status(i['invoice_id'], 'FINISHED')
             res.append(i['invoice_id'])
 
     return res

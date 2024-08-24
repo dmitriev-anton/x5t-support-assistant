@@ -77,7 +77,7 @@ def update_status(invoice_id: str, status : str) -> None:
     destr_upd = """update "core-invoices-schema".own_trip set status = 'DESTROYED', driver_status = 'CANCELED' where 
         status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
     new_upd = """update "core-invoices-schema".own_trip set status = 'SAP_CHECKED', driver_status = 'NEW' where 
-        driver_status = 'APPROVED' and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and 
+        driver_status in ('APPROVED', 'NEW', 'CHANGED') and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and 
         invoice_id = '{0}'"""
 
     try:
@@ -148,6 +148,17 @@ def invoice_unloading_points(inv_id: str):
              f'{inv_id}\' order by iup.invoice_system_version')
 
     return db_request(query)
+
+def cancel_asz(invoce_id: str):
+    """"отменяет АЗС по инвойсу"""
+    query = f"""update "core-azs".azs_finder_operations set (status, service_msg) = ('FAILURE','VEHICLE_OUT_OF_THE_ROUTE') where invoice_id = '{invoce_id}'"""
+    db_request(query)
+
+
+def erase_action_sap(invoce_id: str):
+    """Снимает зависшеее ожидание SAP"""
+    query = f"""delete from "core-invoices-schema".invoice_action_sap where invoice_id = '{invoce_id}'"""
+    db_request(query)
 
 # print(auto_et_finish())
 # inv_id = '12100439'

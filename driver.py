@@ -161,6 +161,21 @@ def driver_cards(num: str):
         else: return res
 
 
+def close_disp_inc(driver: str):
+    """Закрывает все диспетчерские инциденты"""
+
+    query = f"""update "core-incidents-schema".dispatching set status_id = '1004' where driver_number = '{driver}'"""
+    db_request(query)
+
+def get_last_user_agent(driver: str ):
+    query = f"""select last_user_agent from "core-drivers-schema".drivers_user_agent where auth_id =  (select 
+    auth_user_id from "core-drivers-schema".drivers where number = '{driver}')"""
+    try:
+        return db_request(query)
+    except:
+        return None
+
+
 # print(feature_dictionary())
 # print(add_feature('00942766', '1044'))
 # print(search_driver('02286799')[0]['auth_user_id'])

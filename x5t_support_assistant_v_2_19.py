@@ -18,9 +18,9 @@ from gui import main_window, f_dict
 
 
 def main():
-    warnings.filterwarnings("ignore") # игнор ненужных уведомлений
+    warnings.filterwarnings("ignore")  # игнор ненужных уведомлений
 
-    username = os.getlogin() # получаем логин юзера
+    username = os.getlogin()  # получаем логин юзера
     logging.basicConfig(
         level=logging.DEBUG,
         filename="log.log",
@@ -31,12 +31,12 @@ def main():
 
     window = main_window()  # вызов главного окна
 
-    delimiter = '-' * 160 # разделитель для вывода
-    settings = { # хранение токенов для запросов
+    delimiter = '-' * 160  # разделитель для вывода
+    settings = {  # хранение токенов для запросов
         'driver_token': '',
         'gpn_session_id': '',
     }
-    tablefmt="plain"  # 'simple', 'tsv' - подходят
+    tablefmt = "plain"  # 'simple', 'tsv' - подходят
 
     while True:  # The Event Loop
 
@@ -85,12 +85,42 @@ def main():
                     print(delimiter)
                     print('Номер не найден!')
 
+        elif event == 'Снять АЗС':
+
+            if not values['invoice_number'].strip():
+                print(delimiter)
+                print('Введите номер рейса х5т')
+            else:
+                try:
+                    cancel_asz(values['invoice_number'].strip())
+                    print(delimiter)
+                    print('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
+                    logging.info('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
+                except Exception as error:
+                    print(error)
+
+        elif event == 'Убрать Ожидание SAP':
+            if not values['invoice_number'].strip():
+                print(delimiter)
+                print('Введите номер рейса х5т')
+
+            else:
+                try:
+                    erase_action_sap(values['invoice_number'].strip())
+                    print(delimiter)
+                    print('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
+                    logging.info('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
+                except Exception as error:
+
+                    print(error)
+
         elif event == 'Прожать':
 
             if not values['invoice_number'].strip():
                 print('Введите номер рейса х5т')
             else:
-                window.start_thread(lambda : cure_invoice(Invoice(int(values['invoice_number'].strip()))), '-cure_invoice-')
+                window.start_thread(lambda: cure_invoice(Invoice(int(values['invoice_number'].strip()))),
+                                    '-cure_invoice-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
@@ -107,12 +137,11 @@ def main():
             else:
                 try:
                     update_status(values['invoice_number'].strip(), values['status'])
-                    print('Рейсу {0} присвоен статус {1}'.format(values['invoice_number'],values['status']))
-                    logging.info('Рейсу {0} присвоен статус {1}'.format(values['invoice_number'],values['status']))
+                    print('Рейсу {0} присвоен статус {1}'.format(values['invoice_number'], values['status']))
+                    logging.info('Рейсу {0} присвоен статус {1}'.format(values['invoice_number'], values['status']))
 
                 except TypeError as error:
                     print(error)
-
 
         elif event == 'Бафнуть Х5Т':
             # print('Функционал отключен.')
@@ -175,7 +204,8 @@ def main():
                 if not waybills:
                     print('Путевые листы со статусом в работе отсутствуют.')
                 else:
-                    print(tabulate(DataFrame(waybills), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
+                    print(tabulate(DataFrame(waybills), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
 
         elif event == 'ВТК':
             print(delimiter)
@@ -185,7 +215,8 @@ def main():
             else:
                 try:
                     cards = driver_cards(values['driver_number'].strip())
-                    print(tabulate(DataFrame(cards), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
+                    print(
+                        tabulate(DataFrame(cards), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
                 except RuntimeError as error:
                     print(error)
 
@@ -199,7 +230,8 @@ def main():
                 races = all_races(values['driver_number'].strip())
 
                 if races:
-                    print(tabulate(DataFrame(races), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
+                    print(
+                        tabulate(DataFrame(races), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
                 else:
                     print('На активном ПЛ рейсы отсутствуют.')
                 # report = report_window(sorted_races[0], sorted_races[1:])
@@ -310,7 +342,8 @@ def main():
                 if not ot_id:
                     db_request(ot_insrt.format(values['driver_number']))
                     print('ШК ОТ/ВС водителя {0} прописан и поставлен на обновление.'.format(values['driver_number']))
-                    logging.info('ШК ОТ/ВС водителя {0} прописан и поставлен на обновление.'.format(values['driver_number']))
+                    logging.info(
+                        'ШК ОТ/ВС водителя {0} прописан и поставлен на обновление.'.format(values['driver_number']))
                 else:
                     db_request(ot_upd.format(values['driver_number']))
                     print('ШК ОТ/ВС водителя {0} поставлен на обновление.'.format(values['driver_number']))
@@ -349,14 +382,13 @@ def main():
             logging.info('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), phone))
             logging.info(settings['driver_token'])
 
-
         elif event == 'Сбросить пароль':
             # print(values['driver_number'])
             phone = driver_phone(values['driver_number'])
             if not phone:
                 print('Некорректный табельный номер')
             else:
-                window.start_thread(lambda :driver_pwd_reset(phone=phone), '-pwd_reset-')
+                window.start_thread(lambda: driver_pwd_reset(phone=phone), '-pwd_reset-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
@@ -366,6 +398,28 @@ def main():
             print(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
             logging.info(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
 
+        elif event == 'Версия':
+            print(delimiter)
+            phone = driver_phone(values['driver_number'].strip())
+            if not phone:
+                print('Водитель не найден.')
+            else:
+                useragent = get_last_user_agent(values['driver_number'].strip())
+                if not useragent:
+                    print('Данные по версии не найдены')
+                else:
+                    print(useragent[0]['last_user_agent'])
+
+        elif event == 'Закрыть инциденты':
+            # print(values['driver_number'])
+            phone = driver_phone(values['driver_number'])
+            if not phone:
+                print('Некорректный табельный номер')
+            else:
+                close_disp_inc(values['driver_number'])
+                print(delimiter)
+                print('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
+                logging.info('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
 
         elif event == 'gpn_auth':
             window.start_thread(lambda: gpn_auth(), '-auth_done-')
@@ -396,7 +450,8 @@ def main():
                 print('Отправка запроса на сброс МПК карты {0}.'.format(values['vtk'].strip()))
                 # print(values)
                 try:
-                    window.start_thread(lambda: gpn_reset_mpc(values['vtk'].strip(), settings['gpn_session_id']), '-gpn_reset_counter-')
+                    window.start_thread(lambda: gpn_reset_mpc(values['vtk'].strip(), settings['gpn_session_id']),
+                                        '-gpn_reset_counter-')
                     print(delimiter)
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
@@ -414,7 +469,8 @@ def main():
                 print('Отправка запроса на удаление карты {0}.'.format(values['vtk'].strip()))
                 # print(values)
                 try:
-                    window.start_thread(lambda: gpn_delete_mpc(values['vtk'].strip(), settings['gpn_session_id']), '-gpn_delete_mpc-')
+                    window.start_thread(lambda: gpn_delete_mpc(values['vtk'].strip(), settings['gpn_session_id']),
+                                        '-gpn_delete_mpc-')
                     print(delimiter)
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
@@ -431,7 +487,8 @@ def main():
                 print('Отправка запроса на выпуск карты {0}.'.format(values['vtk'].strip()))
                 # print(values)
                 try:
-                    window.start_thread(lambda: gpn_init_mpc(values['vtk'].strip(), settings['gpn_session_id']), '-gpn_init_mpc-')
+                    window.start_thread(lambda: gpn_init_mpc(values['vtk'].strip(), settings['gpn_session_id']),
+                                        '-gpn_init_mpc-')
                     print(delimiter)
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
@@ -448,7 +505,8 @@ def main():
                 print('Отправка кода экономиста.')
                 # print(values)
                 try:
-                    window.start_thread(lambda: gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(), settings['gpn_session_id']), '-gpn_confirm_mpc-')
+                    window.start_thread(lambda: gpn_confirm_mpc(values['vtk'].strip(), values['economist_code'].strip(),
+                                                                settings['gpn_session_id']), '-gpn_confirm_mpc-')
                     print(delimiter)
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:

@@ -20,17 +20,18 @@ def main_window():
     ]
 
     invoice_tab_layout = [
-        [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID')],
-        [SG.Text('Статус'), SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить'), SG.Submit('Точки'),
-         SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Бафнуть Х5Т')]
+        [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
+         SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
+        [SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС'),
+         SG.Submit('Убрать Ожидание SAP'), SG.Submit('Бафнуть Х5Т')]
     ]
 
     drivers_tab_layout = [
         [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
-         SG.Submit('ВТК'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
+         SG.Submit('ВТК'), SG.Submit('Версия'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
         [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
          SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
-         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Стереть AUTH_USER_ID')]
+         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Закрыть инциденты'),SG.Submit('Стереть AUTH_USER_ID')]
     ]
 
     cards_tab_layout = [
@@ -47,8 +48,8 @@ def main_window():
     ]
 
     main_layout = [
-        [SG.TabGroup([[SG.Tab('Привязка ТС', vehicle_tab_layout), SG.Tab('Рейс', invoice_tab_layout),
-                       SG.Tab('Водители', drivers_tab_layout), SG.Tab('ВТК', cards_tab_layout),
+        [SG.TabGroup([[SG.Tab('Водители', drivers_tab_layout), SG.Tab('Рейсы', invoice_tab_layout),
+                       SG.Tab('ВТК', cards_tab_layout), SG.Tab('ТС', vehicle_tab_layout),
                        SG.Tab('SMS', sms_tab_layout)]])],
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
