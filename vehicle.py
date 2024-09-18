@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Any, Generator
-
+from pandas import DataFrame
 from x5t_connect import db_request
 
 car_assign = "UPDATE \"core-vehicle-schema\".vehicle SET group_number='{0}' WHERE code = '{1}'"
@@ -24,5 +24,11 @@ def vehicle_counter(code: str) -> int:
     counter = "select count(*) from \"core-vehicle-schema\".vehicle where code = \'{0}\'"
     return db_request(counter.format(code))[0]['count']
 
+def search_wb_by_vehicle(veh_num :str):
+    query = f"""select "number", system_status as system, user_status as user, vehicle_licence as vehicle, trailer_licence as trailer, driver_number as driver, 
+    start_date_plan as plan_start,start_date_fact as fact_start ,end_date_plan as plan_end, "_type" as type from "core-waybills-schema".waybills where 
+    vehicle_licence = '{veh_num}' order by start_date_plan desc limit 10"""
+    return db_request(query)
 
-#print(car_num_to_latin('М959ут18'))
+
+# print(search_wb_by_vehicle('EM958850'))

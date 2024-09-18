@@ -11,7 +11,7 @@ from driver import *
 from driver_api import driver_pwd_reset
 from vtk_api import *
 from invoice import *
-from vehicle import car_num_to_latin, vehicle_counter, car_assign, car_drop
+from vehicle import *
 from x5t_connect import db_request
 from x5t_tasks import tasks
 from gui import main_window, f_dict
@@ -67,6 +67,24 @@ def main():
                     print('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
                     logging.info('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
 
+        elif event == 'Искать ПЛ':
+            print(delimiter)
+            vehicle_code = car_num_to_latin(values['vehicle'].strip())
+            window['vehicle'].update(vehicle_code)
+            if not vehicle_code:
+                print('Отсутствует номер ТС.')
+
+            elif vehicle_counter(vehicle_code) == 0:
+                print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
+
+            else:
+                wbs = search_wb_by_vehicle(values['vehicle'])
+                if wbs:
+                    print(tabulate(DataFrame(wbs), headers='keys', tablefmt=tablefmt))
+                else:
+                    print('Путевые листы не найдены')
+
+
         elif event == '-->X5T ID':
             print(delimiter)
             if not values['invoice_number'].strip():
@@ -82,8 +100,21 @@ def main():
                     print(tabulate(DataFrame(x5tids), headers='keys', tablefmt=tablefmt))
 
                 else:
-                    print(delimiter)
                     print('Номер не найден!')
+
+        elif event == 'ПЛ ТМ Фикс':
+            if not values['invoice_number'].strip():
+                print(delimiter)
+                print('Введите номер рейса х5т')
+            else:
+                try:
+                    cure_own_trip_tm_invoice(values['invoice_number'].strip())
+                    print(delimiter)
+                    print('Замена ПЛ ТМ по рейсу {0} выполнена.'.format(values['invoice_number'].strip()))
+                    logging.info('Замена ПЛ ТМ по рейсу {0} выполнена.'.format(values['invoice_number'].strip()))
+                except Exception as error:
+                    print(delimiter)
+                    print(error)
 
         elif event == 'Снять АЗС':
 

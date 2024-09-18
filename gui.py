@@ -14,15 +14,13 @@ def main_window():
     # SG.set_options(font=("Segoe UI", 11))
     SG.theme('DarkGreen5')
 
-    vehicle_tab_layout = [
-        [SG.Text('ТС'), SG.InputText(k='vehicle'), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True, k='groups'),
-         SG.Submit('Привязать')]
-    ]
+    vehicle_tab_layout = [[SG.Text('ТС'), SG.InputText(k='vehicle'), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True, k='groups'),
+         SG.Submit('Привязать')], [SG.Submit('Искать ПЛ')]]
 
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
          SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
-        [SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС'),
+        [SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('ПЛ ТМ Фикс'), SG.Submit('Снять АЗС'),
          SG.Submit('Убрать Ожидание SAP'), SG.Submit('Бафнуть Х5Т')]
     ]
 
@@ -54,7 +52,7 @@ def main_window():
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
 
-    return SG.Window('X5T support assistant v2.19 by A.Dmitriev', main_layout, finalize=True)
+    return SG.Window('X5T support assistant v2.20 by A.Dmitriev', main_layout, finalize=True)
 
 
 

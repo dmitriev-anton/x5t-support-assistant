@@ -2,6 +2,7 @@
 from x5t_connect import db_request
 from typing import Union
 
+
 total_insert = []
 
 
@@ -160,6 +161,9 @@ def erase_action_sap(invoce_id: str):
     query = f"""delete from "core-invoices-schema".invoice_action_sap where invoice_id = '{invoce_id}'"""
     db_request(query)
 
+def get_own_trip_status(invoce_id: str):
+    query = f"""select waybillid, version,"status", driver_status, driver_version, id, sap_message from "core-invoices-schema".own_trip where invoice_id = '{invoce_id}' order by id desc"""
+    return db_request(query)
 # print(auto_et_finish())
 # inv_id = '12100439'
 # print(get_x5t_id(inv_id))
@@ -169,11 +173,22 @@ def erase_action_sap(invoce_id: str):
 # print(get_x5t_id(inv_id))
 #
 # inv_id = '15510084'
-# print(get_x5t_id('13392490'))
-# print(search_invoice('13392490'))
-# print(search_invoice('400391463'))
+def cure_own_trip_tm_invoice(invoce_id: str):
 
+    """подменяет ТМ ПЛ"""
+    ot_update_query = """update "core-invoices-schema".own_trip set waybillid = '{0}' where id = '{1}'"""
+    ot = get_own_trip_status(invoce_id)
+    if ot[1]['waybillid'][2] == '1':
+        # со TM рейсом подставляем -
+        # print(ot_update_query.format(ot[1]['waybillid']+'-', ot[1]['id']))
+        db_request(ot_update_query.format(ot[1]['waybillid']+'-', ot[1]['id']))
+        # print(ot_update_query.format(ot[1]['waybillid'], ot[0]['id']))
+        # ot[0]['id'] -> ПЛ TM
+        db_request(ot_update_query.format(ot[1]['waybillid'], ot[0]['id']))
+        # print(ot_update_query.format(ot[0]['waybillid'], ot[1]['id']))
+        # ot[1]['id'] -> ПЛ не ТМ
+        db_request(ot_update_query.format(ot[0]['waybillid'], ot[1]['id']))
 
-# cur_invoice = Invoice('13245730')
-# print(type(checkpoints_aio(cur_invoice)))
-# print(cure_invoice(Invoice('13245730')))
+    else:
+        raise RuntimeError('Предыдущий ПЛ не ТМ. Проверьте рейс.')
+
