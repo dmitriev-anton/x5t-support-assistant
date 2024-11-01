@@ -14,7 +14,7 @@ from vehicle import *
 from waybill import *
 from x5t_connect import db_request
 from x5t_tasks import tasks
-from gui import main_window
+from gui import main_window, d_dict
 
 
 def main():
@@ -551,6 +551,7 @@ def main():
                 print('Сессия не установлена или не введен номер карты.')
 
         elif event == '-gpn_reset_counter-':
+            print(delimiter)
             print(values['-gpn_reset_counter-'])
 
         elif event == 'gpn_delete_mpc':
@@ -569,6 +570,7 @@ def main():
                 print('Сессия не установлена или не введен номер карты.')
 
         elif event == '-gpn_delete_mpc-':
+            print(delimiter)
             print(values['-gpn_delete_mpc-'])
 
         elif event == 'gpn_init_mpc':
@@ -587,6 +589,7 @@ def main():
                 print('Сессия не установлена или не введен номер карты.')
 
         elif event == '-gpn_init_mpc-':
+            print(delimiter)
             print(values['-gpn_init_mpc-'])
 
         elif event == 'gpn_confirm_mpc':
@@ -605,7 +608,44 @@ def main():
                 print('Сессия не установлена или не введены номер карты\код экономиста.')
 
         elif event == '-gpn_confirm_mpc-':
+            print(delimiter)
             print(values['-gpn_confirm_mpc-'])
+
+        elif event == 'gpn_detach_card':
+            print(delimiter)
+            if settings['gpn_session_id'] and values['vtk'].strip() and values['tech_driver_name']:
+                # print(values)
+                try:
+                    window.start_thread(lambda: detach_card(values['vtk'].strip(), d_dict[values['tech_driver_name']],
+                                                                settings['gpn_session_id']), '-gpn_detach_card-')
+                    print(delimiter)
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введены номер карты\код экономиста.')
+
+        elif event == '-gpn_detach_card-':
+            print(delimiter)
+            print(values['-gpn_detach_card-'])
+
+        elif event == 'gpn_attach_card':
+            print(delimiter)
+            if settings['gpn_session_id'] and values['vtk'].strip() and values['tech_driver_name']:
+                # print(values)
+                try:
+                    window.start_thread(lambda: attach_card(values['vtk'].strip(), d_dict[values['tech_driver_name']],
+                                                                settings['gpn_session_id']), '-gpn_attach_card-')
+                    print(delimiter)
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введены номер карты\код экономиста.')
+
+        elif event == '-gpn_attach_card-':
+            print(delimiter)
+            print(values['-gpn_attach_card-'])
 
         elif event == 'Отправить СМС':
             print(delimiter)

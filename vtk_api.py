@@ -210,14 +210,49 @@ def tech_drivers_dict():
         res[i['name']] = i['tech_driver_id']
 
     return res
-def deattach_card(card_num: str,  tech_driver_code: str, session_id: str):
+
+def detach_card(card_num: str,  tech_driver_code: str, session_id: str):
     """отвязка от тех спеца"""
-    pass
+    vtk = get_vtk_info(card_num)
+    url = f"""https://{gpn_url}/vip/v2/users/{tech_driver_code}/detachCard"""
+    headers = {
+        'Content-Type': 'application/json',
+        'Host': gpn_url,
+        'api-key': gpn_key,
+        'session_id': session_id,
+    }
+    body = {
+        'card_id' : vtk['card_id']
+    }
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
+        return response.json()
+    except requests.exceptions.SSLError:
+        return None
+
+
 def attach_card(card_num: str,  tech_driver_code: str, session_id: str):
     """привязка к тех спецу"""
-    pass
+    vtk = get_vtk_info(card_num)
+    url = f"""https://{gpn_url}/vip/v2/users/{tech_driver_code}/attachCard"""
+    headers = {
+        'Content-Type': 'application/json',
+        'Host': gpn_url,
+        'api-key': gpn_key,
+        'session_id': session_id,
+    }
+    body = {
+        'card_id': vtk['card_id']
+    }
 
-print(tech_drivers_dict())
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
+        return response.json()
+    except requests.exceptions.SSLError:
+        return None
+
+# print(tech_drivers_dict())
 
 # auth = gpn_auth()
 # # # print(auth)

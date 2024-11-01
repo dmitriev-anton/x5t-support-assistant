@@ -51,7 +51,7 @@ def main_window():
          SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
          SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'),
          SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc'),
-         SG.Submit('ГПН.Отвязка карты', key='gpn_deattach_card'),
+         SG.Submit('ГПН.Отвязка карты', key='gpn_detach_card'),
          SG.Submit('ГПН.Привязка карты', key='gpn_attach_card'),
          ]
     ]
