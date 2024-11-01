@@ -618,7 +618,6 @@ def main():
                 try:
                     window.start_thread(lambda: detach_card(values['vtk'].strip(), d_dict[values['tech_driver_name']],
                                                                 settings['gpn_session_id']), '-gpn_detach_card-')
-                    print(delimiter)
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
                     print(error)
@@ -636,7 +635,6 @@ def main():
                 try:
                     window.start_thread(lambda: attach_card(values['vtk'].strip(), d_dict[values['tech_driver_name']],
                                                                 settings['gpn_session_id']), '-gpn_attach_card-')
-                    print(delimiter)
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as error:
                     print(error)
