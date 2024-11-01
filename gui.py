@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
+from typing import List, Union
+
 import PySimpleGUI as SG
+from PySimpleGUI import TabGroup, Output
+
 from driver import feature_dictionary
 from vehicle import group_list
+from vtk_api import tech_drivers_dict
 from pandas import DataFrame
 
 f_dict = feature_dictionary()
 g_list = group_list()
 s_list = ['NEW','FINISHED','DESTROYED']
+d_dict = tech_drivers_dict()
 
 
 def main_window():
@@ -20,8 +26,13 @@ def main_window():
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
          SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
-        [SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('ПЛ ТМ Фикс'), SG.Submit('Снять АЗС'),
+        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС'),
          SG.Submit('Убрать Ожидание SAP'), SG.Submit('Бафнуть Х5Т')]
+    ]
+
+    waybill_tab_layout = [
+        [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ')],
+        [SG.Submit('Лог открытия'), SG.Submit('Лог закрытия')],
     ]
 
     drivers_tab_layout = [
@@ -34,9 +45,15 @@ def main_window():
 
     cards_tab_layout = [
         [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('Получить баркод',key='barcode'),
-         SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code'),SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter')],
-        [SG.Submit('ГПН.Авторизация', key='gpn_auth'), SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
-         SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'), SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc')]
+         SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code'), SG.Text('Тех спец.'),
+         SG.Combo(list(d_dict.keys()),readonly=True, k='tech_driver_name')],
+        [SG.Submit('ГПН.Авторизация', key='gpn_auth'), SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter'),
+         SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
+         SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'),
+         SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc'),
+         SG.Submit('ГПН.Отвязка карты', key='gpn_deattach_card'),
+         SG.Submit('ГПН.Привязка карты', key='gpn_attach_card'),
+         ]
     ]
 
     sms_tab_layout = [
@@ -45,14 +62,16 @@ def main_window():
          SG.Submit('Отправить СМС')]
     ]
 
-    main_layout = [
+    main_layout: list[Union[list[TabGroup], list[Output]]] = [
         [SG.TabGroup([[SG.Tab('Водители', drivers_tab_layout), SG.Tab('Рейсы', invoice_tab_layout),
+                       SG.Tab('ПЛ', waybill_tab_layout),
                        SG.Tab('ВТК', cards_tab_layout), SG.Tab('ТС', vehicle_tab_layout),
                        SG.Tab('SMS', sms_tab_layout)]])],
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
 
-    return SG.Window('X5T support assistant v2.20 by A.Dmitriev', main_layout, finalize=True)
+    return SG.Window('X5T support assistant v2.21 by A.Dmitriev',  
+                     main_layout,  return_keyboard_events=False, finalize=True)
 
 
 

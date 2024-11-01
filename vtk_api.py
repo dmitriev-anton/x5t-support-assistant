@@ -201,8 +201,23 @@ def get_vtk_barcode(card_num: str, token: str):
     except requests.exceptions.SSLError:
         return None
 
+def tech_drivers_dict():
+    """собирает словарь тех спецов"""
+    query = """SELECT "name", tech_driver_id FROM "core-azs".tech_driver"""
+    resolve = db_request(query)
+    res = {}
+    for i in resolve:
+        res[i['name']] = i['tech_driver_id']
 
+    return res
+def deattach_card(card_num: str,  tech_driver_code: str, session_id: str):
+    """отвязка от тех спеца"""
+    pass
+def attach_card(card_num: str,  tech_driver_code: str, session_id: str):
+    """привязка к тех спецу"""
+    pass
 
+print(tech_drivers_dict())
 
 # auth = gpn_auth()
 # # # print(auth)

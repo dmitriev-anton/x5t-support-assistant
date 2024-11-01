@@ -70,14 +70,14 @@ def update_status(invoice_id: str, status : str) -> None:
     driver_status_upd = """update "core-drivers-schema".driver_status set STATUS = 'READY' 
                         where status in ('IN_TRIP','NOT_READY') and waybill_id in 
                         (select waybillid from "core-invoices-schema".own_trip 
-                        where (status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED')) 
+                        where (status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED', 'SAP_REJECTED')) 
                         and (driver_status in ('NEW', 'APPROVED','CHANGED')) and (invoice_id = '{0}'))"""
 
     finish_upd = """update "core-invoices-schema".own_trip set status = 'FINISHED', driver_status = 'APPROVED' where 
         status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
     destr_upd = """update "core-invoices-schema".own_trip set status = 'DESTROYED', driver_status = 'CANCELED' where 
         status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
-    new_upd = """update "core-invoices-schema".own_trip set status = 'SAP_CHECKED', driver_status = 'NEW' where 
+    new_upd = """update "core-invoices-schema".own_trip set status = 'SAP_CHECKED', driver_status = 'NEW', sap_message = '' where 
         driver_status in ('APPROVED', 'NEW', 'CHANGED') and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and 
         invoice_id = '{0}'"""
 
@@ -118,11 +118,16 @@ def checkpoints(invoice_id:str) -> list:
 def search_invoice(inv_id: str):
     """Проба 1 запросом"""
 
-    id = inv_id.strip().lstrip('0')
+    id = inv_id.strip().lstrip('0').upper()
     aio_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code from \"core-invoices-schema\".invoice where id = \'{id}\' or tms_number = \'{id}\' or sap_number = \'00{id}\''
+    ltl_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code from \"core-invoices-schema\".invoice where tms_number = \'{id}\''
     # print(aio_num_q)
+
     try:
-        x5tids = db_request(aio_num_q)
+        if id[0] == 'L':
+            x5tids = db_request(ltl_num_q)
+        else:
+            x5tids = db_request(aio_num_q)
     except IndexError:
         return None
     return x5tids
@@ -161,8 +166,8 @@ def erase_action_sap(invoce_id: str):
     query = f"""delete from "core-invoices-schema".invoice_action_sap where invoice_id = '{invoce_id}'"""
     db_request(query)
 
-def get_own_trip_status(invoce_id: str):
-    query = f"""select waybillid, version,"status", driver_status, driver_version, id, sap_message from "core-invoices-schema".own_trip where invoice_id = '{invoce_id}' order by id desc"""
+def get_own_trip(invoce_id: str):
+    query = f"""select waybillid, version,"status", driver_status, driver_version, id, sap_message from "core-invoices-schema".own_trip where invoice_id = '{invoce_id}' order by version desc"""
     return db_request(query)
 # print(auto_et_finish())
 # inv_id = '12100439'
@@ -173,22 +178,9 @@ def get_own_trip_status(invoce_id: str):
 # print(get_x5t_id(inv_id))
 #
 # inv_id = '15510084'
-def cure_own_trip_tm_invoice(invoce_id: str):
 
-    """подменяет ТМ ПЛ"""
-    ot_update_query = """update "core-invoices-schema".own_trip set waybillid = '{0}' where id = '{1}'"""
-    ot = get_own_trip_status(invoce_id)
-    if ot[1]['waybillid'][2] == '1':
-        # со TM рейсом подставляем -
-        # print(ot_update_query.format(ot[1]['waybillid']+'-', ot[1]['id']))
-        db_request(ot_update_query.format(ot[1]['waybillid']+'-', ot[1]['id']))
-        # print(ot_update_query.format(ot[1]['waybillid'], ot[0]['id']))
-        # ot[0]['id'] -> ПЛ TM
-        db_request(ot_update_query.format(ot[1]['waybillid'], ot[0]['id']))
-        # print(ot_update_query.format(ot[0]['waybillid'], ot[1]['id']))
-        # ot[1]['id'] -> ПЛ не ТМ
-        db_request(ot_update_query.format(ot[0]['waybillid'], ot[1]['id']))
+# ot = get_own_trip_status('14475241')
+# print(ot)
+# print(ot[1]['waybillid'][2])
 
-    else:
-        raise RuntimeError('Предыдущий ПЛ не ТМ. Проверьте рейс.')
-
+# print(search_invoice('L00418657'))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from typing import Union, List, Any
+from typing import Union, Any
 
 from x5t_connect import db_request
 
@@ -124,11 +124,11 @@ def search_driver(input: str) -> Union[object, list[Any]]:
 
 def driver_waybills(num: str) -> list:
     """Путевые листы водителя"""
-    waybills_query = ('select \"number\" as \"waybill_number\",system_status , user_status , '
+    waybills_query = ('select \"number\" as \"waybill\",system_status as system, user_status as user, '
                       'vehicle_licence as \"veh_num\", trailer_licence as \"trail_num\", '
                       'start_date_plan as \"plan_start\",end_date_plan as \"plan_end\", start_date_fact as \"fact_start\", '
                       'end_date_fact as \"fact_end\", is_mfp as \"mfp\" from \"core-waybills-schema\".waybills '
-                      f'where driver_number = \'{num}\' and user_status = \'E0002\' and (_type not in (\'TRC\',\'MAINTENANCE\'))')
+                      f'where driver_number = \'{num}\' order by start_date_plan desc limit 10')
     resolve = db_request(waybills_query)
     #print(waybills_query.format(num))
     return resolve
@@ -141,24 +141,42 @@ def driver_cards(num: str):
                         'and (expiration_time >= now()) and vtk = 1 ;')
     waybills = driver_waybills(num)
     real_start = None
+    # print(waybills)
+    # print(len(waybills))
+    # print(len(waybills))
+    res=[]
+    for i in range(len(waybills)):
 
-    if len(waybills) == 1 and waybills[0]['fact_start']:
-        real_start = waybills[0]['fact_start']
-    elif len(waybills) == 1 and not waybills[0]['fact_start']:
-        real_start = waybills[0]['plan_start']
+        if waybills[i]['system'] == 'I0070':
 
-    if len(waybills) == 0:
+            res.append(waybills[i])
+            # print(len(waybills))
+            # print(wb)
+            # print(res)
+
+    counter = len(res)
+
+    real_start = res[0]['plan_start']
+
+    if counter == 1 and res[0]['fact_start']:
+        real_start = res[0]['fact_start']
+    elif counter == 1 and not res[0]['fact_start']:
+        real_start = res[0]['plan_start']
+    # print(waybills[0]['fact_start'])
+    # print(real_start)
+    if counter == 0:
         raise RuntimeError('Нет ПЛ со статусом в работе.')
-    elif len(waybills) >= 2:
+    elif counter >= 2:
         raise RuntimeError('Более 1 ПЛ со статусом в работе.')
     elif real_start > datetime.now():
-        raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(waybills[0]['waybill_number'], real_start))
-    elif real_start and waybills[0]['plan_end'] < datetime.now():
-        raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill_number'], waybills[0]['plan_end']))
+        raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(res[0]['waybill'], real_start))
+    elif real_start and res[0]['plan_end'] < datetime.now():
+        raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill'], res[0]['plan_end']))
     else:
-        res=db_request(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
-        if not res: raise RuntimeError('Виртуальные карты к ТС не привязаны.')
-        else: return res
+        # print(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
+        vtks=db_request(fuel_cards_query.format(res[0]['veh_num'], res[0]['trail_num']))
+        if not vtks: raise RuntimeError('Виртуальные карты к ТС не привязаны.')
+        else: return vtks
 
 
 def close_disp_inc(driver: str):
@@ -184,3 +202,5 @@ def get_last_user_agent(driver: str ):
 # print(search_driver('02286799')[0]['auth_user_id'])
 
 # f25300be-5d5f-48b3-9e4f-9f3ba57414f3
+# print(driver_cards('02029833'))
+# print(get_last_user_agent('02069074'))

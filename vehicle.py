@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Generator
-from pandas import DataFrame
+
 from x5t_connect import db_request
 
 car_assign = "UPDATE \"core-vehicle-schema\".vehicle SET group_number='{0}' WHERE code = '{1}'"
@@ -31,4 +30,4 @@ def search_wb_by_vehicle(veh_num :str):
     return db_request(query)
 
 
-# print(search_wb_by_vehicle('EM958850'))
+# print(search_wb_by_vehicle('K348CP750'))

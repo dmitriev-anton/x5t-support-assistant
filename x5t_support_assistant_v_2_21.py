@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import os
 import warnings
 
 import PySimpleGUI as SG
@@ -12,9 +11,10 @@ from driver_api import driver_pwd_reset
 from vtk_api import *
 from invoice import *
 from vehicle import *
+from waybill import *
 from x5t_connect import db_request
 from x5t_tasks import tasks
-from gui import main_window, f_dict
+from gui import main_window
 
 
 def main():
@@ -42,8 +42,13 @@ def main():
 
         event, values = window.read()
 
+        # print(event)
+
         if event in (SG.WIN_CLOSED, 'Exit'):
             break
+
+        # elif event.find('??') != -1:
+        #     print(event)
 
         elif event == 'Привязать':
             print(delimiter)
@@ -71,6 +76,8 @@ def main():
             print(delimiter)
             vehicle_code = car_num_to_latin(values['vehicle'].strip())
             window['vehicle'].update(vehicle_code)
+            wbs = search_wb_by_vehicle(vehicle_code)
+
             if not vehicle_code:
                 print('Отсутствует номер ТС.')
 
@@ -78,12 +85,11 @@ def main():
                 print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
 
             else:
-                wbs = search_wb_by_vehicle(values['vehicle'])
+                # print(wbs)
                 if wbs:
-                    print(tabulate(DataFrame(wbs), headers='keys', tablefmt=tablefmt))
+                    print(tabulate(DataFrame(wbs), headers='keys', showindex=False,tablefmt=tablefmt))
                 else:
                     print('Путевые листы не найдены')
-
 
         elif event == '-->X5T ID':
             print(delimiter)
@@ -97,24 +103,22 @@ def main():
                     print(tabulate(DataFrame(x5tids), headers='keys', tablefmt=tablefmt))
 
                 elif len(x5tids) > 1:
-                    print(tabulate(DataFrame(x5tids), headers='keys', tablefmt=tablefmt))
+                    print(tabulate(DataFrame(x5tids), headers='keys', showindex=False, tablefmt=tablefmt))
 
                 else:
                     print('Номер не найден!')
 
-        elif event == 'ПЛ ТМ Фикс':
+        elif event == 'OWN_TRIP':
             if not values['invoice_number'].strip():
                 print(delimiter)
                 print('Введите номер рейса х5т')
             else:
-                try:
-                    cure_own_trip_tm_invoice(values['invoice_number'].strip())
-                    print(delimiter)
-                    print('Замена ПЛ ТМ по рейсу {0} выполнена.'.format(values['invoice_number'].strip()))
-                    logging.info('Замена ПЛ ТМ по рейсу {0} выполнена.'.format(values['invoice_number'].strip()))
-                except Exception as error:
-                    print(delimiter)
-                    print(error)
+                ots = get_own_trip(values['invoice_number'].strip())
+                print(delimiter)
+                if ots:
+                    print(tabulate(DataFrame(ots), headers='keys', tablefmt=tablefmt))
+                else:
+                    print('Записи отсутствуют')
 
         elif event == 'Снять АЗС':
 
@@ -192,7 +196,7 @@ def main():
             else:
                 points = checkpoints(values['invoice_number'])
                 if points:
-                    print(tabulate(DataFrame(points), headers='keys', tablefmt=tablefmt))
+                    print(tabulate(DataFrame(points), headers='keys', showindex=False, tablefmt=tablefmt))
                 else:
                     print('Прожатия отсутствуют!')
 
@@ -203,9 +207,59 @@ def main():
             else:
                 stages = invoice_unloading_points(values['invoice_number'])
                 if stages:
-                    print(tabulate(DataFrame(stages), headers='keys', tablefmt=tablefmt))
+                    print(tabulate(DataFrame(stages), headers='keys', showindex=False, tablefmt=tablefmt))
                 else:
                     print('Некорректный номер рейса!')
+
+        elif event == 'Поиск ПЛ':
+            print(delimiter)
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                wb = search_waybill(values['waybill_number'].strip())
+                if not wb:
+                    print('Путевые листы не найдены')
+                else:
+                    print(tabulate(DataFrame(wb), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
+
+        elif event == 'Лог открытия':
+            print(delimiter)
+            log = []
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                log = wb_open_log(values['waybill_number'].strip())
+                if not log:
+                    print('Записи отсутствуют')
+                else:
+                    print(tabulate(DataFrame(log), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
+
+        elif event == 'Лог закрытия':
+            print(delimiter)
+            log = []
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                log = wb_close_log(values['waybill_number'].strip())
+                if not log:
+                    print('Записи отсутствуют')
+                else:
+                    print(tabulate(DataFrame(log), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
+
+        elif event == 'Рейсы на ПЛ':
+            print(delimiter)
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                races = search_invoices_on_wb(values['waybill_number'].strip())
+                if not races:
+                    print('На ПЛ {} рейсы отсутствуют.'.format(values['waybill_number'].strip()))
+                else:
+                    print(tabulate(DataFrame(races), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
 
         elif event == 'Поиск':
             print(delimiter)
@@ -278,7 +332,7 @@ def main():
                 if not features:
                     print('У водителя дефолтный набор фич')
                 else:
-                    print(tabulate(DataFrame(features), headers='keys', tablefmt=tablefmt))
+                    print(tabulate(DataFrame(features), headers='keys', showindex=False, tablefmt=tablefmt))
 
         elif event == 'Добавить фичу':
             print(delimiter)
@@ -394,45 +448,48 @@ def main():
 
         elif event == 'Токен':
             # print(values['driver_number'])
-            phone = driver_phone(values['driver_number'].strip())
-            if not phone:
+            settings['phone'] = driver_phone(values['driver_number'].strip())
+            if not settings['phone']:
                 print('Некорректный табельный номер')
             else:
 
                 try:
-                    window.start_thread(lambda: api_driver_token(phone), '-driver_token-')
                     print(delimiter)
+                    window.start_thread(lambda: api_driver_token(settings['phone']), '-driver_token-')
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as token_error:
+                    print(delimiter)
                     print(token_error)
 
         elif event == '-driver_token-':
             settings['driver_token'] = values['-driver_token-']
             print(delimiter)
-            print('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), phone))
-            logging.info('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), phone))
+            print('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), settings['phone']))
+            logging.info('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), settings['phone']))
             logging.info(settings['driver_token'])
+            settings['phone'] = None
 
         elif event == 'Сбросить пароль':
             # print(values['driver_number'])
-            phone = driver_phone(values['driver_number'])
-            if not phone:
+            settings['phone'] = driver_phone(values['driver_number'].strip())
+            if not settings['phone']:
                 print('Некорректный табельный номер')
             else:
-                window.start_thread(lambda: driver_pwd_reset(phone=phone), '-pwd_reset-')
+                window.start_thread(lambda: driver_pwd_reset(phone=settings['phone']), '-pwd_reset-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-pwd_reset-':
-            send_sms(phone)
+            send_sms(settings['phone'])
             print(delimiter)
-            print(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
-            logging.info(f'Пароль водителя с телефоном {phone} сброшен. Смс о сбросе отправлено.')
+            print('Пароль водителя с телефоном {00} сброшен. Смс о сбросе отправлено.'.format(settings['phone']))
+            logging.info('Пароль водителя с телефоном {} сброшен. Смс о сбросе отправлено.'.format(settings['phone']))
+            settings['phone'] = None
 
         elif event == 'Версия':
             print(delimiter)
-            phone = driver_phone(values['driver_number'].strip())
-            if not phone:
+            settings['phone'] = driver_phone(values['driver_number'].strip())
+            if not settings['phone']:
                 print('Водитель не найден.')
             else:
                 useragent = get_last_user_agent(values['driver_number'].strip())
@@ -440,17 +497,19 @@ def main():
                     print('Данные по версии не найдены')
                 else:
                     print(useragent[0]['last_user_agent'])
+                    settings['phone'] = None
 
         elif event == 'Закрыть инциденты':
             # print(values['driver_number'])
-            phone = driver_phone(values['driver_number'])
-            if not phone:
+            settings['phone'] = driver_phone(values['driver_number'])
+            if not settings['phone']:
                 print('Некорректный табельный номер')
             else:
-                close_disp_inc(values['driver_number'])
+                close_disp_inc(values['driver_number'].strip())
                 print(delimiter)
                 print('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
                 logging.info('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
+                settings['phone'] = None
 
         elif event == 'gpn_auth':
             window.start_thread(lambda: gpn_auth(), '-auth_done-')

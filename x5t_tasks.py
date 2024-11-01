@@ -28,11 +28,15 @@ vtk_bug = """update "core-azs".fuel_cards fc set vtk = 1 where fc."number" in
                 inner join "core-azs".vtk_request vr on vr.card_num like concat('%',fc.number::varchar) 
                 where (fc.azs_company_id in (1000,1002)) and (fc.expiration_time >= now()) and fc.vtk = 0)"""
 
-sap_rejected_bug_check = """select invoice_id from "core-invoices-schema".own_trip where (status = 
-'SAP_REJECTED') and sap_message like  ('%Обработка заявки типа%') """
+sap_rejected_bug_check = """select invoice_id from "core-invoices-schema".own_trip where status = 'SAP_REJECTED' and 
+((sap_message like  ('%Обработка заявки типа%'))  or (sap_message like ('Путевой лист % по данным X5T не найден в SAP 
+TM')))"""
 
 sap_rejected_bug = """update "core-invoices-schema".own_trip set status  = 'SAP_CHECKED',driver_status = 'NEW', 
-driver_version = 0 where (status = 'SAP_REJECTED') and sap_message like  ('%Обработка заявки типа%') """
+driver_version = 0, sap_message = '' where (status = 'SAP_REJECTED') and ((sap_message like  ('%Обработка заявки типа%'))  
+or (sap_message like ('Путевой лист % по данным X5T не найден в SAP TM')))"""
+
+
 
 def auto_et_finish()-> list:
 
