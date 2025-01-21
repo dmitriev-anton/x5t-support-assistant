@@ -64,8 +64,8 @@ def checkpoints_aio(invoice: Invoice) -> list:
 
 def update_status(invoice_id: str, status : str) -> None:
 
-    ot_driver_status = """select driver_status from "core-invoices-schema".own_trip where status in ('SAP_CHECKED',
-        'PLANER_CHECKED','PLANNER_CONFIRMED') and driver_status in ('NEW', 'APPROVED') and invoice_id = '{0}'"""
+    # ot_driver_status = """select driver_status from "core-invoices-schema".own_trip where status in ('SAP_CHECKED',
+    #     'PLANER_CHECKED','PLANNER_CONFIRMED') and driver_status in ('NEW', 'APPROVED', 'CHANGED') and invoice_id = '{0}'"""
 
     driver_status_upd = """update "core-drivers-schema".driver_status set STATUS = 'READY' 
                         where status in ('IN_TRIP','NOT_READY') and waybill_id in 
@@ -81,15 +81,15 @@ def update_status(invoice_id: str, status : str) -> None:
         driver_status in ('APPROVED', 'NEW', 'CHANGED') and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and 
         invoice_id = '{0}'"""
 
-    try:
-        trigger = db_request(ot_driver_status.format(invoice_id))[0]['driver_status']
-        #print(trigger)
-    except IndexError:
-        trigger = None
-
-    if (trigger == 'APPROVED') or (trigger == 'CHANGED'):  ##### НОВАЯ ВЫБОРКА
-        #rint(driver_status_upd.format(invoice_id))
-        db_request(driver_status_upd.format(invoice_id))
+    # try:
+    #     trigger = db_request(ot_driver_status.format(invoice_id))[0]['driver_status']
+    #     #print(trigger)
+    # except IndexError:
+    #     trigger = None
+    #
+    # if (trigger == 'APPROVED') or (trigger == 'CHANGED'):  ##### НОВАЯ ВЫБОРКА
+    #     #rint(driver_status_upd.format(invoice_id))
+    db_request(driver_status_upd.format(invoice_id))
 
     #print(own_trip_upd.format(invoice_id))
     if status == 'DESTROYED':
@@ -119,8 +119,8 @@ def search_invoice(inv_id: str):
     """Проба 1 запросом"""
 
     id = inv_id.strip().lstrip('0').upper()
-    aio_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code from \"core-invoices-schema\".invoice where id = \'{id}\' or tms_number = \'{id}\' or sap_number = \'00{id}\''
-    ltl_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code from \"core-invoices-schema\".invoice where tms_number = \'{id}\''
+    aio_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from \"core-invoices-schema\".invoice where id = \'{id}\' or tms_number = \'{id}\' or sap_number = \'00{id}\''
+    ltl_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from \"core-invoices-schema\".invoice where tms_number = \'{id}\''
     # print(aio_num_q)
 
     try:

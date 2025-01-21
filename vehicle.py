@@ -29,5 +29,9 @@ def search_wb_by_vehicle(veh_num :str):
     vehicle_licence = '{veh_num}' order by start_date_plan desc limit 10"""
     return db_request(query)
 
+def search_vehicle(veh_num :str):
+    query = f"""select code, number, group_number as group, ut_code as ut,capacityton as tng, capacitypallet as plt, motorcade, is_deleted from \"core-vehicle-schema\".vehicle where code like \'%{veh_num}%\'"""
+    return db_request(query)
 
-# print(search_wb_by_vehicle('K348CP750'))
+
+# print(search_vehicle('K348CP750'))

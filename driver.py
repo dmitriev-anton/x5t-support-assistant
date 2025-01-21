@@ -24,7 +24,7 @@ def default_features_set() -> list:
 def all_races(tab_num) -> list:
     active_pl_races = """  select t4.id ,t4.sap_number as sap, t4.tms_number as tms, t2.status as sap_status, t2.driver_status as drv_status, 
                             t4.plan_start_date as plan_start,t5.status,t4.system_version as sys_ver, t2."version" as own_ver, 
-                            t2.driver_version as dr_ver, t4.sap_status_code as sapCode, t2.waybillid as PL
+                            t2.driver_version as dr_ver, t4.sap_status_code as sapCode, t4.is_mfp as mfp,t2.waybillid as PL
                             from "core-drivers-schema".drivers t1
                             inner join "core-waybills-schema".waybills t3 on t3.driver_number=t1."number" 
                             and t3.user_status = 'E0002' and t3.system_status = 'I0070'

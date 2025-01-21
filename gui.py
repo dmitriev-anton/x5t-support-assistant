@@ -21,13 +21,12 @@ def main_window():
     SG.theme('DarkGreen5')
 
     vehicle_tab_layout = [[SG.Text('ТС'), SG.InputText(k='vehicle'), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True, k='groups'),
-         SG.Submit('Привязать')], [SG.Submit('Искать ПЛ')]]
+         SG.Submit('Привязать')], [SG.Submit('Искать ТС'),SG.Submit('Искать ПЛ')]]
 
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
          SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
-        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС'),
-         SG.Submit('Убрать Ожидание SAP'), SG.Submit('Бафнуть Х5Т')]
+        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС')]
     ]
 
     waybill_tab_layout = [
@@ -70,7 +69,7 @@ def main_window():
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
     ]
 
-    return SG.Window('X5T support assistant v2.21 by A.Dmitriev',  
+    return SG.Window('X5Transport support assistant v2.22 by A.Dmitriev',
                      main_layout,  return_keyboard_events=False, finalize=True)
 
 

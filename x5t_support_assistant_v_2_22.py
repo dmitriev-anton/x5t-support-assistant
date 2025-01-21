@@ -13,7 +13,7 @@ from invoice import *
 from vehicle import *
 from waybill import *
 from x5t_connect import db_request
-from x5t_tasks import tasks
+# from x5t_tasks import tasks ----- unused
 from gui import main_window, d_dict
 
 
@@ -72,6 +72,26 @@ def main():
                     print('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
                     logging.info('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
 
+        elif event == 'Искать ТС':
+            print(delimiter)
+            vehicle_code = car_num_to_latin(values['vehicle'].strip())
+
+            if not vehicle_code:
+                print('Отсутствует номер ТС.')
+
+            else:
+                window['vehicle'].update(vehicle_code)
+                vehicle = search_vehicle(vehicle_code)
+
+                if len(vehicle) == 1:
+                    window['vehicle'].update(vehicle[0]['code'])
+
+                if vehicle:
+                    print(tabulate(DataFrame(vehicle), headers='keys', showindex=False,tablefmt=tablefmt))
+
+                else:
+                    print('ТС не найдены')
+
         elif event == 'Искать ПЛ':
             print(delimiter)
             vehicle_code = car_num_to_latin(values['vehicle'].strip())
@@ -90,6 +110,7 @@ def main():
                     print(tabulate(DataFrame(wbs), headers='keys', showindex=False,tablefmt=tablefmt))
                 else:
                     print('Путевые листы не найдены')
+
 
         elif event == '-->X5T ID':
             print(delimiter)
@@ -134,20 +155,20 @@ def main():
                 except Exception as error:
                     print(error)
 
-        elif event == 'Убрать Ожидание SAP':
-            if not values['invoice_number'].strip():
-                print(delimiter)
-                print('Введите номер рейса х5т')
-
-            else:
-                try:
-                    erase_action_sap(values['invoice_number'].strip())
-                    print(delimiter)
-                    print('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
-                    logging.info('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
-                except Exception as error:
-
-                    print(error)
+        # elif event == 'Убрать Ожидание SAP':
+        #     if not values['invoice_number'].strip():
+        #         print(delimiter)
+        #         print('Введите номер рейса х5т')
+        #
+        #     else:
+        #         try:
+        #             erase_action_sap(values['invoice_number'].strip())
+        #             print(delimiter)
+        #             print('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
+        #             logging.info('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
+        #         except Exception as error:
+        #
+        #             print(error)
 
         elif event == 'Прожать':
 
@@ -177,17 +198,17 @@ def main():
 
                 except TypeError as error:
                     print(error)
+        # unused functional
+        # elif event == 'Бафнуть Х5Т':
+        #     # print('Функционал отключен.')
+        #     window.perform_long_operation(tasks, '-tasks-')
+        #     print(delimiter)
+        #     print('Запуск бафера')
+        #     logging.info('Запуск бафера')
 
-        elif event == 'Бафнуть Х5Т':
-            # print('Функционал отключен.')
-            window.perform_long_operation(tasks, '-tasks-')
-            print(delimiter)
-            print('Запуск бафера')
-            logging.info('Запуск бафера')
-
-        elif event == '-tasks-':
-            print(delimiter)
-            print('Фиксы применены')
+        # elif event == '-tasks-':
+        #     print(delimiter)
+        #     print('Фиксы применены')
 
         elif event == 'Прожатия':
             print(delimiter)
@@ -519,7 +540,7 @@ def main():
         elif event == '-auth_done-':
             settings['gpn_session_id'] = values[event]
             print(delimiter)
-            print('Сессия ГПН установлена')
+            print('Сессия ГПН установлена.')
             logging.info('Сессия ГПН установлена')
             logging.info(settings['gpn_session_id'])
 
