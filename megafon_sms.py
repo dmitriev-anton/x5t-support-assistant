@@ -51,4 +51,4 @@ def megafon_send_sms(phone: str, message: str = ''):
         return error
 
 
-print(megafon_send_sms('9127609251', 'тест'))
+# print(megafon_send_sms('9127609251', 'тест'))
