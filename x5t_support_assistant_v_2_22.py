@@ -5,7 +5,7 @@ import warnings
 import PySimpleGUI as SG
 from pandas import DataFrame
 from tabulate import tabulate
-from bee_sms import send_sms
+from megafon_sms import megafon_send_sms
 from driver import *
 from driver_api import driver_pwd_reset
 from vtk_api import *
@@ -673,7 +673,7 @@ def main():
                     values['sms_body']):
 
                 try:
-                    send_sms(values['sms_receiver'].strip(), values['sms_body'].replace("\n", " "))
+                    megafon_send_sms(values['sms_receiver'].strip(), values['sms_body'].replace("\n", " "))
                     print('СМС отправлено на номер {0}'.format(values['sms_receiver'].strip()))
                     logging.info('СМС отправлено на номер {0}'.format(values['sms_receiver'].strip()))
                 except Exception as error:
