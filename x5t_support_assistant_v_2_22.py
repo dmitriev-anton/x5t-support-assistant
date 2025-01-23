@@ -501,7 +501,7 @@ def main():
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-pwd_reset-':
-            send_sms(settings['phone'])
+            megafon_send_sms(settings['phone'])
             print(delimiter)
             print('Пароль водителя с телефоном {00} сброшен. Смс о сбросе отправлено.'.format(settings['phone']))
             logging.info('Пароль водителя с телефоном {} сброшен. Смс о сбросе отправлено.'.format(settings['phone']))
