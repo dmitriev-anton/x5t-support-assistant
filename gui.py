@@ -26,7 +26,7 @@ def main_window():
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
          SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
-        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС')]
+        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС'), SG.Submit('Снять ожидание')]
     ]
 
     waybill_tab_layout = [

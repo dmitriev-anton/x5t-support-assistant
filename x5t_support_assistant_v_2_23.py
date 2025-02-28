@@ -198,20 +198,20 @@ def main():
                 except Exception as error:
                     print(error)
 
-        # elif event == 'Убрать Ожидание SAP':
-        #     if not values['invoice_number'].strip():
-        #         print(delimiter)
-        #         print('Введите номер рейса х5т')
-        #
-        #     else:
-        #         try:
-        #             erase_action_sap(values['invoice_number'].strip())
-        #             print(delimiter)
-        #             print('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
-        #             logging.info('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
-        #         except Exception as error:
-        #
-        #             print(error)
+        elif event == 'Снять ожидание':
+            if not values['invoice_number'].strip():
+                print(delimiter)
+                print('Введите номер рейса х5т')
+
+            else:
+                try:
+                    erase_action_sap(values['invoice_number'].strip())
+                    print(delimiter)
+                    print('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
+                    logging.info('Ожидание SAP по рейсу {0} снятo.'.format(values['invoice_number'].strip()))
+                except Exception as error:
+
+                    print(error)
 
         elif event == 'Прожать':
 
