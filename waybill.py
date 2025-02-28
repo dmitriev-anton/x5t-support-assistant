@@ -28,10 +28,25 @@ def search_invoices_on_wb(wb: str):
     resolve = db_request(query)
     return resolve
 
+def wb_open_status(wb:str):
+    """показывает логи открытия"""
+    query = f"""select waybill_number, sap_request_status, err_message, create_datetime, source 
+            from "core-waybills-schema".waybill_requests where waybill_number = '{wb}' """
+    resolve = db_request(query)
+    return resolve
+
 def wb_open_log(wb:str):
     """показывает логи открытия"""
     query = f"""select waybill, sap_request_status, err_message, update_datetime, source 
             from "core-waybills-schema".waybill_requests_history where waybill = '{wb}' order by update_datetime desc limit 10"""
+    resolve = db_request(query)
+    return resolve
+
+def wb_close_status(wb:str):
+    """показывает логи закрытия"""
+    query = f"""select waybill_number as waybill, sap_request_status, err_message , create_datetime , source
+            from "core-waybills-schema".waybill_close_requests where waybill_number = '{wb}' 
+                """
     resolve = db_request(query)
     return resolve
 
@@ -43,5 +58,5 @@ def wb_close_log(wb:str):
     resolve = db_request(query)
     return resolve
 
-# print(wb_open_log('VG0000251080'))
-# print(wb_close_log('NN0000298725'))
+# print(wb_open_status('VG0000251080'))
+# print(wb_close_status('NN0000298725'))

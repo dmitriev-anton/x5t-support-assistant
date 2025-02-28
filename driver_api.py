@@ -14,7 +14,7 @@ reg_api = os.getenv("DRIVER_REG_API")
 info_api = os.getenv("DRIVER_INFO_API")
 
 
-def driver_pwd_reset(phone: str) -> object:
+def driver_pwd_reset(phone: str, password: str) -> object:
     """Сброс пароля"""
 
     def api_pwd_recovery_request(phone: str):
@@ -87,13 +87,14 @@ def driver_pwd_reset(phone: str) -> object:
         except requests.exceptions.SSLError:
             return None
 
-
     verification_id = api_pwd_recovery_request(phone)
     if verification_id:
         pass_code = pwd_code(verification_id)
         if api_pwd_verify(pass_code, phone, verification_id):
-            result = api_pwd_create(password=phone[4:], verification_id=verification_id)
-            if result: return True
+            # password = ''.join(str(random.randint(0, 9)) for _ in range(6))
+            result = api_pwd_create(password=password, verification_id=verification_id)
+            if result:
+                return True
             else:
                 return 'Отказ на шаге 3'
         else:
@@ -103,7 +104,6 @@ def driver_pwd_reset(phone: str) -> object:
 
 
 def api_driver_token(phone: str) -> str:
-
     """Получает токен из БД или выдает ошибку"""
 
     api = f'https://{info_api}/v1/auth/drivers/token'
@@ -119,7 +119,7 @@ def api_driver_token(phone: str) -> str:
     }
 
     try:
-        response = requests.post(api, headers=headers,data=json.dumps(body), verify=False).json()
+        response = requests.post(api, headers=headers, data=json.dumps(body), verify=False).json()
         if response['data'] == None:
             raise RuntimeError(response['error']['message'])
         else:
@@ -128,8 +128,4 @@ def api_driver_token(phone: str) -> str:
     except requests.exceptions.SSLError:
         raise ConnectionError('Ошибка связи.')
 
-
-
-
 #print(api_driver_token('9898570346'))
-

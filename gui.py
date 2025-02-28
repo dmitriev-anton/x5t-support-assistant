@@ -31,7 +31,7 @@ def main_window():
 
     waybill_tab_layout = [
         [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ')],
-        [SG.Submit('Лог открытия'), SG.Submit('Лог закрытия')],
+        [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'), SG.Submit('Лог закрытия')],
     ]
 
     drivers_tab_layout = [
@@ -66,10 +66,10 @@ def main_window():
                        SG.Tab('ПЛ', waybill_tab_layout),
                        SG.Tab('ВТК', cards_tab_layout), SG.Tab('ТС', vehicle_tab_layout),
                        SG.Tab('SMS', sms_tab_layout)]])],
-        [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9))]
+        [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9),key='output_window')]
     ]
 
-    return SG.Window('X5Transport support assistant v2.22 by A.Dmitriev',
+    return SG.Window('X5Transport support assistant v2.23 by A.Dmitriev',
                      main_layout,  return_keyboard_events=False, finalize=True)
 
 

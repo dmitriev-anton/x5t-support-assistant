@@ -32,12 +32,13 @@ def gpn_auth():
         }
 
     body = {}
-
     try:
         response = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
-        return response.json()['data']['session_id']
+        return response.json()
+        # print(result)
     except requests.exceptions.SSLError:
         return None
+
 
 def get_vtk_info(card_num:str):
     _sql = (f'SELECT id, request_id, azs_contract_id, request_date, request_status, end_date, card_num, parent_id, '
@@ -255,7 +256,7 @@ def attach_card(card_num: str,  tech_driver_code: str, session_id: str):
 # print(tech_drivers_dict())
 
 # auth = gpn_auth()
-# # # print(auth)
+# print(gpn_auth())
 # #
 # card_num = '7005830901840975'
 # print(get_vtk_info(card_num))

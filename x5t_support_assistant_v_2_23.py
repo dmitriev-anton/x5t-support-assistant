@@ -1,23 +1,63 @@
 # -*- coding: utf-8 -*-
 import logging
 import warnings
-
+import tkinter as tk
 import PySimpleGUI as SG
 from pandas import DataFrame
 from tabulate import tabulate
-from megafon_sms import megafon_send_sms
+import random
 from driver import *
 from driver_api import driver_pwd_reset
-from vtk_api import *
-from invoice import *
-from vehicle import *
-from waybill import *
-from x5t_connect import db_request
 # from x5t_tasks import tasks ----- unused
 from gui import main_window, d_dict
+from invoice import *
+from megafon_sms import megafon_send_sms
+from vehicle import *
+from vtk_api import *
+from waybill import *
+from x5t_connect import db_request
+
+
 
 
 def main():
+    def get_active_element_key(window):
+        """Возвращает ключ элемента с фокусом или None"""
+        focused_widget = window.TKroot.focus_get()
+        for key in window.key_dict:
+            element = window[key]
+            if hasattr(element, 'Widget') and element.Widget == focused_widget:
+                return key
+        return None
+    def handle_ctrl_key(event):
+        # Проверяем, что нажат Ctrl (бит 0x0004 в event.state)
+        if event.state & 0x0004:
+            # print(get_active_element_key(window))
+            # Обработка Ctrl+C (код клавиши 'C' = 67)
+            if event.keycode == 67:
+                widget = window[get_active_element_key(window)].Widget
+                try:
+                    # Получаем выделенный текст
+                    selected_text = widget.selection_get()
+                    # print(selected_text)
+                    SG.clipboard_set(selected_text)  # Копируем в буфер
+                except:
+                    pass
+                return 'break'  # Блокируем стандартное поведение
+
+            # Обработка Ctrl+V (код клавиши 'V' = 86)
+            elif event.keycode == 86:
+                # print(get_active_element_key(window))
+                try:
+                    widget = window[get_active_element_key(window)].Widget
+                    text_to_paste = SG.clipboard_get()  # Получаем текст из буфера
+                    # print(text_to_paste)
+                    # widget.insert(tk.INSERT, text_to_paste)  # Вставляем
+                    # window[get_active_element_key(window)].update(text_to_paste)
+                except:
+                    pass
+                return 'break'  # Блокируем стандартное поведение
+
     warnings.filterwarnings("ignore")  # игнор ненужных уведомлений
 
     username = os.getlogin()  # получаем логин юзера
@@ -30,6 +70,7 @@ def main():
     logging.info('Запуск приложения')
 
     window = main_window()  # вызов главного окна
+    window.TKroot.bind('<Control-KeyPress>', handle_ctrl_key)
 
     delimiter = '-' * 160  # разделитель для вывода
     settings = {  # хранение токенов для запросов
@@ -42,7 +83,9 @@ def main():
 
         event, values = window.read()
 
-        # print(event)
+        # print(f'Событие: {event}')
+        # print(f'значение: {values}')
+
 
         if event in (SG.WIN_CLOSED, 'Exit'):
             break
@@ -244,6 +287,18 @@ def main():
                     print(tabulate(DataFrame(wb), headers='keys', showindex=False, tablefmt=tablefmt,
                                    numalign='left'))
 
+        elif event == 'Статус открытия':
+            print(delimiter)
+            log = []
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                log = wb_open_status(values['waybill_number'].strip())
+                if not log:
+                    print('Записи отсутствуют')
+                else:
+                    print(tabulate(DataFrame(log), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
         elif event == 'Лог открытия':
             print(delimiter)
             log = []
@@ -251,6 +306,19 @@ def main():
                 print('Введите данные для поиска.')
             else:
                 log = wb_open_log(values['waybill_number'].strip())
+                if not log:
+                    print('Записи отсутствуют')
+                else:
+                    print(tabulate(DataFrame(log), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
+
+        elif event == 'Статус закрытия':
+            print(delimiter)
+            log = []
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                log = wb_close_status(values['waybill_number'].strip())
                 if not log:
                     print('Записи отсутствуют')
                 else:
@@ -496,15 +564,16 @@ def main():
             if not settings['phone']:
                 print('Некорректный табельный номер')
             else:
-                window.start_thread(lambda: driver_pwd_reset(phone=settings['phone']), '-pwd_reset-')
+                password = ''.join(str(random.randint(0, 9)) for _ in range(6))
+                window.start_thread(lambda: driver_pwd_reset(settings['phone'], password), '-pwd_reset-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-pwd_reset-':
-            megafon_send_sms(settings['phone'])
+            megafon_send_sms(phone=settings['phone'], password=password)
             print(delimiter)
-            print('Пароль водителя с телефоном {00} сброшен. Смс о сбросе отправлено.'.format(settings['phone']))
-            logging.info('Пароль водителя с телефоном {} сброшен. Смс о сбросе отправлено.'.format(settings['phone']))
+            print('Пароль водителя с телефоном {0} сброшен на {1}. Смс о сбросе отправлено.'.format(settings['phone'], password))
+            logging.info('Пароль водителя с телефоном {0} сброшен на {1}. Смс о сбросе отправлено.'.format(settings['phone'], password))
             settings['phone'] = None
 
         elif event == 'Версия':
@@ -538,11 +607,18 @@ def main():
             print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-auth_done-':
-            settings['gpn_session_id'] = values[event]
-            print(delimiter)
-            print('Сессия ГПН установлена.')
-            logging.info('Сессия ГПН установлена')
-            logging.info(settings['gpn_session_id'])
+            if values[event]['status']['code'] == 200:
+                settings['gpn_session_id'] = values[event]['data']['session_id']
+                print(delimiter)
+                print('Сессия ГПН установлена.')
+                logging.info('Сессия ГПН установлена')
+                logging.info(settings['gpn_session_id'])
+            else:
+                print(delimiter)
+                print('Сессия ГПН не установлена. Повторный запуск.')
+                window.start_thread(lambda: gpn_auth(), '-auth_done-')
+                print(delimiter)
+                print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == 'barcode':
             print(delimiter)

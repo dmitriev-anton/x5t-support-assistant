@@ -49,7 +49,7 @@ def checkpoints_aio(invoice: Invoice) -> list:
     result.append(delete)
 
     for point in invoice.points:
-        for stage in range(1, 5):
+        for stage in {1,4}:
             result.append(insert_one_checkpoint(str(invoice.invoice['id']),
                                                 str(invoice.invoice['system_version']),
                                                 str(sequence), point['internal_point_id'], point['external_point_id'],
@@ -157,7 +157,8 @@ def invoice_unloading_points(inv_id: str):
 
 def cancel_asz(invoce_id: str):
     """"отменяет АЗС по инвойсу"""
-    query = f"""update "core-azs".azs_finder_operations set (status, service_msg) = ('FAILURE','VEHICLE_OUT_OF_THE_ROUTE') where invoice_id = '{invoce_id}'"""
+    query = f"""update "core-azs".azs_finder_recommendations set is_select = false where operation_uuid in (
+		select uuid from "core-azs".azs_finder_operations afo where invoice_id = '{invoce_id}' order by created_at desc)"""
     db_request(query)
 
 
@@ -183,4 +184,4 @@ def get_own_trip(invoce_id: str):
 # print(ot)
 # print(ot[1]['waybillid'][2])
 
-# print(search_invoice('L00418657'))
+# cancel_asz('16028033')

@@ -7,7 +7,7 @@ import sys
 from dotenv import load_dotenv
 
 
-def megafon_send_sms(phone: str, message: str = ''):
+def megafon_send_sms(phone: str, message: str = '', password: str = ''):
     url = 'https://hub.megafon.ru/messaging/v1/send'
     extDataDir = os.getcwd()
     if getattr(sys, 'frozen', False):
@@ -19,9 +19,9 @@ def megafon_send_sms(phone: str, message: str = ''):
                "{0}." \
                " С уважением, поддержка X5 Transport"
 
-    pwd_rst_msg = 'В приложении X5Transport Вам был установлен временный пароль, равный 6 последним цифрам вашего номера телефона. Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля'
+    pwd_rst_msg = f'В приложении X5Transport Вам был установлен пароль, равный {password}. Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля'
 
-    if message == '':
+    if (message == '') and password:
         message = pwd_rst_msg
 
     headers = {

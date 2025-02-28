@@ -138,7 +138,7 @@ def driver_cards(num: str):
     fuel_cards_query = ('SELECT id, \"number\", code, company_id, azs_company_id, main, "fuel_type", fuel_limit, '
                         'create_time, vtk FROM \"core-azs\".fuel_cards '
                         'where (code in (\'{0}\', \'{1}\')) and (azs_company_id in (1000,1002)) '
-                        'and (expiration_time >= now()) and vtk = 1 ;')
+                        'and (expiration_time >= now());')
     waybills = driver_waybills(num)
     real_start = None
     # print(waybills)
