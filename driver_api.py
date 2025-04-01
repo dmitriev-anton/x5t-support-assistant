@@ -44,7 +44,7 @@ def driver_pwd_reset(phone: str, password: str) -> object:
              'where status = \'ACTIVE\' and id = \'{0}\'')
         temp = None
         temp = db_request(_.format(verification_id))
-        print(temp)
+        # print(temp)
         return temp[0]['code']
 
     def api_pwd_verify(code, phone, verification_id: str):
@@ -103,6 +103,7 @@ def driver_pwd_reset(phone: str, password: str) -> object:
             # password = ''.join(str(random.randint(0, 9)) for _ in range(6))
             result = api_pwd_create(phone=phone, password=password, verification_id=verification_id)
             if result:
+
                 return True
             else:
                 return 'Отказ на шаге 3'
