@@ -555,7 +555,7 @@ def main():
 
                 try:
                     print(delimiter)
-                    window.start_thread(lambda: api_driver_token(settings['phone']), '-driver_token-')
+                    window.start_thread(lambda: api_driver_token(settings['phone'], settings['phone'][4:]), '-driver_token-')
                     print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
                 except Exception as token_error:
                     print(delimiter)
@@ -564,8 +564,8 @@ def main():
         elif event == '-driver_token-':
             settings['driver_token'] = values['-driver_token-']
             print(delimiter)
-            print('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), settings['phone']))
-            logging.info('Токен водителя {0}-{1} загружен'.format(values['driver_number'].strip(), settings['phone']))
+            print('Токен водителя {0} загружен'.format(values['driver_number'].strip()))
+            logging.info('Токен водителя {0} загружен'.format(values['driver_number'].strip()))
             logging.info(settings['driver_token'])
             settings['phone'] = None
 
@@ -582,6 +582,7 @@ def main():
 
         elif event == '-pwd_reset-':
             megafon_send_sms(phone=settings['phone'], password=password)
+            window.start_thread(lambda: api_driver_token(phone=settings['phone'], password=password), '-driver_token-')
             print(delimiter)
             print('Пароль водителя с телефоном {0} сброшен на {1}. Смс о сбросе отправлено.'.format(settings['phone'], password))
             logging.info('Пароль водителя с телефоном {0} сброшен на {1}. Смс о сбросе отправлено.'.format(settings['phone'], password))

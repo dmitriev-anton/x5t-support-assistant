@@ -113,18 +113,18 @@ def driver_pwd_reset(phone: str, password: str) -> object:
         return 'Отказ на шаге 1'
 
 
-def api_driver_token(phone: str) -> str:
+def api_driver_token(phone: str, password : str) -> str:
     """Получает токен из БД или выдает ошибку"""
 
     api = f'https://{info_api}/v1/auth/drivers/token'
     headers = {
         'Content-Type': 'application/json',
         'Cookie': '17b4e09f4ad0242ff0dcd2969ae02791=5dc45d0378d1e3bd72bbffecd742833e',
-        'User-Agent': 'X5 Transport NEW/versionName=24.3.20 versionCode=2503020',
+        'User-Agent': 'X5 Transport NEW/versionName=24.3.27 versionCode=2503027',
         #'Host': info_api,
     }
     body = {
-        'password': phone[4:],
+        'password': password,
         'userName': phone
     }
 
@@ -138,4 +138,4 @@ def api_driver_token(phone: str) -> str:
     except requests.exceptions.SSLError:
         raise ConnectionError('Ошибка связи.')
 
-# print(driver_pwd_reset('9110916360', '111112'))
+# print(api_driver_token('9652406029', '454868'))
