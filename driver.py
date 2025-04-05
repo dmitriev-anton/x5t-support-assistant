@@ -108,6 +108,7 @@ def search_driver(input: str) -> Union[object, list[Any]]:
     search_by_phone = f"SELECT id, \"number\", \"name\", phone, ut, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where phone like \'%{input}%\'"
     search_by_num = f"SELECT id, \"number\", \"name\", phone, ut, deleted, auth_user_id, status, \"type\", driver_id FROM \"core-drivers-schema\".drivers where \"number\" like \'%{input}%\'"
     result = []
+    input=input.lstrip('X5T_')
 
     if input.isdigit() and len(input) == 10:
         return db_request(search_by_phone)
@@ -115,7 +116,7 @@ def search_driver(input: str) -> Union[object, list[Any]]:
     elif input.replace(' ', '').isalpha():
         return db_request(search_by_name)
 
-    elif input.isdigit() and (4 <= len(input) < 10):
+    elif input.isdigit() and (4 <= len(input) < 10) :
         return db_request(search_by_num)
 
     else:

@@ -184,19 +184,19 @@ def main():
                 else:
                     print('Записи отсутствуют')
 
-        elif event == 'Снять АЗС':
-
-            if not values['invoice_number'].strip():
-                print(delimiter)
-                print('Введите номер рейса х5т')
-            else:
-                try:
-                    cancel_asz(values['invoice_number'].strip())
-                    print(delimiter)
-                    print('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
-                    logging.info('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
-                except Exception as error:
-                    print(error)
+        # elif event == 'Снять АЗС':
+        #
+        #     if not values['invoice_number'].strip():
+        #         print(delimiter)
+        #         print('Введите номер рейса х5т')
+        #     else:
+        #         try:
+        #             cancel_asz(values['invoice_number'].strip())
+        #             print(delimiter)
+        #             print('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
+        #             logging.info('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
+        #         except Exception as error:
+        #             print(error)
 
         elif event == 'Снять ожидание':
             if not values['invoice_number'].strip():
@@ -349,6 +349,17 @@ def main():
                 else:
                     print(tabulate(DataFrame(races), headers='keys', showindex=False, tablefmt=tablefmt,
                                    numalign='left'))
+
+        elif event == 'Закрыть ТРК ПЛ':
+            print(delimiter)
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            elif not values['waybill_number'].strip().startswith('TRC'):
+                print('ПЛ не ТРК. Введите корректный номер.')
+            else:
+                close_wb(values['waybill_number'].strip())
+                print('ПЛ {} закрыт.'.format(values['waybill_number'].strip()))
+                logging.info('ПЛ {} закрыт.'.format(values['waybill_number'].strip()))
 
         elif event == 'Поиск':
             print(delimiter)

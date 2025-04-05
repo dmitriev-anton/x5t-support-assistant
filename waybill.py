@@ -58,5 +58,10 @@ def wb_close_log(wb:str):
     resolve = db_request(query)
     return resolve
 
+def close_wb(wb : str):
+    """закрывает ПЛ в бд"""
+    query = f"""update "core-waybills-schema".waybills set user_status = 'E0004', system_status = 'I0072' where number = '{wb}'"""
+    db_request(query)
+
 # print(wb_open_status('VG0000251080'))
 # print(wb_close_status('NN0000298725'))

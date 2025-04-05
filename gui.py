@@ -26,12 +26,13 @@ def main_window():
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
          SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
-        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять АЗС'), SG.Submit('Снять ожидание')]
+        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять ожидание')]
     ]
 
     waybill_tab_layout = [
         [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ')],
-        [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'), SG.Submit('Лог закрытия')],
+        [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'), SG.Submit('Лог закрытия'),
+         SG.Submit('Закрыть ТРК ПЛ')],
     ]
 
     drivers_tab_layout = [
@@ -46,7 +47,8 @@ def main_window():
         [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('Получить баркод',key='barcode'),
          SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code'), SG.Text('Тех спец.'),
          SG.Combo(list(d_dict.keys()),readonly=True, k='tech_driver_name')],
-        [SG.Submit('ГПН.Авторизация', key='gpn_auth'), SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter'),
+        [SG.Submit('ГПН.Авторизация', key='gpn_auth'),
+         SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter'),
          SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
          SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'),
          SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc'),
@@ -69,7 +71,7 @@ def main_window():
         [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9),key='output_window')]
     ]
 
-    return SG.Window('X5Transport support assistant v2.23 by A.Dmitriev',
+    return SG.Window('X5Transport support assistant v2.24 by A.Dmitriev',
                      main_layout,  return_keyboard_events=False, finalize=True)
 
 
