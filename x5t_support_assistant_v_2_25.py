@@ -350,6 +350,19 @@ def main():
                     print(tabulate(DataFrame(races), headers='keys', showindex=False, tablefmt=tablefmt,
                                    numalign='left'))
 
+        elif event == 'Осмотры':
+            print(delimiter)
+            briefing = []
+            if not values['waybill_number'].strip():
+                print('Введите данные для поиска.')
+            else:
+                briefing = briefing_report(values['waybill_number'].strip())
+                if not briefing:
+                    print('Записи отсутствуют')
+                else:
+                    print(tabulate(DataFrame(briefing), headers='keys', showindex=False, tablefmt=tablefmt,
+                                   numalign='left'))
+
         elif event == 'Закрыть ТРК ПЛ':
             print(delimiter)
             if not values['waybill_number'].strip():
@@ -420,6 +433,10 @@ def main():
                 else:
                     print('На активном ПЛ рейсы отсутствуют.')
                 # report = report_window(sorted_races[0], sorted_races[1:])
+
+        elif event == 'Все фичи':
+            print(delimiter)
+            print(tabulate(DataFrame(feature_dictionary()), headers='keys', showindex=False, tablefmt=tablefmt))
 
         elif event == 'Фичи':
             print(delimiter)

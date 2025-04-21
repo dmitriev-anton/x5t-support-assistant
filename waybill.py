@@ -19,8 +19,7 @@ def search_invoices_on_wb(wb: str):
     query = f""" select  t4.id, t4.sap_number, t4.tms_number as tms_num, t2.status as sap_status, t2.driver_status, 
         t4.plan_start_date, t4.system_version as sys_ver, t2."version" as own_ver, 
         t2.driver_version as dr_ver, t4.sap_status_code as sapCode,  t3.is_mfp,  t2.waybillid 
-        from "core-drivers-schema".drivers t1
-        inner join "core-waybills-schema".waybills t3 on t3.driver_number=t1."number" 
+        from "core-waybills-schema".waybills t3 
         inner join "core-invoices-schema".own_trip t2 on t3."number"=t2.waybillid 
         inner join "core-invoices-schema".invoice t4 on t4.id=t2.invoice_id
         where t2.waybillid = '{wb}' order by t4.plan_start_date asc """
@@ -62,6 +61,16 @@ def close_wb(wb : str):
     """закрывает ПЛ в бд"""
     query = f"""update "core-waybills-schema".waybills set user_status = 'E0004', system_status = 'I0072' where number = '{wb}'"""
     db_request(query)
+
+def briefing_report(wb : str):
+    query = f"""SELECT ioi.driver_ext_id,ioi.driver_name, j.waybill_id, ioi.vehicle_license, i.type, ioc.type, ioc."result" , i.mechanic_id, i.created
+                FROM "core-mech-schema".inspect i
+                join "core-mech-schema".inspect_object_check ioc on i.id = ioc.inspect_id
+                join "core-mech-schema".inspect_objects_info ioi on i.id = ioi.inspect_id
+                join "core-mech-schema".journal j on j.id = i.journal_id
+                where j.waybill_id  = '{wb}'
+                order by i.created desc"""
+    return  db_request(query)
 
 # print(wb_open_status('VG0000251080'))
 # print(wb_close_status('NN0000298725'))

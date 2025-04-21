@@ -22,20 +22,16 @@ def default_features_set() -> list:
 
 
 def all_races(tab_num) -> list:
-    active_pl_races = """  select t4.id ,t4.sap_number as sap, t4.tms_number as tms, t2.status as sap_status, t2.driver_status as drv_status, 
+    active_pl_races = f"""select t4.id ,t4.sap_number as sap, t4.tms_number as tms, t2.status as sap_status, t2.driver_status as drv_status, 
                             t4.plan_start_date as plan_start,t5.status,t4.system_version as sys_ver, t2."version" as own_ver, 
                             t2.driver_version as dr_ver, t4.sap_status_code as sapCode, t4.is_mfp as mfp,t2.waybillid as PL
-                            from "core-drivers-schema".drivers t1
-                            inner join "core-waybills-schema".waybills t3 on t3.driver_number=t1."number" 
-                            and t3.user_status = 'E0002' and t3.system_status = 'I0070'
+                            from "core-waybills-schema".waybills t3 
                             inner join "core-invoices-schema".own_trip t2 on t3."number"=t2.waybillid 
                             inner join "core-drivers-schema".driver_status t5 on t5.waybill_id = t2.waybillid 
                             inner join "core-invoices-schema".invoice t4 on t4.id=t2.invoice_id
-                            where t1."number" = '{0}' order by t4.plan_start_date ASC"""
-    temp = []
-    temp = db_request(active_pl_races.format(tab_num))
+                            where t3.driver_number = '{tab_num}' and t3.user_status = 'E0002' and t3.system_status = 'I0070' order by t4.plan_start_date ASC"""
 
-    return temp
+    return db_request(active_pl_races)
 
 
 def add_feature(tab_num: str, f_num: Union[str, list[str]]):
@@ -76,8 +72,8 @@ def remove_feature(tab_num: str, f_num=None):
 
 def feature_dictionary():
     """кортеж всех фич"""
-    feature_dictionary_query = """select id from "core-drivers-schema".driver_feature_dictionary order by id"""
-    return [str(i['id']) for i in db_request(feature_dictionary_query)]
+    feature_dictionary_query = """select id, "name", description from "core-drivers-schema".driver_feature_dictionary order by id"""
+    return db_request(feature_dictionary_query)
 
 
 def driver_features(tab_num) -> list:
@@ -196,6 +192,7 @@ def get_last_user_agent(driver: str ):
 
 
 # print(feature_dictionary())
+# print([i['id'] for i in feature_dictionary()])
 # print(add_feature('00942766', '1044'))
 # print(search_driver('02286799')[0]['auth_user_id'])
 # print(auth_id_to_null.format('02286799'))
@@ -204,4 +201,4 @@ def get_last_user_agent(driver: str ):
 
 # f25300be-5d5f-48b3-9e4f-9f3ba57414f3
 # print(driver_cards('02029833'))
-# print(get_last_user_agent('02069074'))
+# print(all_races('02048874'))

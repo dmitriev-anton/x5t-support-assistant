@@ -9,7 +9,7 @@ from vehicle import group_list
 from vtk_api import tech_drivers_dict
 from pandas import DataFrame
 
-f_dict = feature_dictionary()
+f_dict = [i['id'] for  i in feature_dictionary()]
 g_list = group_list()
 s_list = ['NEW','FINISHED','DESTROYED']
 d_dict = tech_drivers_dict()
@@ -30,7 +30,8 @@ def main_window():
     ]
 
     waybill_tab_layout = [
-        [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ')],
+        [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ'),
+         SG.Submit('Осмотры')],
         [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'), SG.Submit('Лог закрытия'),
          SG.Submit('Закрыть ТРК ПЛ')],
     ]
@@ -38,7 +39,7 @@ def main_window():
     drivers_tab_layout = [
         [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
          SG.Submit('ВТК'), SG.Submit('Версия'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
-        [SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
+        [SG.Submit('Все фичи'), SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
          SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
          SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Закрыть инциденты'),SG.Submit('Стереть AUTH_USER_ID')]
     ]
@@ -68,10 +69,10 @@ def main_window():
                        SG.Tab('ПЛ', waybill_tab_layout),
                        SG.Tab('ВТК', cards_tab_layout), SG.Tab('ТС', vehicle_tab_layout),
                        SG.Tab('SMS', sms_tab_layout)]])],
-        [SG.Output(size=(160, 25), font=("DejaVu Sans Mono", 9),key='output_window')]
+        [SG.Output(size=(160, 25), font=("Consolas", 9),key='output_window')]
     ]
 
-    return SG.Window('X5Transport support assistant v2.24 by A.Dmitriev',
+    return SG.Window('X5Transport support assistant v2.25 by A.Dmitriev',
                      main_layout,  return_keyboard_events=False, finalize=True)
 
 
