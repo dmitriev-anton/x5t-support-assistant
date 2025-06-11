@@ -20,42 +20,35 @@ class Invoice:
             self.plants.append(db_request(self.plants_req.format(i['internal_point_id'])))
 
 
-def checkpoints_aio(invoice: Invoice) -> list:
-    def insert_one_checkpoint(invoice: int, version: int, sequence: int, internal_point: str, external_point: str,
-                              stage_num: int) -> str:
-        one_internal_stage = ('INSERT INTO "core-invoices-schema".driver_checkpoint '
-                              '(invoice_id, invoice_version, invoice_point_sequence, internal_point_id, external_point_id,'
-                              'stage_id, create_time, id, longitude, latitude, credentials, username)'
-                              'VALUES     ({0}, {1}, {2}, \'{3}\', NULL, {4},now(), (select(max(id) + 20) FROM '
-                              '"core-invoices-schema".driver_checkpoint),'
-                              '0, 0, \'AUTOSET\', null);')
+def checkpoints_aio(inv: str) -> list:
+    def insert_one_checkpoint(invoice: int, version: int, sequence: int, internal_point, external_point) -> str:
 
-        one_external_stage = ('INSERT INTO "core-invoices-schema".driver_checkpoint '
-                              '(invoice_id, invoice_version, invoice_point_sequence, internal_point_id, external_point_id,'
-                              'stage_id, create_time, id, longitude, latitude, credentials, username)'
-                              'VALUES     ({0}, {1}, {2}, NULL, \'{3}\', {4},now(), (select(max(id) + 20) FROM '
-                              '"core-invoices-schema".driver_checkpoint),'
-                              '0, 0, \'AUTOSET\', null);')
+        """insert into "core-invoices-schema".driver_checkpoint (invoice_version, invoice_point_sequence, internal_point_id, external_point_id,'stage_id, create_time, invoice_id, credentials)
+ values('2','2','Y982',unnest(array [1,4]),now(),'17026469','AUTOSET');"""
+
+        # one_any_stage = """insert into \"core-invoices-schema\".driver_checkpoint (invoice_id, invoice_version, invoice_point_sequence, internal_point_id, external_point_id, stage_id, create_time, credentials) values('{0}','{1}','{2}','{3}','{4}',unnest(array [1,4]),now(),'AUTOSET');"""
+
+        one_internal_point = """insert into \"core-invoices-schema\".driver_checkpoint (invoice_id, invoice_version, invoice_point_sequence, internal_point_id, stage_id, create_time, credentials) values('{0}','{1}','{2}','{3}', unnest(array [1,4]),now(),'AUTOSET');"""
+
+        one_external_point = """insert into \"core-invoices-schema\".driver_checkpoint (invoice_id, invoice_version, invoice_point_sequence, external_point_id, stage_id, create_time, credentials) values('{0}','{1}','{2}', '{3}',unnest(array [1,4]),now(),'AUTOSET');"""
 
         if not external_point:
-            return one_internal_stage.format(str(invoice), str(version), str(sequence), internal_point, str(stage_num))
+            return one_internal_point.format(str(inv), str(version), str(sequence), str(internal_point))
         elif not internal_point:
-            return one_external_stage.format(str(invoice), str(version), str(sequence), external_point, str(stage_num))
+            return one_external_point.format(str(inv), str(version), str(sequence), str(external_point))
 
     result = []
     sequence = 0
-    delete = """DELETE FROM "core-invoices-schema".driver_checkpoint where invoice_id = \'{0}\' ;""".format(
-        str(invoice.invoice['id']))
+    # print(type(inv))
+    invoice=Invoice(inv)
+    delete = """DELETE FROM "core-invoices-schema".driver_checkpoint where invoice_id = '{0}';""".format(str(invoice.invoice['id']))
     result.append(delete)
 
     for point in invoice.points:
-        for stage in {1,4}:
-            result.append(insert_one_checkpoint(str(invoice.invoice['id']),
-                                                str(invoice.invoice['system_version']),
-                                                str(sequence), point['internal_point_id'], point['external_point_id'],
-                                                str(stage),
-                                                ))
 
+
+        result.append(insert_one_checkpoint(str(invoice.invoice['id']), str(invoice.invoice['system_version']),
+                                            str(sequence), point['internal_point_id'], point['external_point_id']))
         sequence += 1
     return result
 
@@ -78,7 +71,7 @@ def update_status(invoice_id: str, status : str) -> None:
     destr_upd = """update "core-invoices-schema".own_trip set status = 'DESTROYED', driver_status = 'CANCELED' where 
         status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and invoice_id = '{0}'"""
     new_upd = """update "core-invoices-schema".own_trip set status = 'SAP_CHECKED', driver_status = 'NEW', sap_message = '' where 
-        driver_status in ('APPROVED', 'NEW', 'CHANGED') and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED') and 
+        driver_status in ('APPROVED', 'NEW', 'CHANGED') and status in ('SAP_CHECKED','PLANER_CHECKED','PLANNER_CONFIRMED','SAP_REJECTED','FINISHED') and 
         invoice_id = '{0}'"""
 
     # try:
@@ -119,13 +112,28 @@ def search_invoice(inv_id: str):
     """Проба 1 запросом"""
 
     id = inv_id.strip().lstrip('0').upper()
-    aio_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from \"core-invoices-schema\".invoice where id = \'{id}\' or tms_number = \'{id}\' or sap_number = \'00{id}\''
-    ltl_num_q = f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from \"core-invoices-schema\".invoice where tms_number = \'{id}\''
+    aio_num_q = (f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,'
+                 f'system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from '
+                 f'\"core-invoices-schema\".invoice where id = \'{id}\' or tms_number = \'{id}\' or sap_number = '
+                 f'\'00{id}\'')
+
+    ltl_num_q = (f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,'
+                 f'system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from '
+                 f'\"core-invoices-schema\".invoice where tms_number = \'{id}\'')
+
+    tm_num_q = (f'select id, sap_number, tms_number, expect_driver_date, plan_start_date, plan_end_date ,'
+                 f'system_version, sap_version, sap_status_code as sap_code, is_mfp as mfp from '
+                 f'\"core-invoices-schema\".invoice where sap_number = \'{id}\'')
+
     # print(aio_num_q)
 
     try:
         if id[0] == 'L':
             x5tids = db_request(ltl_num_q)
+
+        elif id[0] == 'T':
+            x5tids = db_request(tm_num_q)
+
         else:
             x5tids = db_request(aio_num_q)
     except IndexError:
@@ -134,7 +142,7 @@ def search_invoice(inv_id: str):
 
 
 
-def cure_invoice(invoice: Invoice):
+def cure_invoice(invoice: str):
     """"""
     try:
         db_request(checkpoints_aio(invoice))
@@ -170,6 +178,9 @@ def erase_action_sap(invoce_id: str):
 def get_own_trip(invoce_id: str):
     query = f"""select waybillid, version,"status", driver_status, driver_version, id, sap_message from "core-invoices-schema".own_trip where invoice_id = '{invoce_id}' order by version desc"""
     return db_request(query)
+
+
+
 # print(auto_et_finish())
 # inv_id = '12100439'
 # print(get_x5t_id(inv_id))
@@ -185,3 +196,8 @@ def get_own_trip(invoce_id: str):
 # print(ot[1]['waybillid'][2])
 
 # cancel_asz('16028033')
+
+# print(Invoice(16960788).points)
+
+# for i in checkpoints_aio(17013078):
+#     print(i)

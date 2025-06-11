@@ -1,5 +1,6 @@
 **/.idea
 .env
+config.cfg
 **/venv
 **/build
 **/dist

@@ -20,43 +20,48 @@ def main_window():
     # SG.set_options(font=("Segoe UI", 11))
     SG.theme('DarkGreen5')
 
-    vehicle_tab_layout = [[SG.Text('ТС'), SG.InputText(k='vehicle'), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True, k='groups'),
-         SG.Submit('Привязать')], [SG.Submit('Искать ТС'),SG.Submit('Искать ПЛ')]]
+    drivers_tab_layout = [
+        [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'),
+         SG.Submit('Путевые листы'),
+         SG.Submit('ВТК'), SG.Submit('Версия'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
+        [SG.Submit('Все фичи'), SG.Submit('Фичи'),
+         SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
+         SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
+         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Закрыть инциденты'),
+         SG.Submit('Стереть AUTH_USER_ID')]
+    ]
 
     invoice_tab_layout = [
         [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'), SG.Text('Статус'),
          SG.Combo(s_list, default_value=s_list[1], readonly=True, k='status', size=(13, 1)), SG.Submit('Изменить')],
-        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'), SG.Submit('Снять ожидание')]
+        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия'), SG.Submit('Прожать'),
+         SG.Submit('Снять ожидание'), SG.Submit('Снять АЗС')]
     ]
 
     waybill_tab_layout = [
         [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ'),
          SG.Submit('Осмотры')],
-        [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'), SG.Submit('Лог закрытия'),
+        [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'),
+         SG.Submit('Лог закрытия'),
          SG.Submit('Закрыть ТРК ПЛ')],
     ]
 
-    drivers_tab_layout = [
-        [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
-         SG.Submit('ВТК'), SG.Submit('Версия'), SG.Submit('Токен'), SG.Submit('Сбросить пароль')],
-        [SG.Submit('Все фичи'), SG.Submit('Фичи'), SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'), SG.Submit('Добавить фичу'),
-         SG.Submit('Удалить фичу'), SG.Submit('Деф. фичи', k='add_all'), SG.Submit('Удалить все', k='remove_all'),
-         SG.Submit('ШК ОТ/ВС'), SG.Submit('Обновить ШК ОТ/ВС'), SG.Submit('Закрыть инциденты'),SG.Submit('Стереть AUTH_USER_ID')]
-    ]
-
     cards_tab_layout = [
-        [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('Получить баркод',key='barcode'),
+        [SG.Text('Номер карты'), SG.InputText(size=(30, 3), key='vtk'), SG.Submit('Получить баркод', key='barcode'),
          SG.Text('Код экономиста'), SG.InputText(size=(8, 3), key='economist_code'), SG.Text('Тех спец.'),
-         SG.Combo(list(d_dict.keys()),readonly=True, k='tech_driver_name')],
+         SG.Combo(list(d_dict.keys()), readonly=True, k='tech_driver_name')],
         [SG.Submit('ГПН.Авторизация', key='gpn_auth'),
-         SG.Submit('ГПН.Сброс МПК',key='gpn_reset_counter'),
-         SG.Submit('ГПН.Удаление МПК',key='gpn_delete_mpc'),
-         SG.Submit('ГПН.Выпуск МПК',key='gpn_init_mpc'),
-         SG.Submit('ГПН.Код Экономиста',key='gpn_confirm_mpc'),
+         SG.Submit('ГПН.Сброс МПК', key='gpn_reset_counter'),
+         SG.Submit('ГПН.Удаление МПК', key='gpn_delete_mpc'),
+         SG.Submit('ГПН.Выпуск МПК', key='gpn_init_mpc'),
+         SG.Submit('ГПН.Код Экономиста', key='gpn_confirm_mpc'),
          SG.Submit('ГПН.Отвязка карты', key='gpn_detach_card'),
          SG.Submit('ГПН.Привязка карты', key='gpn_attach_card'),
          ]
     ]
+
+    vehicle_tab_layout = [[SG.Text('ТС'), SG.InputText(k='vehicle'), SG.Text('Группа'), SG.Combo(g_list, default_value=g_list[0], readonly=True, k='groups'),
+         SG.Submit('Привязать')], [SG.Submit('Искать ТС'),SG.Submit('Искать ПЛ')]]
 
     sms_tab_layout = [
         [SG.Multiline(default_text='Введите текст сообщения', size=(80, 3), no_scrollbar=True, key='sms_body'),

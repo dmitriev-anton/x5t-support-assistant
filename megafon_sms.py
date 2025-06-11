@@ -19,7 +19,7 @@ def megafon_send_sms(phone: str, message: str = '', password: str = ''):
                "{0}." \
                " С уважением, поддержка X5 Transport"
 
-    pwd_rst_msg = f'В приложении X5Transport Вам был установлен пароль, равный {password}. Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля'
+    pwd_rst_msg = f'В приложении X5Transport Вам был установлен пароль, равный {password} . Сброс пароля осуществляется по кнопке "Забыли пароль" в окне ввода логина-пароля'
 
     if (message == '') and password:
         message = pwd_rst_msg

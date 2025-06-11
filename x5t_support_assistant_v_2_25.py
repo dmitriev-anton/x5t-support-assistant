@@ -7,7 +7,7 @@ from pandas import DataFrame
 from tabulate import tabulate
 import random
 from driver import *
-from driver_api import driver_pwd_reset
+from driver_api import *
 # from x5t_tasks import tasks ----- unused
 from gui import main_window, d_dict
 from invoice import *
@@ -184,19 +184,19 @@ def main():
                 else:
                     print('Записи отсутствуют')
 
-        # elif event == 'Снять АЗС':
-        #
-        #     if not values['invoice_number'].strip():
-        #         print(delimiter)
-        #         print('Введите номер рейса х5т')
-        #     else:
-        #         try:
-        #             cancel_asz(values['invoice_number'].strip())
-        #             print(delimiter)
-        #             print('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
-        #             logging.info('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
-        #         except Exception as error:
-        #             print(error)
+        elif event == 'Снять АЗС':
+
+            if not values['invoice_number'].strip():
+                print(delimiter)
+                print('Введите номер рейса х5т')
+            else:
+                try:
+                    cancel_asz(values['invoice_number'].strip())
+                    print(delimiter)
+                    print('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
+                    logging.info('Подбор АЗС по рейсу {0} снят.'.format(values['invoice_number'].strip()))
+                except Exception as error:
+                    print(error)
 
         elif event == 'Снять ожидание':
             if not values['invoice_number'].strip():
@@ -218,8 +218,7 @@ def main():
             if not values['invoice_number'].strip():
                 print('Введите номер рейса х5т')
             else:
-                window.start_thread(lambda: cure_invoice(Invoice(int(values['invoice_number'].strip()))),
-                                    '-cure_invoice-')
+                window.start_thread(lambda: cure_invoice(values['invoice_number'].strip()), '-cure_invoice-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
@@ -592,7 +591,7 @@ def main():
             if not settings['phone']:
                 print('Некорректный табельный номер')
             else:
-                password = ''.join(str(random.randint(0, 9)) for _ in range(6))
+                password = generate_password()
                 window.start_thread(lambda: driver_pwd_reset(settings['phone'], password), '-pwd_reset-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
@@ -601,8 +600,8 @@ def main():
             megafon_send_sms(phone=settings['phone'], password=password)
             window.start_thread(lambda: api_driver_token(phone=settings['phone'], password=password), '-driver_token-')
             print(delimiter)
-            print('Пароль водителя с телефоном {0} сброшен на {1}. Смс о сбросе отправлено.'.format(settings['phone'], password))
-            logging.info('Пароль водителя с телефоном {0} сброшен на {1}. Смс о сбросе отправлено.'.format(settings['phone'], password))
+            print('Пароль водителя с телефоном {0} сброшен на {1} Смс о сбросе отправлено.'.format(settings['phone'], password))
+            logging.info('Пароль водителя с телефоном {0} сброшен на {1} Смс о сбросе отправлено.'.format(settings['phone'], password))
             settings['phone'] = None
 
         elif event == 'Версия':

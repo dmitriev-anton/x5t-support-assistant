@@ -11,7 +11,7 @@ extDataDir = os.getcwd()
 if getattr(sys, 'frozen', False):
     extDataDir = sys._MEIPASS
 load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
-
+load_dotenv(dotenv_path=os.path.join(extDataDir, 'config.cfg'))
 
 def db_request(sql_request: Union[str, list[str]]) -> Union[list[dict], None]:
     """Шлат запрос или много запросов в зависимости от типа sql_request    """
