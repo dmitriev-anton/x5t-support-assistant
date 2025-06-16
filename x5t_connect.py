@@ -3,31 +3,57 @@ import psycopg2
 import psycopg2.extras
 import os
 import sys
+import logging
 
 from dotenv import load_dotenv
 from typing import Union
 
-# Определяем базовую директорию
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename='app_debug.log',
+    filemode='w'
+)
+
 if getattr(sys, 'frozen', False):
-    base_dir = os.path.dirname(sys.executable)  # Директория с EXE
+    base_dir = os.path.dirname(sys.executable)
 else:
-    base_dir = os.path.dirname(os.path.abspath(__file__))  # Директория с исходным кодом
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Загружаем .env (если он встроен или рядом)
-load_dotenv(os.path.join(base_dir, '.env'))  # Встроенный или внешний .env
-
-# Загружаем config.cfg из директории с EXE
+# Проверка существования config.cfg
 config_path = os.path.join(base_dir, 'config.cfg')
-if os.path.exists(config_path):
-    load_dotenv(dotenv_path=config_path)  # Используем dotenv для загрузки .cfg
-else:
+logging.info(f"Looking for config at: {config_path}")
+
+if not os.path.exists(config_path):
+    logging.error(f"Config file not found: {config_path}")
     raise FileNotFoundError(f"Config file not found: {config_path}")
+
+# Загрузка конфигов
+load_dotenv(os.path.join(base_dir, '.env'))
+host=os.getenv("DB_HOST")
+dbname=os.getenv("DB_NAME")
+
+load_dotenv(config_path)
+user=os.getenv("DB_USERNAME")
+password=os.getenv("DB_PASSWORD")
+
+
+# Проверка значений переменных
+required_vars = ['DB_HOST',  'DB_USERNAME', 'DB_PASSWORD', 'DB_NAME']
+for var in required_vars:
+    value = os.getenv(var)
+    if not value:
+        logging.error(f"Missing environment variable: {var}")
+    else:
+        logging.info(f"{var} = {value if var != 'DB_PASSWORD' else '***'}")
+
+
 
 def db_request(sql_request: Union[str, list[str]]) -> Union[list[dict], None]:
     """Шлат запрос или много запросов в зависимости от типа sql_request    """
     list_result = []
-    conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USERNAME"),
-                            password=os.getenv("DB_PASSWORD"), host=os.getenv("DB_HOST"))
+    conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+
     with conn:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as curs:
 
