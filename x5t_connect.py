@@ -7,11 +7,21 @@ import sys
 from dotenv import load_dotenv
 from typing import Union
 
-extDataDir = os.getcwd()
+# Определяем базовую директорию
 if getattr(sys, 'frozen', False):
-    extDataDir = sys._MEIPASS
-load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
-load_dotenv(dotenv_path=os.path.join(extDataDir, 'config.cfg'))
+    base_dir = os.path.dirname(sys.executable)  # Директория с EXE
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Директория с исходным кодом
+
+# Загружаем .env (если он встроен или рядом)
+load_dotenv(os.path.join(base_dir, '.env'))  # Встроенный или внешний .env
+
+# Загружаем config.cfg из директории с EXE
+config_path = os.path.join(base_dir, 'config.cfg')
+if os.path.exists(config_path):
+    load_dotenv(dotenv_path=config_path)  # Используем dotenv для загрузки .cfg
+else:
+    raise FileNotFoundError(f"Config file not found: {config_path}")
 
 def db_request(sql_request: Union[str, list[str]]) -> Union[list[dict], None]:
     """Шлат запрос или много запросов в зависимости от типа sql_request    """

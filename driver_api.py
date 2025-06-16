@@ -9,11 +9,21 @@ import random
 import string
 import secrets
 
-extDataDir = os.getcwd()
 if getattr(sys, 'frozen', False):
-    extDataDir = sys._MEIPASS
-load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
-load_dotenv(dotenv_path=os.path.join(extDataDir, 'config.cfg'))
+    base_dir = os.path.dirname(sys.executable)  # Директория с EXE
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Директория с исходным кодом
+
+# Загружаем .env (если он встроен или рядом)
+load_dotenv(os.path.join(base_dir, '.env'))  # Встроенный или внешний .env
+
+# Загружаем config.cfg из директории с EXE
+config_path = os.path.join(base_dir, 'config.cfg')
+if os.path.exists(config_path):
+    load_dotenv(dotenv_path=config_path)  # Используем dotenv для загрузки .cfg
+else:
+    raise FileNotFoundError(f"Config file not found: {config_path}")
+
 reg_api = os.getenv("DRIVER_REG_API")
 info_api = os.getenv("DRIVER_INFO_API")
 app_fleet  = os.getenv("APP_FLEET")

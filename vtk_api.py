@@ -10,10 +10,20 @@ from driver_api import api_driver_token
 from tabulate import tabulate
 from pandas import DataFrame
 
-extDataDir = os.getcwd()
 if getattr(sys, 'frozen', False):
-    extDataDir = sys._MEIPASS
-load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
+    base_dir = os.path.dirname(sys.executable)  # Директория с EXE
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Директория с исходным кодом
+
+# Загружаем .env (если он встроен или рядом)
+load_dotenv(os.path.join(base_dir, '.env'))  # Встроенный или внешний .env
+
+# Загружаем config.cfg из директории с EXE
+config_path = os.path.join(base_dir, 'config.cfg')
+if os.path.exists(config_path):
+    load_dotenv(dotenv_path=config_path)  # Используем dotenv для загрузки .cfg
+else:
+    raise FileNotFoundError(f"Config file not found: {config_path}")
 
 gpn_login = os.getenv("GPN_LOGIN")
 gpn_pwd = os.getenv("GPN_PWD")
