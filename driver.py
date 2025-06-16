@@ -144,7 +144,7 @@ def driver_cards(num: str):
     res=[]
     for i in range(len(waybills)):
 
-        if waybills[i]['system'] == 'I0070':
+        if waybills[i]['system'] == 'I0070' and waybills[i]['user'] == 'E0002':
 
             res.append(waybills[i])
             # print(len(waybills))
@@ -153,28 +153,30 @@ def driver_cards(num: str):
 
     counter = len(res)
 
-    real_start = res[0]['plan_start']
-
-    if counter == 1 and res[0]['fact_start']:
-        real_start = res[0]['fact_start']
-    elif counter == 1 and not res[0]['fact_start']:
-        real_start = res[0]['plan_start']
-    # print(waybills[0]['fact_start'])
-    # print(real_start)
+    # real_start = res[0]['plan_start']
+    #
+    # if counter == 1 and res[0]['fact_start']:
+    #     real_start = res[0]['fact_start']
+    # elif counter == 1 and not res[0]['fact_start']:
+    #     real_start = res[0]['plan_start']
+    # # print(waybills[0]['fact_start'])
+    # # print(real_start)
     if counter == 0:
         raise RuntimeError('Нет ПЛ со статусом в работе.')
     elif counter >= 2:
         raise RuntimeError('Более 1 ПЛ со статусом в работе.')
-    elif real_start > datetime.now():
-        raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(res[0]['waybill'], real_start))
-    # elif real_start and res[0]['plan_end'] < datetime.now():
-    #     raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill'], res[0]['plan_end']))
+    # elif real_start > datetime.now():
+    #     raise RuntimeError('Начало ПЛ {0} {1} еще не наступило'.format(res[0]['waybill'], real_start))
+    # # elif real_start and res[0]['plan_end'] < datetime.now():
+    # #     raise RuntimeError('ПЛ {0} истек {1}'.format(waybills[0]['waybill'], res[0]['plan_end']))
     else:
         # print(fuel_cards_query.format(waybills[0]['veh_num'], waybills[0]['trail_num']))
         vtks=db_request(fuel_cards_query.format(res[0]['veh_num'], res[0]['trail_num']))
         if not vtks: raise RuntimeError('Виртуальные карты к ТС не привязаны.')
         else: return vtks
 
+# def vtk_details(card_num : str):
+#     query = f'select card_num, card_id, azs_contract_id, '
 
 def close_disp_inc(driver: str):
     """Закрывает все диспетчерские инциденты"""
@@ -200,5 +202,5 @@ def get_last_user_agent(driver: str ):
 # print(search_driver('02286799')[0]['auth_user_id'])
 
 # f25300be-5d5f-48b3-9e4f-9f3ba57414f3
-# print(driver_cards('02029833'))
+#print(driver_cards('01669222'))
 # print(all_races('02048874'))

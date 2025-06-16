@@ -412,8 +412,7 @@ def main():
             else:
                 try:
                     cards = driver_cards(values['driver_number'].strip())
-                    print(
-                        tabulate(DataFrame(cards), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
+                    print(tabulate(DataFrame(cards), headers='keys', showindex=False, tablefmt=tablefmt, numalign='left'))
                 except RuntimeError as error:
                     print(error)
 
@@ -469,34 +468,34 @@ def main():
                     except Exception as error:
                         print(error)
 
-        elif event == 'add_all':
-            print(delimiter)
-            phone = driver_phone(values['driver_number'])
-            if not phone:
-                print('Водитель не найден.')
-            else:
-                f4s = driver_features(values['driver_number'].strip())
-                if not f4s:
-                    res = add_feature(values['driver_number'].strip(), default_features_set())
-                    print(res)
-                    logging.info(res)
-                else:
-                    print('Добавление невозможно.У водителя уже присутствуют фичи.')
-
-        elif event == 'remove_all':
-            print(delimiter)
-            phone = driver_phone(values['driver_number'].strip())
-            if not phone:
-                print('Водитель не найден.')
-            else:
-                # res = []
-                features = driver_features(values['driver_number'])
-                if features:
-                    res = remove_feature(values['driver_number'].strip())
-                    print(res)
-                    logging.info(res)
-                else:
-                    print('Удаление невозможно.У водителя отсутствуют фичи.')
+        # elif event == 'add_all':
+        #     print(delimiter)
+        #     phone = driver_phone(values['driver_number'])
+        #     if not phone:
+        #         print('Водитель не найден.')
+        #     else:
+        #         f4s = driver_features(values['driver_number'].strip())
+        #         if not f4s:
+        #             res = add_feature(values['driver_number'].strip(), default_features_set())
+        #             print(res)
+        #             logging.info(res)
+        #         else:
+        #             print('Добавление невозможно.У водителя уже присутствуют фичи.')
+        #
+        # elif event == 'remove_all':
+        #     print(delimiter)
+        #     phone = driver_phone(values['driver_number'].strip())
+        #     if not phone:
+        #         print('Водитель не найден.')
+        #     else:
+        #         # res = []
+        #         features = driver_features(values['driver_number'])
+        #         if features:
+        #             res = remove_feature(values['driver_number'].strip())
+        #             print(res)
+        #             logging.info(res)
+        #         else:
+        #             print('Удаление невозможно.У водителя отсутствуют фичи.')
 
         elif event == 'Удалить фичу':
             print(delimiter)
@@ -562,20 +561,20 @@ def main():
                 print('Стирание AUTH_USER_ID водителя {0} выполнено'.format(values['driver_number']))
                 logging.info('Стирание AUTH_USER_ID водителя {0} выполнено'.format(values['driver_number']))
 
-        elif event == 'Токен':
-            # print(values['driver_number'])
-            settings['phone'] = driver_phone(values['driver_number'].strip())
-            if not settings['phone']:
-                print('Некорректный табельный номер')
-            else:
-
-                try:
-                    print(delimiter)
-                    window.start_thread(lambda: api_driver_token(settings['phone'], settings['phone'][4:]), '-driver_token-')
-                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
-                except Exception as token_error:
-                    print(delimiter)
-                    print(token_error)
+        # elif event == 'Токен':
+        #     # print(values['driver_number'])
+        #     settings['phone'] = driver_phone(values['driver_number'].strip())
+        #     if not settings['phone']:
+        #         print('Некорректный табельный номер')
+        #     else:
+        #
+        #         try:
+        #             print(delimiter)
+        #             window.start_thread(lambda: api_driver_token(settings['phone'], settings['phone'][4:]), '-driver_token-')
+        #             print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
+        #         except Exception as token_error:
+        #             print(delimiter)
+        #             print(token_error)
 
         elif event == '-driver_token-':
             settings['driver_token'] = values['-driver_token-']
@@ -586,6 +585,7 @@ def main():
             settings['phone'] = None
 
         elif event == 'Сбросить пароль':
+            print(delimiter)
             # print(values['driver_number'])
             settings['phone'] = driver_phone(values['driver_number'].strip())
             if not settings['phone']:
@@ -593,12 +593,12 @@ def main():
             else:
                 password = generate_password()
                 window.start_thread(lambda: driver_pwd_reset(settings['phone'], password), '-pwd_reset-')
-                print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
 
         elif event == '-pwd_reset-':
             megafon_send_sms(phone=settings['phone'], password=password)
-            window.start_thread(lambda: api_driver_token(phone=settings['phone'], password=password), '-driver_token-')
+            if not settings['driver_token']:
+                window.start_thread(lambda: api_driver_token(phone=settings['phone'], password=password), '-driver_token-')
             print(delimiter)
             print('Пароль водителя с телефоном {0} сброшен на {1} Смс о сбросе отправлено.'.format(settings['phone'], password))
             logging.info('Пароль водителя с телефоном {0} сброшен на {1} Смс о сбросе отправлено.'.format(settings['phone'], password))
@@ -617,22 +617,45 @@ def main():
                     print(useragent[0]['last_user_agent'])
                     settings['phone'] = None
 
-        elif event == 'Закрыть инциденты':
-            # print(values['driver_number'])
-            settings['phone'] = driver_phone(values['driver_number'])
-            if not settings['phone']:
-                print('Некорректный табельный номер')
-            else:
-                close_disp_inc(values['driver_number'].strip())
-                print(delimiter)
-                print('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
-                logging.info('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
-                settings['phone'] = None
+        # elif event == 'Закрыть инциденты':
+        #     # print(values['driver_number'])
+        #     settings['phone'] = driver_phone(values['driver_number'])
+        #     if not settings['phone']:
+        #         print('Некорректный табельный номер')
+        #     else:
+        #         close_disp_inc(values['driver_number'].strip())
+        #         print(delimiter)
+        #         print('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
+        #         logging.info('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
+        #         settings['phone'] = None
 
         elif event == 'gpn_auth':
             window.start_thread(lambda: gpn_auth(), '-auth_done-')
             print(delimiter)
             print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
+
+        elif event =='gpn_barcode':
+            print(delimiter)
+            # print(settings['gpn_session_id'], values['vtk'].strip(), get_vtk_info(values['vtk'].strip()))
+            if (settings['gpn_session_id'] and values['vtk'].strip()
+                    and get_vtk_info(values['vtk'].strip())['azs_company_id'] == 1002):
+                print('Запрос ШК карты {0}.'.format(values['vtk'].strip()))
+                # print(values)
+                try:
+                    window.start_thread(lambda: gpn_barcode_check(values['vtk'].strip(), settings['gpn_session_id']),
+                                        '-gpn_barcode-')
+                    print(delimiter)
+                    print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
+
+                except Exception as error:
+                    print(error)
+            else:
+                print('Сессия не установлена или не введен номер карты или карта не ГПН')
+
+        elif event == '-gpn_barcode-':
+            print(delimiter)
+            print(values['-gpn_barcode-'])
+
 
         elif event == '-auth_done-':
             if values[event]['status']['code'] == 200:
@@ -647,6 +670,21 @@ def main():
                 window.start_thread(lambda: gpn_auth(), '-auth_done-')
                 print(delimiter)
                 print('Запуск в фоновом режиме. Дождитесь выполнения операции.')
+
+        elif event == 'card_info':
+            print(delimiter)
+            if values['vtk'].strip():
+                try:
+                    settings['card_details'] = get_vtk_info(values['vtk'].strip())
+
+                except Exception as error:
+                    print(error)
+
+            if settings['card_details']:
+                # print(settings['card_details'])
+                print(tabulate(DataFrame([settings['card_details']]), headers='keys', showindex=False, tablefmt=tablefmt))
+            else:
+                print('Карта не найдена')
 
         elif event == 'barcode':
             print(delimiter)

@@ -13,19 +13,23 @@ extDataDir = os.getcwd()
 if getattr(sys, 'frozen', False):
     extDataDir = sys._MEIPASS
 load_dotenv(dotenv_path=os.path.join(extDataDir, '.env'))
+load_dotenv(dotenv_path=os.path.join(extDataDir, 'config.cfg'))
 reg_api = os.getenv("DRIVER_REG_API")
 info_api = os.getenv("DRIVER_INFO_API")
 app_fleet  = os.getenv("APP_FLEET")
+latest_user_agent = os.getenv("APP_VERSION")
+
 
 
 def api_pwd_recovery_request(phone: str):
+    # Получаем ид сессии
     api = f'http://{app_fleet}/info/v1/driver/password/recovery'
 
     headers = {
         'Content-Type': 'application/json',
         'Content-Length': '68',
         'Host': app_fleet,
-        'User-Agent': 'X5 Transport NEW/versionName=24.6.4 versionCode=2407015',
+        'User-Agent': latest_user_agent,
     }
     body = {
         'data': {'phone': phone},
@@ -40,6 +44,7 @@ def api_pwd_recovery_request(phone: str):
 
 
 def pwd_code(verification_id: str):
+    # Забираем код смс
     _ = ('SELECT code FROM \"core-verification-schema\".phone_verification_session '
          'where status = \'ACTIVE\' and id = \'{0}\'')
     temp = None
@@ -49,12 +54,13 @@ def pwd_code(verification_id: str):
 
 
 def api_pwd_verify(code, phone, verification_id: str):
+    # Подтверждаем смс в ГПН
     api = f'http://{app_fleet}/info/v1/driver/sms/verify'
     headers = {
         'Content-Type': 'application/json',
         'Content-Length': '129',
         'Host': app_fleet,
-        'User-Agent': 'X5 Transport NEW/versionName=24.6.4 versionCode=2407015',
+        'User-Agent': latest_user_agent,
     }
     body = {
         'data': {
@@ -79,7 +85,7 @@ def api_pwd_create(phone, password, verification_id: str):
         'Content-Type': 'application/json',
         'Content-Length': '122',
         'Host': app_fleet,
-        'User-Agent': 'X5 Transport NEW/versionName=25.6.5 versionCode=250605',
+        'User-Agent': latest_user_agent,
     }
     body = {
         'data': {
@@ -122,7 +128,7 @@ def api_driver_token(phone: str, password : str) -> str:
     headers = {
         'Content-Type': 'application/json',
         # 'Cookie': '17b4e09f4ad0242ff0dcd2969ae02791=5dc45d0378d1e3bd72bbffecd742833e',
-        'User-Agent': 'X5 Transport NEW/versionName=24.6.4 versionCode=2407015',
+        'User-Agent': latest_user_agent,
         #'Host': info_api,
     }
     body = {
@@ -149,19 +155,21 @@ def generate_password(length=8):
     lowercase = string.ascii_lowercase  # строчные буквы
     uppercase = string.ascii_uppercase  # заглавные буквы
     digits = string.digits  # цифры
-    punctuation = "!()+-=[]{}?@"  # знаки препинания
+    punctuation = "!?@{}"  # знаки препинания
     all_chars = lowercase + uppercase + digits + punctuation
 
     # Гарантируем обязательные символы
     password = [
-        secrets.choice(uppercase),  # минимум одна заглавная
-        secrets.choice(lowercase),  # минимум одна строчная
-        secrets.choice(digits),  # минимум одна цифра
-        secrets.choice(punctuation)  # минимум один знак препинания
+        secrets.choice(uppercase),  # одна заглавная
+        secrets.choice(lowercase),  # одна строчная
+        secrets.choice(digits),  # одна цифра
+        secrets.choice(punctuation), # один знак препинания
+        secrets.choice(digits), # одна цифра
+        secrets.choice(punctuation), # один знак препинания
     ]
 
     # Заполняем оставшуюся длину случайными символами
-    remaining = length - 4
+    remaining = length - 6
     if remaining > 0:
         password += [secrets.choice(all_chars) for _ in range(remaining)]
 

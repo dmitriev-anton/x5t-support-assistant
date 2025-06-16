@@ -7,6 +7,8 @@ import requests
 import json
 from x5t_connect import db_request
 from driver_api import api_driver_token
+from tabulate import tabulate
+from pandas import DataFrame
 
 extDataDir = os.getcwd()
 if getattr(sys, 'frozen', False):
@@ -41,15 +43,22 @@ def gpn_auth():
 
 
 def get_vtk_info(card_num:str):
-    _sql = (f'SELECT id, request_id, azs_contract_id, request_date, request_status, end_date, card_num, parent_id, '
+    _sql = (f'SELECT  azs_contract_id,  card_num,  '
            f'vtk_create_time, error_msg, azs_company_id, card_id, pin, confirm_mpc, tech_driver_id, card_status FROM '
            f'\"core-azs\".vtk_request where card_num = \'{card_num}\'')
 
-    resolve = db_request(_sql)
+    _sql2  = (f'SELECT cast(fc.number as text) as card_num, fc.code, fc.azs_company_id, fc.vtk ,vr.azs_contract_id,  vr.error_msg, '
+              f'vr.azs_company_id, vr.card_id, vr.pin, vr.tech_driver_id, vr.card_status, td."name" '
+              f'FROM "core-azs".fuel_cards fc 	'
+              f'left join "core-azs".vtk_request vr on cast(fc.number as text) = vr.card_num 	'
+              f'left join "core-azs".tech_driver td on vr.tech_driver_id = td.tech_driver_id  '
+              f'where fc.number = \'{card_num}\'')
+
+    resolve = db_request(_sql2)
     if resolve:
         return resolve[0]
     else:
-        raise RuntimeError('Карта в таблице ВТК не обнаружена.')
+        raise RuntimeError('Карта не обнаружена.')
 
 def gpn_delete_mpc(card_num:str, session_id:str):
 
@@ -253,17 +262,42 @@ def attach_card(card_num: str,  tech_driver_code: str, session_id: str):
     except requests.exceptions.SSLError:
         return None
 
+def gpn_barcode_check(card_num: str,   session_id: str):
+# Для получения ШК напрямую от ГПН
+
+    vtk = get_vtk_info(card_num)
+    card_id = vtk['card_id']
+    url = f"""https://{gpn_url}/vip/v2/cards/{card_id}/pay"""
+    headers = {
+        'Content-Type': 'application/json',
+        'api_key' : gpn_key,
+        'session_id' : session_id,
+        'contract_id': vtk['azs_contract_id']
+    }
+    body = {
+        'pin' : vtk['pin']
+    }
+
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
+        return response.json()
+    except requests.exceptions.SSLError:
+        return None
+
 # print(tech_drivers_dict())
 
-# auth = gpn_auth()
-# print(gpn_auth())
-# #
-# card_num = '7005830901840975'
-# print(get_vtk_info(card_num))
+# auth = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxMSIsImp0aSI6IjAyYjEyYWUwZjg0MWYzYmZjMjI0MGQxMTU4MTM5NmRmNGQ2NzUzOTZiMjlhOTM3YWM4ODQzNDkxMDkyOTY4NTY4ZjQ2MmQxODkzZWJlODg5IiwiaWF0IjoxNzUwMDYwMDcwLjcwNzk2NywibmJmIjoxNzUwMDYwMDcwLjcwNzk2OSwiZXhwIjoxNzUyNjUyMDcwLjcwNDYzOCwic3ViIjoiMS0xMkRCV01ESCIsInNjb3BlcyI6W119.kbrFenYEvF2XNJ8EK_78S7BoW09uFZE3NBy4SFPFtAxud_WtndcOQZSYgsjt1aCvRRr9yFXUoSidQTofWBvmF8ukr-CcdN9kmphxKtmrmRBhPeF2TEugkzM_6d6uGrhJk7zf5JF57jWtoWXypuERTKIzNJv52USdWJumSsfRUJj4ypfljsYCZ9fUk0xwkjveuu7WQTk1q-ZAjh4zCdsHpMzbYr44lX3bAvkQoDXTpcBK_1VjIsRr03X5lsmcDm2nfWcsN2cu84WkcQZpheYdJ9bLS7l43HQS2h07Bz9RxCIygZovT7U64Awy3BbWJMtxHFEy8Bz7gQq_pKhV1J9uEAHzVJUQSjf5h1nYW6A81RQkaCfZJYmbfexwupK6RMP68yXJDR6hM8vmW476JW7dTDMe8kYH0vonKuqQxt4VxBkhbp0M8JtJ23HG-JwtOFkLUqNLQY2emtFM6mAq6zQ6aHnQHCjUPHLiLQYlSns-aSsmdUYKX7krwz599Arz4Uly9NtrcXgPWK1VB721uZhLYmSizpTxyMVdVMehZg4PrIOPExVrg5CI1DZ-dYP5SpOwbiM17CybXvfqoS8OcIU7XcFBy1KLEfX3QUvMmvwF3yTHwptwyISC0s778mWWhnaZTv1l8BZPGZCZLifhJdhPAdcpG3Qt0oNqTIy3AI58yd0'
+# # # print(gpn_auth())
+# # # #
+# card_num = '7005830900981234'
+# # # print(get_vtk_info(card_num))
+# # # print(tabulate(DataFrame(get_vtk_info(card_num))))
+# print(get_vtk_info(card_num)['azs_company_id'])
 # try:
-#     print(gpn_confirm_mpc(card_num, '756540',  auth))
+#     print(gpn_barcode_check(card_num, auth))
 # except Exception as error:
-#     print(error)
+#      print(error)
 
 
 
