@@ -4,10 +4,12 @@ import psycopg2.extras
 import os
 import sys
 import logging
-
-from dotenv import load_dotenv
+from pathlib import Path
+import dotenv
 from typing import Union
 
+
+# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -15,28 +17,53 @@ logging.basicConfig(
     filemode='w'
 )
 
+def resource_path(relative_path):
+    """Возвращает корректный путь для ресурсов в режиме PyInstaller"""
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+# Основная директория
 if getattr(sys, 'frozen', False):
     base_dir = os.path.dirname(sys.executable)
 else:
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Проверка существования config.cfg
-config_path = os.path.join(base_dir, 'config.cfg')
-logging.info(f"Looking for config at: {config_path}")
+# Пути к конфигурационным файлам
+env_path = resource_path('.env')  # Для .env во временной директории
+config_path = os.path.join(base_dir, 'config.cfg')  # Для config.cfg рядом с EXE
 
-if not os.path.exists(config_path):
-    logging.error(f"Config file not found: {config_path}")
-    raise FileNotFoundError(f"Config file not found: {config_path}")
+logging.info(f"Base directory: {base_dir}")
+logging.info(f".env path: {env_path}")
+logging.info(f"config.cfg path: {config_path}")
 
-# Загрузка конфигов
-load_dotenv(os.path.join(base_dir, '.env'))
+# Загрузка .env из ресурсов
+if os.path.exists(env_path):
+    dotenv.load_dotenv(dotenv_path=env_path, override=True)
+    logging.info(".env loaded from resources")
+else:
+    logging.warning(".env not found in resources")
+
+# Загрузка config.cfg
+if os.path.exists(config_path):
+    dotenv.load_dotenv(dotenv_path=config_path, override=True)
+    logging.info("config.cfg loaded")
+else:
+    logging.error(f"config.cfg not found at {config_path}")
+
+# Проверка переменных (добавьте свои)
+required_vars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME']
+for var in required_vars:
+    value = os.getenv(var)
+    if value is None:
+        logging.error(f"Missing variable: {var}")
+    else:
+        logging.info(f"{var} = {value if var != 'DB_PASSWORD' else '***'}")
+
+user=os.getenv("DB_USER")
+password=os.getenv("DB_PASSWORD")
 host=os.getenv("DB_HOST")
 dbname=os.getenv("DB_NAME")
-
-load_dotenv(config_path)
-user=os.getenv("DB_USERNAME")
-password=os.getenv("DB_PASSWORD")
-
 
 # Проверка значений переменных
 required_vars = ['DB_HOST',  'DB_USERNAME', 'DB_PASSWORD', 'DB_NAME']
