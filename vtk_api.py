@@ -99,9 +99,10 @@ def get_vtk_info(card_num:str):
               f'FROM "core-azs".fuel_cards fc 	'
               f'left join "core-azs".vtk_request vr on cast(fc.number as text) = vr.card_num 	'
               f'left join "core-azs".tech_driver td on vr.tech_driver_id = td.tech_driver_id  '
-              f'where fc.number = \'{card_num}\'')
-
+              f'where fc.number = {card_num}')
+    print(_sql2)
     resolve = db_request(_sql2)
+    print(resolve)
     if resolve:
         return resolve[0]
     else:
@@ -337,10 +338,10 @@ def gpn_barcode_check(card_num: str,   session_id: str):
 # auth = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxMSIsImp0aSI6IjAyYjEyYWUwZjg0MWYzYmZjMjI0MGQxMTU4MTM5NmRmNGQ2NzUzOTZiMjlhOTM3YWM4ODQzNDkxMDkyOTY4NTY4ZjQ2MmQxODkzZWJlODg5IiwiaWF0IjoxNzUwMDYwMDcwLjcwNzk2NywibmJmIjoxNzUwMDYwMDcwLjcwNzk2OSwiZXhwIjoxNzUyNjUyMDcwLjcwNDYzOCwic3ViIjoiMS0xMkRCV01ESCIsInNjb3BlcyI6W119.kbrFenYEvF2XNJ8EK_78S7BoW09uFZE3NBy4SFPFtAxud_WtndcOQZSYgsjt1aCvRRr9yFXUoSidQTofWBvmF8ukr-CcdN9kmphxKtmrmRBhPeF2TEugkzM_6d6uGrhJk7zf5JF57jWtoWXypuERTKIzNJv52USdWJumSsfRUJj4ypfljsYCZ9fUk0xwkjveuu7WQTk1q-ZAjh4zCdsHpMzbYr44lX3bAvkQoDXTpcBK_1VjIsRr03X5lsmcDm2nfWcsN2cu84WkcQZpheYdJ9bLS7l43HQS2h07Bz9RxCIygZovT7U64Awy3BbWJMtxHFEy8Bz7gQq_pKhV1J9uEAHzVJUQSjf5h1nYW6A81RQkaCfZJYmbfexwupK6RMP68yXJDR6hM8vmW476JW7dTDMe8kYH0vonKuqQxt4VxBkhbp0M8JtJ23HG-JwtOFkLUqNLQY2emtFM6mAq6zQ6aHnQHCjUPHLiLQYlSns-aSsmdUYKX7krwz599Arz4Uly9NtrcXgPWK1VB721uZhLYmSizpTxyMVdVMehZg4PrIOPExVrg5CI1DZ-dYP5SpOwbiM17CybXvfqoS8OcIU7XcFBy1KLEfX3QUvMmvwF3yTHwptwyISC0s778mWWhnaZTv1l8BZPGZCZLifhJdhPAdcpG3Qt0oNqTIy3AI58yd0'
 # # # print(gpn_auth())
 # # # #
-# card_num = '7005830900981234'
-# # # print(get_vtk_info(card_num))
-# # # print(tabulate(DataFrame(get_vtk_info(card_num))))
-# print(get_vtk_info(card_num)['azs_company_id'])
+# card_num = '700583090218668'
+# # # # print(get_vtk_info(card_num))
+# # # # print(tabulate(DataFrame(get_vtk_info(card_num))))
+# print(get_vtk_info(card_num))
 # try:
 #     print(gpn_barcode_check(card_num, auth))
 # except Exception as error:

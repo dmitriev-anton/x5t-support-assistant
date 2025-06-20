@@ -20,25 +20,47 @@ def main_window():
     # SG.set_options(font=("Segoe UI", 11))
     SG.theme('DarkGreen5')
 
-    vehicle_tab_layout = [[SG.Text('ТС'), SG.InputText(k='vehicle'), ], [SG.Submit('Искать ТС'),SG.Submit('Искать ПЛ')]]
+    vehicle_tab_layout = [
+        [SG.Text('ТС'),
+         SG.InputText(k='vehicle')],
+        [SG.Submit('Искать ТС'),
+         SG.Submit('Искать ПЛ')]]
 
     invoice_tab_layout = [
-        [SG.Text('Id_invoice'), SG.InputText(k='invoice_number'), SG.Submit('-->X5T ID'),
+        [SG.Text('Id_invoice'),
+         SG.InputText(k='invoice_number'),
+         SG.Submit('-->X5T ID'),
     ],
-        [SG.Submit('OWN_TRIP'), SG.Submit('Точки'), SG.Submit('Прожатия') ]
+        [SG.Submit('OWN_TRIP'),
+         SG.Submit('Точки'),
+         SG.Submit('Прожатия') ]
     ]
 
     waybill_tab_layout = [
-        [SG.Text('ПЛ'), SG.InputText(k='waybill_number'), SG.Submit('Поиск ПЛ'), SG.Submit('Рейсы на ПЛ'),
+        [SG.Text('ПЛ'),
+         SG.InputText(k='waybill_number'),
+         SG.Submit('Поиск ПЛ'),
+         SG.Submit('Рейсы на ПЛ'),
          SG.Submit('Осмотры')],
-        [SG.Submit('Статус открытия'), SG.Submit('Лог открытия'), SG.Submit('Статус закрытия'), SG.Submit('Лог закрытия'),
+        [SG.Submit('Статус открытия'),
+         SG.Submit('Лог открытия'),
+         SG.Submit('Статус закрытия'),
+         SG.Submit('Лог закрытия'),
          ],
     ]
 
     drivers_tab_layout = [
-        [SG.Text('Таб.н.'), SG.InputText(k='driver_number'), SG.Submit('Поиск'), SG.Submit('Рейсы'), SG.Submit('Путевые листы'),
-         SG.Submit('ВТК'), SG.Submit('Версия')],
-        [SG.Submit('Все фичи'), SG.Submit('Фичи'), SG.Submit('ШК ОТ/ВС'),]
+        [SG.Text('Таб.н.'),
+         SG.InputText(k='driver_number'),
+         # SG.Submit('Поиск'),
+         SG.Submit('Рейсы'),
+         SG.Submit('Путевые листы'),
+         SG.Submit('ВТК'),
+         SG.Submit('Версия')],
+        [
+            SG.Submit('Все фичи'),
+            SG.Submit('Фичи'),
+            SG.Submit('ШК ОТ/ВС'),]
     ]
 
     # cards_tab_layout = [
@@ -69,7 +91,7 @@ def main_window():
         [SG.Output(size=(160, 25), font=("Consolas", 9),key='output_window')]
     ]
 
-    return SG.Window('X5Transport support assistant 1Line v2.24 by A.Dmitriev',
+    return SG.Window('X5Transport support assistant 1Line v2.25 by A.Dmitriev',
                      main_layout,  return_keyboard_events=False, finalize=True)
 
 
