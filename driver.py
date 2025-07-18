@@ -2,7 +2,8 @@
 from datetime import datetime
 from typing import Union, Any
 
-from x5t_connect_1line import db_request
+# from x5t_connect_1line import db_request
+from x5t_connect import db_request
 
 ot_check = "select id, driver_id, barcode, status, deleted from \"core-drivers-schema\".drivers_otvs where driver_id = (select id from " \
            "\"core-drivers-schema\".drivers where number = '{0}')"

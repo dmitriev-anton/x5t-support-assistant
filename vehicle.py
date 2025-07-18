@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from x5t_connect_1line import db_request
-# from x5t_connect import db_request
+# from x5t_connect_1line import db_request
+from x5t_connect import db_request
 
 car_assign = "UPDATE \"core-vehicle-schema\".vehicle SET group_number='{0}' WHERE code = '{1}'"
 car_drop = "UPDATE \"core-vehicle-schema\".vehicle SET group_number=NULL WHERE code = '{0}'"
