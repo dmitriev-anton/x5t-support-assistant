@@ -59,6 +59,7 @@ def main():
                     pass
                 return 'break'  # Блокируем стандартное поведение
 
+
     warnings.filterwarnings("ignore")  # игнор ненужных уведомлений
 
     user = os.getlogin()  # получаем логин юзера
@@ -81,6 +82,8 @@ def main():
     }
     tablefmt = "plain"  # 'simple', 'tsv' - подходят
 
+
+
     while True:  # The Event Loop
 
         event, values = window.read()
@@ -95,27 +98,27 @@ def main():
         # elif event.find('??') != -1:
         #     print(event)
 
-        elif event == 'Привязать':
-            print(delimiter)
-            vehicle_code = car_num_to_latin(values['vehicle'].strip())
-            window['vehicle'].update(vehicle_code)
-            if not vehicle_code:
-                print('Отсутствует номер ТС.')
-
-            elif vehicle_counter(vehicle_code) == 0:
-                print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
-
-            else:
-
-                if not values['groups']:
-                    db_request(car_drop.format(vehicle_code))
-                    print(f'ТС {vehicle_code} отвязана.')
-                    logging.info(f'ТС {vehicle_code} отвязана.')
-
-                else:
-                    db_request(car_assign.format(values['groups'], vehicle_code))
-                    print('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
-                    logging.info('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
+        # elif event == 'Привязать':
+        #     print(delimiter)
+        #     vehicle_code = car_num_to_latin(values['vehicle'].strip())
+        #     window['vehicle'].update(vehicle_code)
+        #     if not vehicle_code:
+        #         print('Отсутствует номер ТС.')
+        #
+        #     elif vehicle_counter(vehicle_code) == 0:
+        #         print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
+        #
+        #     else:
+        #
+        #         if not values['groups']:
+        #             db_request(car_drop.format(vehicle_code))
+        #             print(f'ТС {vehicle_code} отвязана.')
+        #             logging.info(f'ТС {vehicle_code} отвязана.')
+        #
+        #         else:
+        #             db_request(car_assign.format(values['groups'], vehicle_code))
+        #             print('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
+        #             logging.info('ТС {0} привязана к группе {1}.'.format(vehicle_code, values['groups']))
 
         elif event == 'Искать ТС':
             print(delimiter)
@@ -677,18 +680,6 @@ def main():
                 else:
                     print(useragent[0]['last_user_agent'])
                     settings['phone'] = None
-
-        # elif event == 'Закрыть инциденты':
-        #     # print(values['driver_number'])
-        #     settings['phone'] = driver_phone(values['driver_number'])
-        #     if not settings['phone']:
-        #         print('Некорректный табельный номер')
-        #     else:
-        #         close_disp_inc(values['driver_number'].strip())
-        #         print(delimiter)
-        #         print('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
-        #         logging.info('Старые инциденты водителя {0} закрыты.'.format(values['driver_number']))
-        #         settings['phone'] = None
 
         elif event == 'gpn_auth':
             window.start_thread(lambda: gpn_auth(), '-auth_done-')

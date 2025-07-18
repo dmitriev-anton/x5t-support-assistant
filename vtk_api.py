@@ -95,14 +95,14 @@ def get_vtk_info(card_num:str):
            f'\"core-azs\".vtk_request where card_num = \'{card_num}\'')
 
     _sql2  = (f'SELECT cast(fc.number as text) as card_num, fc.code, fc.azs_company_id, fc.vtk ,vr.azs_contract_id,  vr.error_msg, '
-              f'vr.azs_company_id, vr.card_id, vr.pin, vr.tech_driver_id, vr.card_status, td."name" '
+              f'vr.azs_company_id, vr.card_id, vr.pin, vr.tech_driver_id, vr.card_status, td."name", td.tech_driver_mobile as phone '
               f'FROM "core-azs".fuel_cards fc 	'
               f'left join "core-azs".vtk_request vr on cast(fc.number as text) = vr.card_num 	'
               f'left join "core-azs".tech_driver td on vr.tech_driver_id = td.tech_driver_id  '
               f'where fc.number = {card_num}')
-    print(_sql2)
+    # print(_sql2)
     resolve = db_request(_sql2)
-    print(resolve)
+    # print(resolve)
     if resolve:
         return resolve[0]
     else:
@@ -339,7 +339,7 @@ def gpn_barcode_check(card_num: str,   session_id: str):
 # # # print(gpn_auth())
 # # # #
 # card_num = '700583090218668'
-# # # # print(get_vtk_info(card_num))
+# print(get_vtk_info('7826010900001654698'))
 # # # # print(tabulate(DataFrame(get_vtk_info(card_num))))
 # print(get_vtk_info(card_num))
 # try:

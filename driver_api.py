@@ -205,7 +205,7 @@ def generate_password(length=8):
     lowercase = "abcdefghjkmnpqrstuvwxyz"  # исключены l, i
     uppercase = "ABCDEFGHJKMNPQRSTUVWXYZ"  # исключены I, L, O
     digits = "23456789"  # исключены 0, 1
-    punctuation = "[]?@{}"  # знаки препинания
+    punctuation = "?@{}"  # знаки препинания
     all_chars = lowercase + uppercase + digits
 
     # Гарантируем обязательные символы
