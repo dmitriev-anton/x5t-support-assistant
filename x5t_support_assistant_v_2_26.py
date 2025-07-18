@@ -9,9 +9,9 @@ import random
 from driver import *
 from driver_api import *
 # from x5t_tasks import tasks ----- unused
-from gui_chained import main_window, d_dict
+from gui import main_window, d_dict
 from invoice import *
-# from megafon_sms import megafon_send_sms
+from megafon_sms import megafon_send_sms
 from vehicle import *
 from vtk_api import *
 from waybill import *
@@ -153,7 +153,63 @@ def main():
                     print(tabulate(DataFrame(wbs), headers='keys', showindex=False,tablefmt=tablefmt))
                 else:
                     print('Путевые листы не найдены')
+        elif event == 'show_cards':
+            print(delimiter)
+            vehicle_code = car_num_to_latin(values['vehicle'].strip())
+            window['vehicle'].update(vehicle_code)
+            fuel_cards = fuel_cards_by_vehicle(vehicle_code)
 
+            if not vehicle_code:
+                print('Отсутствует номер ТС.')
+
+            elif vehicle_counter(vehicle_code) == 0:
+                print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
+
+            else:
+
+                if fuel_cards:
+                    print(tabulate(DataFrame(fuel_cards), headers='keys', showindex=False,tablefmt=tablefmt))
+                else:
+                    print('Карты не найдены')
+
+        elif event == 'show_finder_ops':
+            print(delimiter)
+            vehicle_code = car_num_to_latin(values['vehicle'].strip())
+            window['vehicle'].update(vehicle_code)
+            azs_finder_ops = asz_finder_ops_by_vehicle(vehicle_code)
+
+            if not vehicle_code:
+                print('Отсутствует номер ТС.')
+
+            elif vehicle_counter(vehicle_code) == 0:
+                print(f'ТС {vehicle_code} в системе х5транспорт отсутствует. Укажите существующий номер.')
+
+            else:
+                if azs_finder_ops:
+                    print(tabulate(DataFrame(azs_finder_ops), headers='keys', showindex=False,tablefmt=tablefmt))
+                else:
+                    print('Подборы АЗС не найдены')
+
+        elif event == 'azs_finder_status':
+            print(delimiter)
+            uuid = values['azs_ops'].strip()
+            window['azs_ops'].update(uuid)
+            # print(uuid)
+            try:
+                finder_status = azs_finder_status(uuid)
+            except Exception as asz_err:
+                finder_status = None
+            if not uuid:
+                print('Отсутствует код подбора.')
+
+            else:
+                if finder_status:
+                    # print(tabulate(DataFrame(finder_status), headers='keys', showindex=False,tablefmt=tablefmt))
+                    # print(finder_status)
+                    pretty_dict_print(finder_status)
+
+                else:
+                    print('Данные не найдены')
 
         elif event == '-->X5T ID':
             print(delimiter)
@@ -654,7 +710,7 @@ def main():
 
         elif event == '-gpn_barcode-':
             print(delimiter)
-            print(values['-gpn_barcode-'])
+            pretty_dict_print(values['-gpn_barcode-'])
 
 
         elif event == '-auth_done-':

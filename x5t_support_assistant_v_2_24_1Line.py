@@ -7,15 +7,15 @@ from pandas import DataFrame
 from tabulate import tabulate
 import random
 from driver import *
-from driver_api import *
+from driver_api import generate_password, latest_user_agent
 # from x5t_tasks import tasks ----- unused
-from gui import main_window, d_dict
+from gui_1line import main_window
 from invoice import *
-from megafon_sms import megafon_send_sms
+# from megafon_sms import megafon_send_sms
 from vehicle import *
 from vtk_api import *
 from waybill import *
-from x5t_connect import db_request
+from x5t_connect_1line import db_request
 
 
 

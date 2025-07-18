@@ -231,4 +231,4 @@ def generate_password(length=8):
 # print(api_driver_token('9601032336', 'c_LWs25B'))
 
 # print(api_driver_token(''))
-# print(driver_pwd_reset('9819907292', 'A[MYxxQ8hPKZ'))
+# print(driver_pwd_reset('9528643099', password))

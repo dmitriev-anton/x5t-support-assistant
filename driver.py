@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Union, Any
 
-from x5t_connect import db_request
+from x5t_connect_1line import db_request
 
 ot_check = "select id, driver_id, barcode, status, deleted from \"core-drivers-schema\".drivers_otvs where driver_id = (select id from " \
            "\"core-drivers-schema\".drivers where number = '{0}')"
@@ -203,4 +203,4 @@ def get_last_user_agent(driver: str ):
 
 # f25300be-5d5f-48b3-9e4f-9f3ba57414f3
 #print(driver_cards('01669222'))
-# print(all_races('02048874'))
+# print(db_request(ot_check.format('90000529')))

@@ -52,7 +52,7 @@ else:
     logging.error(f"config.cfg not found at {config_path}")
 
 # Проверка переменных (добавьте свои)
-required_vars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME']
+required_vars = ['1LINE_DB_HOST', '1LINE_DB_USER', '1LINE_DB_PASSWORD', '1LINE_DB_NAME']
 for var in required_vars:
     value = os.getenv(var)
     if value is None:
@@ -60,13 +60,19 @@ for var in required_vars:
     else:
         logging.info(f"{var} = {value if var != 'DB_PASSWORD' else '***'}")
 
+# user=os.getenv("1LINE_DB_USER")
+# password=os.getenv("1LINE_DB_PASSWORD")
+# host=os.getenv("1LINE_DB_HOST")
+# dbname=os.getenv("1LINE_DB_NAME")
+
 user=os.getenv("DB_USER")
 password=os.getenv("DB_PASSWORD")
 host=os.getenv("DB_HOST")
 dbname=os.getenv("DB_NAME")
 
+
 # Проверка значений переменных
-required_vars = ['DB_HOST',  'DB_USERNAME', 'DB_PASSWORD', 'DB_NAME']
+required_vars = ['1LINE_DB_HOST',  '1LINE_DB_USERNAME', '1LINE_DB_PASSWORD', '1LINE_DB_NAME']
 for var in required_vars:
     value = os.getenv(var)
     if not value:
