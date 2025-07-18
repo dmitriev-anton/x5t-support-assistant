@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import logging
 import warnings
 import tkinter as tk
@@ -60,11 +61,11 @@ def main():
 
     warnings.filterwarnings("ignore")  # игнор ненужных уведомлений
 
-    username = os.getlogin()  # получаем логин юзера
+    user = os.getlogin()  # получаем логин юзера
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         filename="log.log",
-        format=f'%(asctime)s - {username} - %(module)s - %(levelname)s : %(message)s',
+        format=f'%(asctime)s - {user} - %(module)s - %(levelname)s : %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S',
     )
     logging.info('Запуск приложения')

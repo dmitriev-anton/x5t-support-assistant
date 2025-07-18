@@ -202,11 +202,11 @@ def generate_password(length=8):
         raise ValueError("Длина пароля должна быть не менее 4 символов")
 
     # Наборы символов
-    lowercase = string.ascii_lowercase  # строчные буквы
-    uppercase = string.ascii_uppercase  # заглавные буквы
-    digits = string.digits  # цифры
-    punctuation = "!?@{}"  # знаки препинания
-    all_chars = lowercase + uppercase + digits + punctuation
+    lowercase = "abcdefghjkmnpqrstuvwxyz"  # исключены l, i
+    uppercase = "ABCDEFGHJKMNPQRSTUVWXYZ"  # исключены I, L, O
+    digits = "23456789"  # исключены 0, 1
+    punctuation = "[]?@{}"  # знаки препинания
+    all_chars = lowercase + uppercase + digits
 
     # Гарантируем обязательные символы
     password = [
@@ -215,11 +215,11 @@ def generate_password(length=8):
         secrets.choice(digits),  # одна цифра
         secrets.choice(punctuation), # один знак препинания
         secrets.choice(digits), # одна цифра
-        secrets.choice(punctuation), # один знак препинания
+        # secrets.choice(punctuation), # один знак препинания
     ]
 
     # Заполняем оставшуюся длину случайными символами
-    remaining = length - 6
+    remaining = length - 5
     if remaining > 0:
         password += [secrets.choice(all_chars) for _ in range(remaining)]
 
