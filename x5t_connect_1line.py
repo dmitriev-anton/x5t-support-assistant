@@ -31,11 +31,11 @@ else:
 
 # Пути к конфигурационным файлам
 env_path = resource_path('.env')  # Для .env во временной директории
-config_path = os.path.join(base_dir, 'config.cfg')  # Для config.cfg рядом с EXE
+# config_path = os.path.join(base_dir, 'config.cfg')  # Для config.cfg рядом с EXE
 
 logging.info(f"Base directory: {base_dir}")
 logging.info(f".env path: {env_path}")
-logging.info(f"config.cfg path: {config_path}")
+# logging.info(f"config.cfg path: {config_path}")
 
 # Загрузка .env из ресурсов
 if os.path.exists(env_path):
@@ -44,12 +44,12 @@ if os.path.exists(env_path):
 else:
     logging.warning(".env not found in resources")
 
-# Загрузка config.cfg
-if os.path.exists(config_path):
-    dotenv.load_dotenv(dotenv_path=config_path, override=True)
-    logging.info("config.cfg loaded")
-else:
-    logging.error(f"config.cfg not found at {config_path}")
+# # Загрузка config.cfg
+# if os.path.exists(config_path):
+#     dotenv.load_dotenv(dotenv_path=config_path, override=True)
+#     logging.info("config.cfg loaded")
+# else:
+#     logging.error(f"config.cfg not found at {config_path}")
 
 # Проверка переменных (добавьте свои)
 required_vars = ['1LINE_DB_HOST', '1LINE_DB_USER', '1LINE_DB_PASSWORD', '1LINE_DB_NAME']

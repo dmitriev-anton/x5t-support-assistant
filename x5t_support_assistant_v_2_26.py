@@ -76,6 +76,7 @@ def main():
     settings = {  # хранение токенов для запросов
         'driver_token': '',
         'gpn_session_id': '',
+        'azs_company_id' : {1000 : 'RosNeft', 1002: 'GazPromNeft'}
     }
     tablefmt = "plain"  # 'simple', 'tsv' - подходят
 
@@ -153,6 +154,7 @@ def main():
                     print(tabulate(DataFrame(wbs), headers='keys', showindex=False,tablefmt=tablefmt))
                 else:
                     print('Путевые листы не найдены')
+
         elif event == 'show_cards':
             print(delimiter)
             vehicle_code = car_num_to_latin(values['vehicle'].strip())
@@ -168,7 +170,9 @@ def main():
             else:
 
                 if fuel_cards:
-                    print(tabulate(DataFrame(fuel_cards), headers='keys', showindex=False,tablefmt=tablefmt))
+                    fc=DataFrame(fuel_cards)
+                    fc['azs_company_id'] = fc['azs_company_id'].map(settings['azs_company_id']).fillna(fc['azs_company_id'])
+                    print(tabulate(fc, headers='keys', showindex=False, tablefmt=tablefmt))
                 else:
                     print('Карты не найдены')
 
@@ -186,7 +190,7 @@ def main():
 
             else:
                 if azs_finder_ops:
-                    print(tabulate(DataFrame(azs_finder_ops), headers='keys', showindex=False,tablefmt=tablefmt))
+                    print(tabulate(DataFrame(azs_finder_ops), headers='keys', showindex=False, tablefmt=tablefmt))
                 else:
                     print('Подборы АЗС не найдены')
 
