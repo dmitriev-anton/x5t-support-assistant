@@ -95,7 +95,7 @@ def get_vtk_info(card_num:str):
            f'\"core-azs\".vtk_request where card_num = \'{card_num}\'')
 
     _sql2  = (f'SELECT cast(fc.number as text) as card_num, fc.code, fc.azs_company_id, fc.vtk ,vr.azs_contract_id,  vr.error_msg, '
-              f'vr.azs_company_id, vr.card_id, vr.pin, vr.tech_driver_id, vr.card_status, td."name", td.tech_driver_mobile as phone '
+              f'vr.azs_company_id, vr.card_id, vr.pin, vr.tech_driver_id, td."name", td.tech_driver_mobile as phone '
               f'FROM "core-azs".fuel_cards fc 	'
               f'left join "core-azs".vtk_request vr on cast(fc.number as text) = vr.card_num 	'
               f'left join "core-azs".tech_driver td on vr.tech_driver_id = td.tech_driver_id  '
