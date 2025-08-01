@@ -243,15 +243,26 @@ def get_vtk_barcode(card_num: str, token: str):
     else:
         raise RuntimeError('Карта не ВТК!')
 
-    headers = {
-        'Content-Type': 'application/json',
-        'Cookie': '53d4e18adf1674a3b93e63371b741a75=02e4c91cb6754b198c3303ec9b664f59; NSC_ESNS=2d5d4a6b-3031-13c9-9678-00e0ed6806e6_2011328032_1682857824_00000000000760926456',
-        'Authorization' : f'Bearer {token}'
-        }
     body = {
+        'invoiceId': 201127,
         'fuelCardNumber': vtk['card_num'],
-        'vehicleNumber' : '"X999XX999"' # поле обязательное но сам номер значения не имеет
+        'vehicleNumber': 'E050PT136',  # поле обязательное но сам номер значения не имеет
+        'lat': 34.34,
+        'lon': 34.34,
+    }
+
+
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Host': 'app-fleet.x5tmfp-prod-4.salt.x5.ru',
+        'Content-Type': 'application/json',
+        'Cookie': 'eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjNTZmY2YzNC05MjAzLTRlNDItOGY1Ny1jMWE0OTI0Mzc2YTcifQ.eyJleHAiOjE3MTUxMjgxNDMsImlhdCI6MTcxNDg2ODk0MywianRpIjoiZGE3NDI1ODctMGY0MC00ZTU1LWJhYjgtNWUzZjk1ZDUxYzI3IiwiaXNzIjoiaHR0cHM6Ly9sb2dpc3RpY3MueDUucnUvYXV0aC9yZWFsbXMvbWZwcmVhbG0iLCJhdWQiOiJodHRwczovL2xvZ2lzdGljcy54NS5ydS9hdXRoL3JlYWxtcy9tZnByZWFsbSIsInN1YiI6IjZmOGZlZjhjLTkyOGQtNGE2Ni04YzJmLTgzMzZkZDllNjZhMCIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJhcHAtZmxlZXQtc2VydmljZSIsInNlc3Npb25fc3RhdGUiOiI1NmRiZWI2Yi0yN2M3LTRiZjktYmMzMy03ZTQ0M2E2YTJiMGMiLCJzY29wZSI6IiIsInNpZCI6IjU2ZGJlYjZiLTI3YzctNGJmOS1iYzMzLTdlNDQzYTZhMmIwYyJ9.CqtAQ5vSg2Myu5LPc4jG93JOICGH30WqDLeuJrcSzl8',
+        # 'User-Agent': 'PostmanRuntime/7.44.1',
+
         }
+
+    # print(headers)
+    # print(body)
 
     try:
         response = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
@@ -335,15 +346,18 @@ def gpn_barcode_check(card_num: str,   session_id: str):
 
 # print(tech_drivers_dict())
 
-# auth = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxMSIsImp0aSI6IjAyYjEyYWUwZjg0MWYzYmZjMjI0MGQxMTU4MTM5NmRmNGQ2NzUzOTZiMjlhOTM3YWM4ODQzNDkxMDkyOTY4NTY4ZjQ2MmQxODkzZWJlODg5IiwiaWF0IjoxNzUwMDYwMDcwLjcwNzk2NywibmJmIjoxNzUwMDYwMDcwLjcwNzk2OSwiZXhwIjoxNzUyNjUyMDcwLjcwNDYzOCwic3ViIjoiMS0xMkRCV01ESCIsInNjb3BlcyI6W119.kbrFenYEvF2XNJ8EK_78S7BoW09uFZE3NBy4SFPFtAxud_WtndcOQZSYgsjt1aCvRRr9yFXUoSidQTofWBvmF8ukr-CcdN9kmphxKtmrmRBhPeF2TEugkzM_6d6uGrhJk7zf5JF57jWtoWXypuERTKIzNJv52USdWJumSsfRUJj4ypfljsYCZ9fUk0xwkjveuu7WQTk1q-ZAjh4zCdsHpMzbYr44lX3bAvkQoDXTpcBK_1VjIsRr03X5lsmcDm2nfWcsN2cu84WkcQZpheYdJ9bLS7l43HQS2h07Bz9RxCIygZovT7U64Awy3BbWJMtxHFEy8Bz7gQq_pKhV1J9uEAHzVJUQSjf5h1nYW6A81RQkaCfZJYmbfexwupK6RMP68yXJDR6hM8vmW476JW7dTDMe8kYH0vonKuqQxt4VxBkhbp0M8JtJ23HG-JwtOFkLUqNLQY2emtFM6mAq6zQ6aHnQHCjUPHLiLQYlSns-aSsmdUYKX7krwz599Arz4Uly9NtrcXgPWK1VB721uZhLYmSizpTxyMVdVMehZg4PrIOPExVrg5CI1DZ-dYP5SpOwbiM17CybXvfqoS8OcIU7XcFBy1KLEfX3QUvMmvwF3yTHwptwyISC0s778mWWhnaZTv1l8BZPGZCZLifhJdhPAdcpG3Qt0oNqTIy3AI58yd0'
+
 # # # print(gpn_auth())
 # # # #
-# card_num = '700583090218668'
+
 # print(get_vtk_info('7826010900001654698'))
 # # # # print(tabulate(DataFrame(get_vtk_info(card_num))))
 # print(get_vtk_info(card_num))
+
+# token = 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJYeWhSclk4NTdWaTI4cEhvQXF1VUVuMTRKb2NOS0lYdUotT1JTMnlrLXZvIn0.eyJleHAiOjE3NTQxMjM3NTMsImlhdCI6MTc1NDAzNzM1MywianRpIjoib25ydHJvOjU1NzUyOWM5LWFmOGItNDdhNS05YjZjLTA0ZWM1MTVlNDExOSIsImlzcyI6Imh0dHBzOi8vbG9naXN0aWNzLng1LnJ1L2F1dGgvcmVhbG1zL21mcHJlYWxtIiwiYXVkIjpbImFwcC1mbGVldC1zZXJ2aWNlIiwiYXBwLW1pc3Npb24tY29udHJvbCIsImFjY291bnQiXSwic3ViIjoiMjNjZmU5NDItMDFmMi00Yjk4LThiYWQtODI4ODQ1NTI0ODcyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYXBwLWZsZWV0LXNlcnZpY2UiLCJzaWQiOiIyYjg3MjAzZS0xMzJkLTRjNGItOTg0Yi1hM2MxMmQ4NGU5ZGYiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFwcC1mbGVldC1zZXJ2aWNlIjp7InJvbGVzIjpbIkRSSVZFUiJdfSwiYXBwLW1pc3Npb24tY29udHJvbCI6eyJyb2xlcyI6WyJESVNQQVRDSEVSIiwiVVNFUiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiIiLCJuYW1lIjoi0KDRg9Cx0LDQvdC-0LLQuNGHINCh0LXRgNCz0LXQuSDQn9C10YLRgNC-0LLQuNGHINCg0YPQsdCw0L3QvtCy0LjRhyDQodC10YDQs9C10Lkg0J_QtdGC0YDQvtCy0LjRhyIsInByZWZlcnJlZF91c2VybmFtZSI6IjkwNDU5MjEyNDkiLCJnaXZlbl9uYW1lIjoi0KDRg9Cx0LDQvdC-0LLQuNGHINCh0LXRgNCz0LXQuSDQn9C10YLRgNC-0LLQuNGHIiwiZmFtaWx5X25hbWUiOiLQoNGD0LHQsNC90L7QstC40Ycg0KHQtdGA0LPQtdC5INCf0LXRgtGA0L7QstC40YcifQ.KkV-HjdV4Um_XB9KRY2XtxTGcZkEeVC-T51cSkdXsFqcAZE6UdL50gpjZcwU6UCXZ3_UsInYs_WrcIkw5J8O8ZYwIEVhTx54e4hBXCgcm3GfKzeD1FgwzrHYDA9YfO-zJw1JM62HxxmCzXTV3IH9ORFxWwqUgrIwefUdrO8q5MAXwwYxLVgrtAxKMvB3jKroBXv62oyr5YJ-l3GPUNM_D9yqw93ZyCkmsjX26nCcd190f_WlO4zOMbD19Y0x1YKMWu4m27A5mDmDscgRujyJNRmJI2Dxlh74ruA5mghdol6-037G_EehwCI22jlRZWrPL7TFyBMdnJfPEP-rcYn4QQ'
+# card_num = '7005830902184159'
 # try:
-#     print(gpn_barcode_check(card_num, auth))
+#      print(get_vtk_barcode(card_num, token))
 # except Exception as error:
 #      print(error)
 
