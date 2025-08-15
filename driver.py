@@ -38,7 +38,7 @@ def add_feature(tab_num: str, f_num: Union[str, list[str]]):
     add_feature = ("insert into \"core-drivers-schema\".driver_features (driver_id, feature_id) \n"
                    "	values ((select id from \"core-drivers-schema\".drivers where number = '{0}'),'{1}');")
     # total_query = None
-    print(type(f_num))
+    # print(type(f_num))
     if type(f_num) == str:
         total_query = add_feature.format(tab_num, f_num)
         # print(total_query) check
@@ -46,12 +46,12 @@ def add_feature(tab_num: str, f_num: Union[str, list[str]]):
         total_query = [add_feature.format(tab_num, f) for f in f_num]
 
     try:
-        print(total_query)
+        # print(total_query)
         db_request(total_query)
         return (f'Водителю {tab_num} добавлены фичи {f_num}')
     except Exception as error:
         print(error)
-        print(total_query)
+        # print(total_query)
         return 'Невозможно добавить фичу!!!'
 
 
@@ -68,7 +68,7 @@ def remove_feature(tab_num: str, f_num=None):
         total_query = delete_feature
     # print(total_query) check
     try:
-        print(total_query)
+        # print(total_query)
         db_request(total_query)
         return f'Удаление фич водителю {tab_num}'
     except Exception as error:
