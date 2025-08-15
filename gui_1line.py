@@ -34,17 +34,7 @@ def main_window():
         SG.Submit('Рейсы'),
         SG.Submit('Путевые листы'),
         SG.Submit('ВТК'),
-        # [SG.Submit('Все фичи'),
-        #  SG.Submit('Фичи'),
-        #  SG.Combo(f_dict, default_value=f_dict[0], readonly=True, k='feature'),
-        #  SG.Submit('Добавить фичу'),
-        #  SG.Submit('Удалить фичу'),
-         # SG.Submit('Деф. фичи', k='add_all'),
-         # SG.Submit('Удалить все', k='remove_all'),
-
-         # SG.Submit('Обновить ШК ОТ/ВС'),
-         # SG.Submit('Закрыть инциденты'),
-         # SG.Submit('Стереть AUTH_USER_ID')]
+        
             ]
     ]
 

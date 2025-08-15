@@ -1,6 +1,7 @@
 **/.idea
 .env
 config.cfg
+keycloak.py
 **/venv
 **/build
 **/dist

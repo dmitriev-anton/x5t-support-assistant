@@ -525,8 +525,8 @@ def main():
                     print('У водителя дефолтный набор фич')
                 else:
                     try:
-                        # print(values['driver_number'], values['feature'])
-                        res = add_feature(values['driver_number'], values['feature'])
+                        print(values['driver_number'], values['feature'])
+                        res = add_feature(values['driver_number'], str(values['feature']))
                         print(res)
                         logging.info(res)
                     except Exception as error:
